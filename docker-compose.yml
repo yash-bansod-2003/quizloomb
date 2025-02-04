@@ -9,6 +9,12 @@ services:
       POSTGRES_PASSWORD: root
     volumes:
       - postgres-db:/var/lib/postgresql/data
+    networks:
+      - quizloom
 
 volumes:
   postgres-db:
+
+networks:
+  quizloom:
+    external: true
