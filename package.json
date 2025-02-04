@@ -13,8 +13,8 @@
       "prepare": "husky",
       "test": "jest",
       "typeorm": "typeorm-ts-node-esm",
-      "migration:generate": "cross-env NODE_ENV=development typeorm-ts-node-esm -d src/data-source.ts migration:generate",
-      "migration:run": "cross-env NODE_ENV=development typeorm-ts-node-esm -d src/data-source.ts migration:run"
+      "migration:generate": "cross-env NODE_ENV=development npx typeorm-ts-node-esm migration:generate",
+      "migration:run": "cross-env NODE_ENV=development typeorm-ts-node-esm migration:run"
    },
    "keywords": [
       "quiz"
@@ -30,6 +30,7 @@
       "@swc/core": "^1.10.0",
       "@swc/jest": "^0.2.37",
       "@types/bcrypt": "^5.0.2",
+      "@types/cookie-parser": "^1.4.8",
       "@types/cors": "^2.8.17",
       "@types/eslint__js": "^8.42.3",
       "@types/express": "^5.0.0",
@@ -47,6 +48,7 @@
       "prettier": "3.4.2",
       "supertest": "^7.0.0",
       "ts-jest": "^29.2.5",
+      "ts-node": "^10.9.2",
       "tsconfig-paths": "^4.2.0",
       "tsx": "^4.19.2",
       "typescript": "5.7.2",
@@ -55,6 +57,7 @@
    "dependencies": {
       "@google/generative-ai": "^0.21.0",
       "bcrypt": "^5.1.1",
+      "cookie-parser": "^1.4.7",
       "cors": "^2.8.5",
       "cross-env": "^7.0.3",
       "dotenv": "^16.4.7",
