@@ -3,7 +3,9 @@ import { DataSource } from "typeorm";
 import configuration from "./config/configuration.js";
 import path from "path";
 
-const __dirname = path.resolve();
+const __dirname = process.cwd();
+
+console.log(__dirname);
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -14,7 +16,7 @@ export const AppDataSource = new DataSource({
   database: configuration.database.database,
   synchronize: true,
   logging: false,
-  entities: [path.join(__dirname, "src", "models/**/*.{js,ts}")],
-  migrations: [path.join(__dirname, "src", "migrations/**/*.{js,ts}")],
+  entities: [path.join(__dirname, "models/**/*.{js,ts}")],
+  migrations: [path.join(__dirname, "migrations/**/*.{js,ts}")],
   subscribers: [],
 });
