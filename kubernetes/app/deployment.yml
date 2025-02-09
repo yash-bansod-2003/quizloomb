@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quizloom-backend-deployment
+  namespace: quizloom
+  labels:
+    app: quizloom-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: quizloom-backend
+  template:
+    metadata:
+      labels:
+        app: quizloom-backend
+    spec:
+      containers:
+        - name: quizloom-backend
+          image: yashbansod2003/quizloomb:build-7
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 5000
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: quizloom-backend-config-map
+                  key: PORT
+            - name: HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: quizloom-backend-config-map
+                  key: HOST
+            - name: DOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  name: quizloom-backend-config-map
+                  key: DOMAIN
+            - name: DATABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: quizloom-backend-secret
+                  key: DATABASE_HOST
+            - name: DATABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: quizloom-backend-secret
+                  key: DATABASE_PORT
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: quizloom-backend-secret
+                  key: DATABASE_USER
+            - name: DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: quizloom-backend-secret
+                  key: DATABASE
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: quizloom-backend-secret
+                  key: DATABASE_PASSWORD
+            - name: JWT_ACCESS_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: quizloom-backend-secret
+                  key: JWT_ACCESS_TOKEN_SECRET
+            - name: JWT_REFRESH_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: quizloom-backend-secret
+                  key: JWT_REFRESH_TOKEN_SECRET
+            - name: JWT_FORGOT_PASSWORD_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: quizloom-backend-secret
+                  key: JWT_FORGOT_PASSWORD_TOKEN_SECRET
+            - name: SMTP_SERVICE
+              valueFrom:
+                secretKeyRef:
+                  name: quizloom-backend-secret
+                  key: SMTP_SERVICE
+            - name: SMTP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: quizloom-backend-secret
+                  key: SMTP_USERNAME
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: quizloom-backend-secret
+                  key: SMTP_PASSWORD
