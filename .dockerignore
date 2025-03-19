@@ -46,3 +46,6 @@ eslint.config.mjs
 .husky
 docker
 http_client
+docker
+logs
+kubernetes

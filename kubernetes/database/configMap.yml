@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quizloom-database-config-map
+  namespace: quizloom
+
+data:
+  POSTGRES_USER: "root"
+  POSTGRES_PASSWORD: "root"
+  POSTGRES_DB: "quizloom"

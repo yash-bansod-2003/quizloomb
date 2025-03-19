@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: quizloom-frontend-service
+  name: quizloom-backend-service
   namespace: quizloom
 spec:
   selector:
-    app: quizloom-frontend
+    app: quizloom-backend
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 80
+      port: 5000
+      targetPort: 5000
