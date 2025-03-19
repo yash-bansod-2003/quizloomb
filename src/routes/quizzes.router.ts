@@ -9,6 +9,8 @@ import logger from "@/config/logger.js";
 import { QuizCreateValidator } from "@/validators/quizzes.validator.js";
 import { User } from "@/models/User.js";
 import Aiservice from "@/services/ai.service.js";
+import SettingsService from "@/services/settings.service.js";
+import { Settings } from "@/models/Settings.js";
 
 const router = Router();
 
@@ -16,11 +18,14 @@ const quizzesRepository = AppDataSource.getRepository(Quiz);
 const usersRepository = AppDataSource.getRepository(User);
 const quizzesService = new QuizzesService(quizzesRepository);
 const usersService = new UsersService(usersRepository);
+const settingsRepository = AppDataSource.getRepository(Settings);
+const settingsService = new SettingsService(settingsRepository);
 const aiService = new Aiservice();
 
 const quizzesController = new QuizzesController(
   quizzesService,
   usersService,
+  settingsService,
   aiService,
   logger,
 );
