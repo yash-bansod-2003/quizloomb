@@ -6,11 +6,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  OneToOne,
 } from "typeorm";
 import { User } from "@/models/User.js";
 import { Question } from "@/models/Question.js";
 import { Submission } from "@/models/Submission.js";
 import { Result } from "@/models/Result.js";
+import { Settings } from "@/models/Settings.js";
 
 @Entity("quizzes")
 export class Quiz {
@@ -40,4 +42,7 @@ export class Quiz {
 
   @OneToMany(() => Result, (result) => result.user)
   results: Result[];
+
+  @OneToOne(() => Settings, (settings) => settings.quiz)
+  settings: Settings;
 }

@@ -28,7 +28,7 @@ WORKDIR /app
 # Copy package.json from the builder stage
 COPY --from=builder /build/package.json ./
 
-# Install production dependencies , handle bcrypt separately and install pm2
+# Install production dependencies, handle bcrypt separately and install pm2
 RUN npm install --ignore-scripts --omit=dev \
   && npm uninstall bcrypt \
   && npm install bcrypt \
@@ -41,5 +41,5 @@ COPY --from=builder /build/dist/ .
 # Expose port 5000
 EXPOSE 5000
 
-# Start the application
-CMD ["pm2-runtime", "./src/index.js"]
+# Start the application with migration
+CMD ["sh", "-c", "npm run migration:run && pm2-runtime ./src/index.js"]
