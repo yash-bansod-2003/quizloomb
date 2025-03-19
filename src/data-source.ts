@@ -3,9 +3,7 @@ import { DataSource } from "typeorm";
 import configuration from "./config/configuration.js";
 import path from "path";
 
-const __dirname = process.cwd();
-
-console.log(__dirname);
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export const AppDataSource = new DataSource({
   type: "postgres",
