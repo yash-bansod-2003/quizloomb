@@ -42,4 +42,4 @@ COPY --from=builder /build/dist/ .
 EXPOSE 5000
 
 # Start the application
-CMD ["pm2-runtime", "src/index.js"]
+CMD ["pm2-runtime", "./src/index.js"]
