@@ -22,11 +22,14 @@ FROM node:22-alpine AS runner
 # Set environment variable to production
 ENV NODE_ENV=production
 
+# Change the owner of the working directory to the node user
+USER node
+
 # Set the working directory inside the container
-WORKDIR /app
+WORKDIR /home/node/app
 
 # Copy package.json from the builder stage
-COPY --from=builder /build/package.json ./
+COPY --chown=node:node --from=builder /build/package.json ./
 
 # Install production dependencies, handle bcrypt separately and install pm2
 RUN npm install --ignore-scripts --omit=dev \
@@ -36,7 +39,7 @@ RUN npm install --ignore-scripts --omit=dev \
   && pm2 update
 
 # Copy the built application from the builder stage
-COPY --from=builder /build/dist/ .
+COPY --chown=node:node --from=builder /build/dist/ .
 
 # Expose port 5000
 EXPOSE 5000
