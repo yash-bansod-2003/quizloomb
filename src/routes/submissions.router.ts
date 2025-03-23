@@ -4,7 +4,7 @@ import QuestionsService from "@/services/questions.service.js";
 import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/config/logger.js";
-import { SubmissionCreateValidator } from "@/validators/submissions.validator.js";
+import { SubmissionValidator } from "@/validators/submissions.validator.js";
 import { Question } from "@/models/Question.js";
 import { Answer } from "@/models/Answer.js";
 import { User } from "@/models/User.js";
@@ -38,14 +38,9 @@ const submissionsController = new SubmissionsController(
   logger,
 );
 
-router.post(
-  "/",
-  authenticate,
-  SubmissionCreateValidator,
-  async (req, res, next) => {
-    await submissionsController.create(req, res, next);
-  },
-);
+router.post("/", authenticate, SubmissionValidator, async (req, res, next) => {
+  await submissionsController.create(req, res, next);
+});
 
 router.get("/", authenticate, async (req, res, next) => {
   await submissionsController.findAll(req, res, next);

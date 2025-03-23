@@ -2,7 +2,7 @@ import { Router } from "express";
 import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/config/logger.js";
-import { ResultCreateValidator } from "@/validators/results.validator.js";
+import { ResultValidator } from "@/validators/results.validator.js";
 import { User } from "@/models/User.js";
 import { Quiz } from "@/models/Quiz.js";
 import UserService from "@/services/users.service.js";
@@ -33,14 +33,9 @@ const resultsController = new ResultsController(
   logger,
 );
 
-router.post(
-  "/",
-  authenticate,
-  ResultCreateValidator,
-  async (req, res, next) => {
-    await resultsController.create(req, res, next);
-  },
-);
+router.post("/", authenticate, ResultValidator, async (req, res, next) => {
+  await resultsController.create(req, res, next);
+});
 
 router.get("/", authenticate, async (req, res, next) => {
   await resultsController.findAll(req, res, next);

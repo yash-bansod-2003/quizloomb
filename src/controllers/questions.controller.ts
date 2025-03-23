@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from "express";
+import { z } from "zod";
 import { Logger } from "winston";
 import QuestionsService from "@/services/questions.service.js";
-import { CreateQuestionDto, UpdateQuestionDto } from "@/dto/questions.js";
+import { UpdateQuestionDto } from "@/dto/questions.js";
 import createHttpError from "http-errors";
 import QuizzesService from "@/services/quizzes.service.js";
+import { questionValidationSchema } from "@/validators/questions.validator.js";
 
 class QuestionsController {
   constructor(
@@ -17,7 +19,9 @@ class QuestionsController {
       this.logger.info(
         `Creating new question with data: ${JSON.stringify(req.body)}`,
       );
-      const { quizId, ...questionData } = req.body as CreateQuestionDto;
+      const { quizId, ...questionData } = req.body as z.infer<
+        typeof questionValidationSchema
+      >;
       const quiz = await this.quizzesService.findOne({ where: { id: quizId } });
 
       if (!quiz) {

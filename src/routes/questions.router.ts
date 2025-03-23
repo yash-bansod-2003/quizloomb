@@ -5,7 +5,7 @@ import QuizzesService from "@/services/quizzes.service.js";
 import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/config/logger.js";
-import { QuestionCreateValidator } from "@/validators/questions.validator.js";
+import { QuestionValidator } from "@/validators/questions.validator.js";
 import { Quiz } from "@/models/Quiz.js";
 import { Question } from "@/models/Question.js";
 
@@ -22,14 +22,9 @@ const questionsController = new QuestionsController(
   logger,
 );
 
-router.post(
-  "/",
-  authenticate,
-  QuestionCreateValidator,
-  async (req, res, next) => {
-    await questionsController.create(req, res, next);
-  },
-);
+router.post("/", authenticate, QuestionValidator, async (req, res, next) => {
+  await questionsController.create(req, res, next);
+});
 
 router.get("/", authenticate, async (req, res, next) => {
   await questionsController.findAll(req, res, next);
@@ -39,7 +34,7 @@ router.get("/:id", authenticate, async (req, res, next) => {
   await questionsController.findOne(req, res, next);
 });
 
-router.put("/:id", authenticate, async (req, res, next) => {
+router.put("/:id", authenticate, QuestionValidator, async (req, res, next) => {
   await questionsController.update(req, res, next);
 });
 

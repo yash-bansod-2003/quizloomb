@@ -6,7 +6,7 @@ import { AppDataSource } from "@/data-source.js";
 import { Quiz } from "@/models/Quiz.js";
 import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/config/logger.js";
-import { QuizCreateValidator } from "@/validators/quizzes.validator.js";
+import { QuizValidator } from "@/validators/quizzes.validator.js";
 import { User } from "@/models/User.js";
 import Aiservice from "@/services/ai.service.js";
 import SettingsService from "@/services/settings.service.js";
@@ -30,14 +30,14 @@ const quizzesController = new QuizzesController(
   logger,
 );
 
-router.post("/", authenticate, QuizCreateValidator, async (req, res, next) => {
+router.post("/", authenticate, QuizValidator, async (req, res, next) => {
   await quizzesController.create(req, res, next);
 });
 
 router.post(
   "/generate",
   authenticate,
-  QuizCreateValidator,
+  QuizValidator,
   async (req, res, next) => {
     await quizzesController.generate(req, res, next);
   },
@@ -51,7 +51,7 @@ router.get("/:id", authenticate, async (req, res, next) => {
   await quizzesController.findOne(req, res, next);
 });
 
-router.put("/:id", authenticate, async (req, res, next) => {
+router.put("/:id", authenticate, QuizValidator, async (req, res, next) => {
   await quizzesController.update(req, res, next);
 });
 

@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
+import { z } from "zod";
 import { Logger } from "winston";
 import createHttpError from "http-errors";
 import AnswersService from "@/services/answers.service.js";
-import { CreateAnswerDto, UpdateAnswerDto } from "@/dto/answers.js";
+import { answerValidationSchema } from "@/validators/answers.validator.js";
 import QuestionsService from "@/services/questions.service.js";
 
 class AnswersController {
@@ -14,7 +15,9 @@ class AnswersController {
 
   async create(req: Request, res: Response, next: NextFunction) {
     this.logger.debug("creating answer");
-    const { questionId, ...rest } = req.body as CreateAnswerDto;
+    const { questionId, ...rest } = req.body as z.infer<
+      typeof answerValidationSchema
+    >;
     try {
       const question = await this.questionsService.findOne({
         where: { id: questionId },
@@ -72,10 +75,11 @@ class AnswersController {
 
   async update(req: Request, res: Response, next: NextFunction) {
     this.logger.debug("updating answer");
+    const updateAnswerDto = req.body as z.infer<typeof answerValidationSchema>;
     try {
       const answer = await this.answersService.update(
         { id: Number(req.params.id) },
-        req.body as UpdateAnswerDto,
+        updateAnswerDto,
       );
       if (!answer) {
         this.logger.error("answer not updated");
