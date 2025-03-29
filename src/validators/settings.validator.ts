@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { NextFunction, Request, Response } from "express";
 
-export const settingsCreateValidationSchema = z.object({
+export const settingsValidationSchema = z.object({
   fullscreen: z.boolean(),
 });
 
@@ -16,13 +16,13 @@ export const settingsCreateValidationSchema = z.object({
  * @param res - The response object
  * @param next - The next middleware function
  */
-export const SettingsCreateValidator = (
+export const SettingsValidator = (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    settingsCreateValidationSchema.parse(req.body);
+    settingsValidationSchema.parse(req.body);
     next();
   } catch (error) {
     return next(error);

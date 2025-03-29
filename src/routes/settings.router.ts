@@ -4,7 +4,7 @@ import SettingsService from "@/services/settings.service.js";
 import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/config/logger.js";
-import { SettingsCreateValidator } from "@/validators/settings.validator.js";
+import { SettingsValidator } from "@/validators/settings.validator.js";
 import { Settings } from "@/models/Settings.js";
 
 const router = Router();
@@ -22,13 +22,8 @@ router.get("/:id", authenticate, async (req, res, next) => {
   await settingsController.findOne(req, res, next);
 });
 
-router.put(
-  "/:id",
-  authenticate,
-  SettingsCreateValidator,
-  async (req, res, next) => {
-    await settingsController.update(req, res, next);
-  },
-);
+router.put("/:id", authenticate, SettingsValidator, async (req, res, next) => {
+  await settingsController.update(req, res, next);
+});
 
 export default router;

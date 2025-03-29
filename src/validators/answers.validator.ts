@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { NextFunction, Request, Response } from "express";
 
+export const answerValidationSchema = z.object({
+  text: z.string(),
+  is_correct: z.boolean().optional(),
+  questionId: z.number(),
+});
+
 /**
  * Validates the body of a request to create a new answer.
  *
@@ -8,18 +14,13 @@ import { NextFunction, Request, Response } from "express";
  * @param {Response} res The Express.js response object.
  * @param {NextFunction} next The Express.js next function.
  */
-export const AnswerCreateValidator = (
+export const AnswerValidator = (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  const validationSchema = z.object({
-    text: z.string(),
-    is_correct: z.boolean().optional(),
-    questionId: z.number(),
-  });
   try {
-    validationSchema.parse(req.body);
+    answerValidationSchema.parse(req.body);
     next();
   } catch (error) {
     return next(error);

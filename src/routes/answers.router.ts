@@ -5,7 +5,7 @@ import QuestionsService from "@/services/questions.service.js";
 import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/config/logger.js";
-import { AnswerCreateValidator } from "@/validators/answers.validator.js";
+import { AnswerValidator } from "@/validators/answers.validator.js";
 import { Question } from "@/models/Question.js";
 import { Answer } from "@/models/Answer.js";
 
@@ -22,14 +22,9 @@ const answersController = new AnswersController(
   logger,
 );
 
-router.post(
-  "/",
-  authenticate,
-  AnswerCreateValidator,
-  async (req, res, next) => {
-    await answersController.create(req, res, next);
-  },
-);
+router.post("/", authenticate, AnswerValidator, async (req, res, next) => {
+  await answersController.create(req, res, next);
+});
 
 router.get("/", authenticate, async (req, res, next) => {
   await answersController.findAll(req, res, next);
@@ -39,7 +34,7 @@ router.get("/:id", authenticate, async (req, res, next) => {
   await answersController.findOne(req, res, next);
 });
 
-router.put("/:id", authenticate, async (req, res, next) => {
+router.put("/:id", authenticate, AnswerValidator, async (req, res, next) => {
   await answersController.update(req, res, next);
 });
 

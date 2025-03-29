@@ -7,7 +7,7 @@ import MailService from "@/services/notification/mail.js";
 import { AppDataSource } from "@/data-source.js";
 import { User } from "@/models/User.js";
 import authenticationMiddleware from "@/middlewares/authenticate.js";
-import { userCreateValidator } from "@/validators/users.validators.js";
+import { userValidator } from "@/validators/users.validators.js";
 import logger from "@/config/logger.js";
 import configuration from "@/config/configuration.js";
 import { RefreshToken } from "@/models/RefreshToken.js";
@@ -37,7 +37,7 @@ const authenticationController = new AutenticationController(
   logger,
 );
 
-router.post("/register", userCreateValidator, async (req, res, next) => {
+router.post("/register", userValidator, async (req, res, next) => {
   await authenticationController.register(req, res, next);
 });
 

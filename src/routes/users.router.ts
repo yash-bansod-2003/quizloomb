@@ -7,6 +7,7 @@ import { User } from "@/models/User.js";
 import authenticate from "@/middlewares/authenticate.js";
 import authorization from "@/middlewares/authorization.js";
 import logger from "@/config/logger.js";
+import { userValidator } from "@/validators/users.validators.js";
 
 const router = Router();
 
@@ -23,6 +24,7 @@ router.post(
   "/",
   authenticate,
   authorization(["admin"]),
+  userValidator,
   async (req, res, next) => {
     await usersController.create(req, res, next);
   },
@@ -50,6 +52,7 @@ router.put(
   "/:id",
   authenticate,
   authorization(["admin"]),
+  userValidator,
   async (req, res, next) => {
     await usersController.update(req, res, next);
   },

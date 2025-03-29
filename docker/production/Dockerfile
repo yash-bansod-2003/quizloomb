@@ -22,9 +22,6 @@ FROM node:22-alpine AS runner
 # Set environment variable to production
 ENV NODE_ENV=production
 
-# Change the owner of the working directory to the node user
-USER node
-
 # Set the working directory inside the container
 WORKDIR /home/node/app
 
@@ -40,6 +37,9 @@ RUN npm install --ignore-scripts --omit=dev \
 
 # Copy the built application from the builder stage
 COPY --chown=node:node --from=builder /build/dist/ .
+
+# Change the owner of the working directory to the node user
+USER node
 
 # Expose port 5000
 EXPOSE 5000

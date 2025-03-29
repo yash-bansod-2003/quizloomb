@@ -4,7 +4,7 @@ import { z } from "zod";
 import { Logger } from "winston";
 
 import SettingsService from "@/services/settings.service.js";
-import { settingsCreateValidationSchema } from "@/validators/settings.validator.js";
+import { settingsValidationSchema } from "@/validators/settings.validator.js";
 
 class SettingsController {
   constructor(
@@ -53,7 +53,7 @@ class SettingsController {
     try {
       const settingId = Number(req.params.id);
       const settingUpdateData = req.body as z.infer<
-        typeof settingsCreateValidationSchema
+        typeof settingsValidationSchema
       >;
 
       this.logger.info(

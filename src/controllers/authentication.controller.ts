@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { z } from "zod";
 import { Logger } from "winston";
 import JsonWebToken from "jsonwebtoken";
 import createError from "http-errors";
@@ -10,6 +11,7 @@ import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import HashingService from "@/services/hashing.service.js";
 import MailService from "@/services/notification/mail.js";
 import configuration from "@/config/configuration.js";
+import { userValidationSchema } from "@/validators/users.validators.js";
 
 class AuthenticationController {
   constructor(
@@ -23,7 +25,9 @@ class AuthenticationController {
   ) {}
 
   async register(req: Request, res: Response, next: NextFunction) {
-    const { email, password, ...rest } = req.body as CreateUserDto;
+    const { email, password, ...rest } = req.body as z.infer<
+      typeof userValidationSchema
+    >;
     this.logger.debug(`initiate registering user ${email}`);
     try {
       const userExists = await this.userService.findOne({ where: { email } });

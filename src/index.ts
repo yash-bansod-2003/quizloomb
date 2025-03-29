@@ -5,7 +5,7 @@ import { AppDataSource } from "@/data-source.js";
 import logger from "@/config/logger.js";
 
 const port = 5000;
-const host = "localhost";
+const host = "0.0.0.0";
 const server: Express = createServer();
 
 server.listen(port, host, () => {
