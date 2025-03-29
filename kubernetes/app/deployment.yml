@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: quizloom-backend
-          image: yashbansod2003/quizloomb:build-7
+          image: yashbansod2003/quizloomb:build-16
           resources:
             requests:
               memory: "64Mi"
@@ -28,16 +28,6 @@ spec:
           ports:
             - containerPort: 5000
           env:
-            - name: PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: quizloom-backend-config-map
-                  key: PORT
-            - name: HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: quizloom-backend-config-map
-                  key: HOST
             - name: DOMAIN
               valueFrom:
                 configMapKeyRef:
