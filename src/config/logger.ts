@@ -10,20 +10,6 @@ const logger = createLogger({
       format: format.combine(format.timestamp(), format.simple()),
       silent: configuration.node_env === "test",
     }),
-    new transports.File({
-      dirname: "logs",
-      filename: "combined.log",
-      level: "info",
-      format: format.combine(format.timestamp(), format.simple()),
-      silent: true,
-    }),
-    new transports.File({
-      dirname: "logs",
-      filename: "errors.log",
-      level: "error",
-      format: format.combine(format.timestamp(), format.simple()),
-      silent: true,
-    }),
   ],
 });
 
