@@ -3,8 +3,6 @@ kind: PersistentVolume
 metadata:
   name: quizloom-database-pv
   namespace: quizloom
-  labels:
-    app: quizloom-database
 
 spec:
   capacity:
