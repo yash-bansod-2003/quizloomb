@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: quizloom-backend
-          image: yashbansod2003/quizloomb:build-18
+          image: yashbansod2003/quizloomb:build-20
           resources:
             requests:
               memory: "64Mi"
