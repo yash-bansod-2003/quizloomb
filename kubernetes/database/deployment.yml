@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: quizloom-database-deployment
+  namespace: quizloom
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: quizloom-database
+  template:
+    metadata:
+      labels:
+        app: quizloom-database
+    spec:
+      containers:
+        - name: quizloom-database
+          image: postgres:17.2
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: quizloom-database-config-map
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: quizloom-database-config-map
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: quizloom-database-config-map
+                  key: POSTGRES_DB
+      volumes:
+        - name: quizloom-database-pv
+          persistentVolumeClaim:
+            claimName: quizloom-database-pvc

@@ -15,16 +15,14 @@ const logger = createLogger({
       filename: "combined.log",
       level: "info",
       format: format.combine(format.timestamp(), format.simple()),
-      silent:
-        configuration.node_env === "test" ||
-        configuration.node_env === "development",
+      silent: true,
     }),
     new transports.File({
       dirname: "logs",
       filename: "errors.log",
       level: "error",
       format: format.combine(format.timestamp(), format.simple()),
-      silent: configuration.node_env === "test",
+      silent: true,
     }),
   ],
 });

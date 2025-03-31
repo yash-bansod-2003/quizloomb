@@ -4,6 +4,4 @@ metadata:
   name: quizloom-backend-config-map
   namespace: quizloom
 data:
-  PORT: "5000"
-  HOST: "0.0.0.0"
   DOMAIN: "http://localhost:3000"
