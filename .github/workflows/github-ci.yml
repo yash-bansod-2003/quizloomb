@@ -59,7 +59,16 @@ jobs:
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_TOKEN }}
-      - name: Build and push
+      - name: Build Docker Image
         run: docker build -t ${{ env.DOCKERIMAGE_NAME }}:${{ env.DOCKERIMAGE_TAG }} --platform linux/amd64 -f docker/production/Dockerfile .
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: "${{ env.DOCKERIMAGE_NAME }}:${{ env.DOCKERIMAGE_TAG }}"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "CRITICAL,HIGH"
       - name: Push to DockerHub
         run: docker push ${{ env.DOCKERIMAGE_NAME }}:${{ env.DOCKERIMAGE_TAG }}
