@@ -40,7 +40,7 @@ export class Quiz {
   @OneToMany(() => Submission, (submission) => submission.quiz)
   submissions: Submission[];
 
-  @OneToMany(() => Result, (result) => result.user)
+  @OneToMany(() => Result, (result) => result.quiz)
   results: Result[];
 
   @OneToOne(() => Settings, (settings) => settings.quiz)
