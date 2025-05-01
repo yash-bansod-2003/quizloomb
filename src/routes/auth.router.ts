@@ -7,7 +7,12 @@ import MailService from "@/services/notification/mail.js";
 import { AppDataSource } from "@/data-source.js";
 import { User } from "@/models/User.js";
 import authenticationMiddleware from "@/middlewares/authenticate.js";
-import { userValidator } from "@/validators/users.validators.js";
+import { createUserValidator } from "@/validators/users.validators.js";
+import {
+  forgotValidator,
+  loginValidator,
+  resetValidator,
+} from "@/validators/authentication.validator.js";
 import logger from "@/config/logger.js";
 import configuration from "@/config/configuration.js";
 import { RefreshToken } from "@/models/RefreshToken.js";
@@ -37,11 +42,11 @@ const authenticationController = new AutenticationController(
   logger,
 );
 
-router.post("/register", userValidator, async (req, res, next) => {
+router.post("/register", createUserValidator, async (req, res, next) => {
   await authenticationController.register(req, res, next);
 });
 
-router.post("/login", async (req, res, next) => {
+router.post("/login", loginValidator, async (req, res, next) => {
   await authenticationController.login(req, res, next);
 });
 
@@ -49,11 +54,11 @@ router.get("/profile", authenticationMiddleware, async (req, res, next) => {
   await authenticationController.profile(req, res, next);
 });
 
-router.post("/forgot", async (req, res, next) => {
+router.post("/forgot", forgotValidator, async (req, res, next) => {
   await authenticationController.forgot(req, res, next);
 });
 
-router.put("/reset/:token", async (req, res, next) => {
+router.put("/reset/:token", resetValidator, async (req, res, next) => {
   await authenticationController.reset(req, res, next);
 });
 

@@ -2,8 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import { Logger } from "winston";
 import createError from "http-errors";
 import UsersService from "@/services/users.service.js";
-import { CreateUserDto, UpdateUserDto } from "@/dto/users.js";
+import { createUserValidationSchema } from "@/validators/users.validators.js";
 import HashingService from "@/services/hashing.service.js";
+import { z } from "zod";
 
 class UsersController {
   constructor(
@@ -15,7 +16,9 @@ class UsersController {
   async create(req: Request, res: Response, next: NextFunction) {
     this.logger.debug("creating user", { ...req.body, password: "******" });
     try {
-      const createUserDto = req.body as CreateUserDto;
+      const createUserDto = req.body as z.infer<
+        typeof createUserValidationSchema
+      >;
       const password = await this.hashingService.hash(createUserDto.password);
       const user = await this.usersService.create({
         password,
@@ -68,10 +71,13 @@ class UsersController {
   async update(req: Request, res: Response, next: NextFunction) {
     const userId = Number(req.params.id);
     this.logger.debug("updating user", { id: userId, ...req.body });
+    const updateUserDto = req.body as z.infer<
+      typeof createUserValidationSchema
+    >;
     try {
       const user = await this.usersService.update(
         { id: userId },
-        req.body as UpdateUserDto,
+        updateUserDto,
       );
       if (!user) {
         this.logger.debug("user not updated", { id: userId });

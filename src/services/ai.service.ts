@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import configuration from "@/config/configuration.js";
-import { CreateQuizDto } from "@/dto/quizzes.js";
+import { quizValidationSchema } from "@/validators/quizzes.validator.js";
+import { z } from "zod";
 
 class Aiservice {
   private readonly client: GoogleGenerativeAI;
@@ -8,7 +9,7 @@ class Aiservice {
     this.client = new GoogleGenerativeAI(configuration.ai.key);
   }
   async generateQuiz(
-    createQuizDto: CreateQuizDto,
+    createQuizDto: z.infer<typeof quizValidationSchema>,
   ): Promise<Record<string, unknown> | null> {
     const model = this.client.getGenerativeModel({ model: "gemini-1.5-flash" });
 

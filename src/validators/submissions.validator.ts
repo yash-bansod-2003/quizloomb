@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { NextFunction, Request, Response } from "express";
 
-const submissionValidationSchema = z.object({
+export const submissionValidationSchema = z.object({
   quizId: z.number(),
   questionId: z.number(),
   answerId: z.number(),

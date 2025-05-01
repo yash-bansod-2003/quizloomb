@@ -4,9 +4,10 @@ import createHttpError from "http-errors";
 import QuizzesService from "@/services/quizzes.service.js";
 import UsersService from "@/services/users.service.js";
 import AiService from "@/services/ai.service.js";
-import { CreateQuizDto, UpdateQuizDto } from "@/dto/quizzes.js";
+import { quizValidationSchema } from "@/validators/quizzes.validator.js";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import SettingsService from "@/services/settings.service.js";
+import { z } from "zod";
 
 class QuizzesController {
   constructor(
@@ -19,7 +20,7 @@ class QuizzesController {
 
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const createQuizDto = req.body as CreateQuizDto;
+      const createQuizDto = req.body as z.infer<typeof quizValidationSchema>;
       const userId = Number((req as AuthenticatedRequest).user.sub);
       const user = await this.usersService.findOne({ where: { id: userId } });
 
@@ -50,7 +51,7 @@ class QuizzesController {
 
   async generate(req: Request, res: Response, next: NextFunction) {
     try {
-      const createQuizDto = req.body as CreateQuizDto;
+      const createQuizDto = req.body as z.infer<typeof quizValidationSchema>;
       const userId = (req as AuthenticatedRequest).user.sub;
       const user = await this.usersService.findOne({
         where: { id: Number(userId) },
@@ -124,6 +125,7 @@ class QuizzesController {
     try {
       const quizId = Number(req.params.id);
       const userId = (req as AuthenticatedRequest).user.sub;
+      const updateQuizDto = req.body as z.infer<typeof quizValidationSchema>;
       const user = await this.usersService.findOne({
         where: { id: Number(userId) },
       });
@@ -136,7 +138,7 @@ class QuizzesController {
       this.logger.info(`Updating quiz ${quizId} for user ${userId}`);
       const quiz = await this.quizzesService.update(
         { id: quizId, user: { id: user.id } },
-        req.body as UpdateQuizDto,
+        updateQuizDto,
       );
       return res.json(quiz);
     } catch (error) {

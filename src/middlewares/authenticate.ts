@@ -2,10 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import createHttpError from "http-errors";
 import TokensService from "@/services/tokens.service.js";
 import configuration from "@/config/configuration.js";
+import { COOKIE_PROPERTIES } from "@/lib/constants.js";
+
 const accessTokensService = new TokensService(configuration.jwt.secret.access);
 const authenticate = (req: Request, res: Response, next: NextFunction) => {
   const cookies = req.cookies as Record<string, string>;
-  const authenticationToken = cookies["accessToken"];
+  const authenticationToken =
+    cookies[COOKIE_PROPERTIES.ACCESS_TOKEN_COOKIE_NAME];
 
   if (!authenticationToken) {
     return next(createHttpError.Unauthorized());

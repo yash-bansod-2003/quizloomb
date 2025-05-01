@@ -2,11 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import { Logger } from "winston";
 import createHttpError from "http-errors";
 import ResultsService from "@/services/results.service.js";
-import { CreateResultDto } from "@/dto/results.js";
+import { resultValidationSchema } from "@/validators/results.validator.js";
 import QuizzesService from "@/services/quizzes.service.js";
 import UserService from "@/services/users.service.js";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import SubmissionsService from "@/services/submissions.service.js";
+import { z } from "zod";
 
 class ResultsController {
   constructor(
@@ -35,8 +36,7 @@ class ResultsController {
         throw err;
       }
 
-      // Validate and fetch quiz.
-      const { quizId } = req.body as CreateResultDto;
+      const { quizId } = req.body as z.infer<typeof resultValidationSchema>;
       this.logger.debug(`Fetching quiz with id: ${quizId}`);
 
       const quiz = await this.quizzesService.findOne({ where: { id: quizId } });
@@ -91,7 +91,7 @@ class ResultsController {
         attempt,
       });
       this.logger.info(
-        `Successfully created result with id: ${newResult.resultId || "unknown"}`,
+        `Successfully created result with id: ${newResult.id || "unknown"}`,
       );
       res.status(201).json(newResult);
     } catch (error) {
@@ -117,7 +117,7 @@ class ResultsController {
     this.logger.info(`Entered findOne for result id: ${resultId}`);
     try {
       const result = await this.resultsService.findOne({
-        where: { resultId },
+        where: { id: resultId },
       });
       if (!result) {
         const err = createHttpError.NotFound("result not found");
@@ -137,7 +137,7 @@ class ResultsController {
     this.logger.info(`Entered delete for result id: ${resultId}`);
     try {
       const result = await this.resultsService.delete({
-        resultId,
+        id: resultId,
       });
       if (!result) {
         const err = createHttpError.NotFound("result not found");

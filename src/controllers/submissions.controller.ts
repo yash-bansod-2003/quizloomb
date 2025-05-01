@@ -2,7 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { Logger } from "winston";
 import createHttpError from "http-errors";
 import SubmissionsService from "@/services/submissions.service.js";
-import { CreateSubmissionDto } from "@/dto/submissions.js";
+import { submissionValidationSchema } from "@/validators/submissions.validator.js";
+import { z } from "zod";
 import QuestionsService from "@/services/questions.service.js";
 import QuizzesService from "@/services/quizzes.service.js";
 import UserService from "@/services/users.service.js";
@@ -28,7 +29,9 @@ class SubmissionsController {
       this.logger.error(`User with id ${userId} not found`);
       return next(createHttpError.NotFound("user not found"));
     }
-    const { quizId, questionId, answerId } = req.body as CreateSubmissionDto;
+    const { quizId, questionId, answerId } = req.body as z.infer<
+      typeof submissionValidationSchema
+    >;
 
     const quiz = await this.quizzesService.findOne({ where: { id: quizId } });
 

@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 import { Logger } from "winston";
 import QuestionsService from "@/services/questions.service.js";
-import { UpdateQuestionDto } from "@/dto/questions.js";
 import createHttpError from "http-errors";
 import QuizzesService from "@/services/quizzes.service.js";
 import { questionValidationSchema } from "@/validators/questions.validator.js";
@@ -86,12 +85,16 @@ class QuestionsController {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const questionId = Number(req.params.id);
+      const updateQuestionDto = req.body as z.infer<
+        typeof questionValidationSchema
+      >;
+
       this.logger.info(
         `Updating question with id: ${questionId} with data: ${JSON.stringify(req.body)}`,
       );
       const updatedQuestion = await this.questionsService.update(
         { id: questionId },
-        req.body as UpdateQuestionDto,
+        updateQuestionDto,
       );
 
       if (!updatedQuestion) {

@@ -5,13 +5,17 @@ import JsonWebToken from "jsonwebtoken";
 import createError from "http-errors";
 import UserService from "@/services/users.service.js";
 import TokensService from "@/services/tokens.service.js";
-import { CreateUserDto } from "@/dto/users.js";
-import { ForgotPasswordDto, ResetPasswordDto } from "@/dto/authentication.js";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import HashingService from "@/services/hashing.service.js";
 import MailService from "@/services/notification/mail.js";
 import configuration from "@/config/configuration.js";
-import { userValidationSchema } from "@/validators/users.validators.js";
+import { createUserValidationSchema } from "@/validators/users.validators.js";
+import {
+  loginValidationSchema,
+  forgotValidationSchema,
+  resetValidationSchema,
+} from "@/validators/authentication.validator.js";
+import { COOKIE_PROPERTIES, TOKEN_PROPERTIES } from "@/lib/constants.js";
 
 class AuthenticationController {
   constructor(
@@ -26,7 +30,7 @@ class AuthenticationController {
 
   async register(req: Request, res: Response, next: NextFunction) {
     const { email, password, ...rest } = req.body as z.infer<
-      typeof userValidationSchema
+      typeof createUserValidationSchema
     >;
     this.logger.debug(`initiate registering user ${email}`);
     try {
@@ -52,13 +56,12 @@ class AuthenticationController {
       };
 
       const tokenOptions: JsonWebToken.SignOptions = {
-        expiresIn: "30m",
+        expiresIn: TOKEN_PROPERTIES.VERIFICATION_TOKEN_EXPIRES_IN,
       };
 
       this.logger.debug("generating verify email token");
       const token = this.verificationTokensService.sign(payload, tokenOptions);
 
-      // This link change according how we handle it on frontend
       const verificationLink = `${configuration.domain}/verify-email/${token}`;
 
       const content = {
@@ -145,7 +148,9 @@ class AuthenticationController {
   }
 
   async login(req: Request, res: Response, next: NextFunction) {
-    const { email, password } = req.body as CreateUserDto;
+    const { email, password, role } = req.body as z.infer<
+      typeof loginValidationSchema
+    >;
     this.logger.debug(`initiate login user ${email}`);
     try {
       const user = await this.userService.findOne({
@@ -165,10 +170,11 @@ class AuthenticationController {
 
       const payload: JsonWebToken.JwtPayload = {
         sub: String(user.id),
-        role: user.role,
+        role: role ?? user.role,
       };
+
       const tokenOptions: JsonWebToken.SignOptions = {
-        expiresIn: "30m",
+        expiresIn: TOKEN_PROPERTIES.ACCESS_TOKEN_EXPIRES_IN,
       };
       this.logger.debug("generating access token");
       const accessToken = this.accessTokensService.sign(payload, tokenOptions);
@@ -191,20 +197,24 @@ class AuthenticationController {
         tokenOptions,
       );
 
-      res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        domain: configuration.domain,
-        sameSite: "strict",
-        maxAge: 1000 * 60 * 60,
-        secure: false,
+      res.cookie(COOKIE_PROPERTIES.ACCESS_TOKEN_COOKIE_NAME, accessToken, {
+        httpOnly: COOKIE_PROPERTIES.HTTP_ONLY,
+        sameSite: COOKIE_PROPERTIES.SAME_SITE,
+        maxAge: COOKIE_PROPERTIES.ACCESS_TOKEN_COOKIE_MAX_AGE,
+        secure: COOKIE_PROPERTIES.SECURE,
+        ...(configuration.node_env === "production" && {
+          domain: COOKIE_PROPERTIES.DOMAIN,
+        }),
       });
 
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        domain: configuration.domain,
-        sameSite: "strict",
-        maxAge: 1000 * 60 * 60 * 24 * 365,
-        secure: false,
+      res.cookie(COOKIE_PROPERTIES.REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
+        httpOnly: COOKIE_PROPERTIES.HTTP_ONLY,
+        sameSite: COOKIE_PROPERTIES.SAME_SITE,
+        maxAge: COOKIE_PROPERTIES.REFRESH_TOKEN_COOKIE_MAX_AGE,
+        secure: COOKIE_PROPERTIES.SECURE,
+        ...(configuration.node_env === "production" && {
+          domain: COOKIE_PROPERTIES.DOMAIN,
+        }),
       });
 
       this.logger.debug("login user successfully");
@@ -234,7 +244,7 @@ class AuthenticationController {
   }
 
   async forgot(req: Request, res: Response, next: NextFunction) {
-    const { email } = req.body as ForgotPasswordDto;
+    const { email } = req.body as z.infer<typeof forgotValidationSchema>;
     this.logger.debug(`initiate forgot password process for ${email}`);
     try {
       const user = await this.userService.findOne({ where: { email } });
@@ -250,7 +260,7 @@ class AuthenticationController {
       };
 
       const tokenOptions: JsonWebToken.SignOptions = {
-        expiresIn: "10m",
+        expiresIn: TOKEN_PROPERTIES.VERIFICATION_TOKEN_EXPIRES_IN,
       };
 
       this.logger.debug("generating forgot password token");
@@ -318,7 +328,7 @@ class AuthenticationController {
         return next(createError.NotFound("user not found"));
       }
 
-      const { password } = req.body as ResetPasswordDto;
+      const { password } = req.body as z.infer<typeof resetValidationSchema>;
 
       this.logger.debug("updating user password");
       const hashedPassword = await this.hashingService.hash(password);
@@ -375,7 +385,7 @@ class AuthenticationController {
         role: user.role,
       };
       const tokenOptions: JsonWebToken.SignOptions = {
-        expiresIn: "30m",
+        expiresIn: TOKEN_PROPERTIES.ACCESS_TOKEN_EXPIRES_IN,
       };
       this.logger.debug("generating access token");
       const accessToken = this.accessTokensService.sign(payload, tokenOptions);
@@ -407,20 +417,24 @@ class AuthenticationController {
         tokenOptions,
       );
 
-      res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        domain: configuration.domain,
-        sameSite: "strict",
-        maxAge: 1000 * 60 * 60,
-        secure: false,
+      res.cookie(COOKIE_PROPERTIES.ACCESS_TOKEN_COOKIE_NAME, accessToken, {
+        httpOnly: COOKIE_PROPERTIES.HTTP_ONLY,
+        sameSite: COOKIE_PROPERTIES.SAME_SITE,
+        maxAge: COOKIE_PROPERTIES.ACCESS_TOKEN_COOKIE_MAX_AGE,
+        secure: COOKIE_PROPERTIES.SECURE,
+        ...(configuration.node_env === "production" && {
+          domain: COOKIE_PROPERTIES.DOMAIN,
+        }),
       });
 
-      res.cookie("refreshToken", refreshTokenNew, {
-        httpOnly: true,
-        domain: configuration.domain,
-        sameSite: "strict",
-        maxAge: 1000 * 60 * 60 * 24 * 365,
-        secure: false,
+      res.cookie(COOKIE_PROPERTIES.REFRESH_TOKEN_COOKIE_NAME, refreshTokenNew, {
+        httpOnly: COOKIE_PROPERTIES.HTTP_ONLY,
+        sameSite: COOKIE_PROPERTIES.SAME_SITE,
+        maxAge: COOKIE_PROPERTIES.REFRESH_TOKEN_COOKIE_MAX_AGE,
+        secure: COOKIE_PROPERTIES.SECURE,
+        ...(configuration.node_env === "production" && {
+          domain: COOKIE_PROPERTIES.DOMAIN,
+        }),
       });
 
       this.logger.debug("token refreshed successfully");
