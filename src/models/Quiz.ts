@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
   OneToMany,
   OneToOne,
+  JoinColumn,
 } from "typeorm";
 import { User } from "@/models/User.js";
 import { Question } from "@/models/Question.js";
@@ -31,7 +32,9 @@ export class Quiz {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @ManyToOne(() => User, (user) => user.quizzes)
+  @ManyToOne(() => User, (user) => user.quizzes, {
+    onDelete: "CASCADE",
+  })
   user: User;
 
   @OneToMany(() => Question, (question) => question.quiz)
@@ -44,5 +47,6 @@ export class Quiz {
   results: Result[];
 
   @OneToOne(() => Settings, (settings) => settings.quiz)
+  @JoinColumn()
   settings: Settings;
 }

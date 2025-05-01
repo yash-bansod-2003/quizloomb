@@ -1,5 +1,5 @@
-# Use the official Node.js 22 image as the builder
-FROM node:22 AS builder
+# Use the official Node.js 23 Alpine image as the builder
+FROM node:23-alpine AS builder
 
 # Set the working directory inside the container
 WORKDIR /build
@@ -16,8 +16,8 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Use a smaller Node.js 22 Alpine image for the runner
-FROM node:22-alpine AS runner
+# Use a smaller Node.js 23 Alpine image for the runner
+FROM node:23-alpine AS runner
 
 # Set environment variable to production
 ENV NODE_ENV=production

@@ -11,7 +11,7 @@ import { Quiz } from "@/models/Quiz.js";
 @Entity("results")
 export class Result {
   @PrimaryGeneratedColumn()
-  resultId: number;
+  id: number;
 
   @Column({ type: "int" })
   score: number;

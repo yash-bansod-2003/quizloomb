@@ -22,10 +22,10 @@ export class Submission {
   session_id: number;
 
   @CreateDateColumn()
-  created_at: number;
+  created_at: Date;
 
   @UpdateDateColumn()
-  updated_at: number;
+  updated_at: Date;
 
   @ManyToOne(() => Quiz, (quiz) => quiz.submissions)
   quiz: Quiz;
