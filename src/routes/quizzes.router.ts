@@ -12,6 +12,10 @@ import Aiservice from "@/services/ai.service.js";
 import SettingsService from "@/services/settings.service.js";
 import { Settings } from "@/models/Settings.js";
 import multer from "multer";
+import { Question } from "@/models/Question.js";
+import QuestionsService from "@/services/questions.service.js";
+import { Answer } from "@/models/Answer.js";
+import AnswersService from "@/services/answers.service.js";
 
 const router = Router();
 
@@ -32,6 +36,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+const questionsRepository = AppDataSource.getRepository(Question);
+const questionsService = new QuestionsService(questionsRepository);
+const answersRepository = AppDataSource.getRepository(Answer);
+const answersService = new AnswersService(answersRepository);
 const quizzesRepository = AppDataSource.getRepository(Quiz);
 const usersRepository = AppDataSource.getRepository(User);
 const quizzesService = new QuizzesService(quizzesRepository);
@@ -43,6 +51,8 @@ const aiService = new Aiservice();
 const quizzesController = new QuizzesController(
   quizzesService,
   usersService,
+  questionsService,
+  answersService,
   settingsService,
   aiService,
   logger,

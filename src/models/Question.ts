@@ -19,7 +19,10 @@ export class Question {
   @Column({ type: "text" })
   text: string;
 
-  @Column({ enum: ["mcq", "true_false", "written"], type: "text" })
+  @Column({
+    enum: ["mcq", "true_false", "multi_select", "written"],
+    type: "text",
+  })
   type: string;
 
   @Column("text", { array: true })

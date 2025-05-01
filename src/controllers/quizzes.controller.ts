@@ -7,6 +7,8 @@ import AiService from "@/services/ai.service.js";
 import { quizValidationSchema } from "@/validators/quizzes.validator.js";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import SettingsService from "@/services/settings.service.js";
+import QuestionsService from "@/services/questions.service.js";
+import AnswersService from "@/services/answers.service.js";
 import { z } from "zod";
 import fs from "node:fs";
 
@@ -14,6 +16,8 @@ class QuizzesController {
   constructor(
     private readonly quizzesService: QuizzesService,
     private readonly usersService: UsersService,
+    private readonly questionsService: QuestionsService,
+    private readonly answersService: AnswersService,
     private readonly settingsService: SettingsService,
     private readonly aiService: AiService,
     private readonly logger: Logger,
@@ -64,8 +68,8 @@ class QuizzesController {
       }
 
       this.logger.info(`Generating quiz for user ${userId}`);
-      const quiz = await this.aiService.improveQuiz(createQuizDto);
-      return res.status(200).json(quiz);
+      const quizContent = await this.aiService.improveQuiz(createQuizDto);
+      return res.status(200).send(quizContent);
     } catch (error) {
       this.logger.error(`Generate quiz error: ${error}`);
       return next(createHttpError.InternalServerError());
@@ -118,6 +122,54 @@ class QuizzesController {
         });
         return;
       }
+
+      const quiz = await this.quizzesService.create({
+        name: result.quiz.name,
+        description: result.quiz.description,
+        user,
+      });
+
+      for (const question of result.quiz.questions) {
+        const dbQuestion = await this.questionsService.create({
+          text: question.question,
+          type: question.type,
+          tags: question.tags,
+          quiz,
+        });
+        if (!dbQuestion) {
+          this.logger.error("Failed to create question");
+          return next(createHttpError.InternalServerError());
+        }
+
+        if (question.type === "mcq") {
+          for (const option of question.options) {
+            const answer = await this.answersService.create({
+              text: option,
+              question: dbQuestion,
+              is_correct: question.correct === option,
+            });
+            if (!answer) {
+              this.logger.error("Failed to create answer");
+              return next(createHttpError.InternalServerError());
+            }
+          }
+        }
+
+        if (question.type === "multi_select") {
+          for (const option of question.options) {
+            const answer = await this.answersService.create({
+              text: option,
+              question: dbQuestion,
+              is_correct: (question.correct as string[]).includes(option),
+            });
+            if (!answer) {
+              this.logger.error("Failed to create answer");
+              return next(createHttpError.InternalServerError());
+            }
+          }
+        }
+      }
+
       res.status(200).json(result.quiz);
       return;
     } catch (error) {
