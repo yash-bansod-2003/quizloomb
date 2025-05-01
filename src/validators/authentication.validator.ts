@@ -5,7 +5,7 @@ export const loginValidationSchema = z
   .object({
     email: z.string(),
     password: z.string(),
-    role: z.enum(["student", "user"]),
+    role: z.enum(["student", "user"]).optional(),
   })
   .strict();
 

@@ -8,6 +8,7 @@ import { quizValidationSchema } from "@/validators/quizzes.validator.js";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import SettingsService from "@/services/settings.service.js";
 import { z } from "zod";
+import fs from "node:fs";
 
 class QuizzesController {
   constructor(
@@ -49,6 +50,28 @@ class QuizzesController {
     }
   }
 
+  async improve(req: Request, res: Response, next: NextFunction) {
+    try {
+      const createQuizDto = req.body as z.infer<typeof quizValidationSchema>;
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in generate quiz`);
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(`Generating quiz for user ${userId}`);
+      const quiz = await this.aiService.improveQuiz(createQuizDto);
+      return res.status(200).json(quiz);
+    } catch (error) {
+      this.logger.error(`Generate quiz error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
   async generate(req: Request, res: Response, next: NextFunction) {
     try {
       const createQuizDto = req.body as z.infer<typeof quizValidationSchema>;
@@ -65,6 +88,38 @@ class QuizzesController {
       this.logger.info(`Generating quiz for user ${userId}`);
       const quiz = await this.aiService.generateQuiz(createQuizDto);
       return res.status(200).json(quiz);
+    } catch (error) {
+      this.logger.error(`Generate quiz error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  async createFile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in generate quiz`);
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(`Generating quiz from file for user ${userId}`);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const filename = req.files["document"][0].filename;
+      const content = fs.readFileSync(`src/uploads/${filename}`, "utf-8");
+      const result = this.quizzesService.generateFromFile(content);
+      if (result.errors.length > 0) {
+        res.status(400).json({
+          status: "error",
+          errors: result.errors,
+        });
+        return;
+      }
+      res.status(200).json(result.quiz);
+      return;
     } catch (error) {
       this.logger.error(`Generate quiz error: ${error}`);
       return next(createHttpError.InternalServerError());

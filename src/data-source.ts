@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import configuration from "./config/configuration.js";
-import path from "path";
+import path from "node:path";
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 

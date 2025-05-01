@@ -1,12 +1,12 @@
 meta {
-  name: Generate
+  name: Create From File
   type: http
-  seq: 8
+  seq: 3
 }
 
 post {
-  url: http://127.0.0.1:5000/quizzes/generate
-  body: json
+  url: http://127.0.0.1:5000/quizzes/create-file
+  body: multipartForm
   auth: bearer
 }
 
@@ -14,9 +14,6 @@ auth:bearer {
   token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjc4NjcwMzV9.EblhUijUGNgfXuFYChIS2w7TJFQohjxFZDRj9yCfQPE
 }
 
-body:json {
-  {
-    "name" : "react fundamentals",
-    "description" : "introduce to react"
-  }
+body:multipart-form {
+  document: @file(/home/yash/Desktop/quizloom/quizloomb/src/uploads/example.ql)
 }

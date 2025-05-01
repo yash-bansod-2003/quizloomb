@@ -22,6 +22,9 @@ export class Question {
   @Column({ enum: ["mcq", "true_false", "written"], type: "text" })
   type: string;
 
+  @Column("text", { array: true })
+  tags: string[];
+
   @CreateDateColumn()
   created_at: Date;
 
