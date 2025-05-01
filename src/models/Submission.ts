@@ -20,10 +20,10 @@ export class Submission {
   attempt: number;
 
   @CreateDateColumn()
-  created_at: number;
+  created_at: Date;
 
   @UpdateDateColumn()
-  updated_at: number;
+  updated_at: Date;
 
   @ManyToOne(() => User, (user) => user.submissions)
   user: User;

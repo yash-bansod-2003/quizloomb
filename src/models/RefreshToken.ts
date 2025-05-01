@@ -18,6 +18,6 @@ export class RefreshToken {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @ManyToOne(() => User, (user) => user.quizzes)
+  @ManyToOne(() => User, (user) => user.refreshTokens)
   user: User;
 }
