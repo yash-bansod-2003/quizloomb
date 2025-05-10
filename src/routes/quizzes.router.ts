@@ -100,4 +100,76 @@ router.delete("/:id", authenticate, async (req, res, next) => {
   await quizzesController.delete(req, res, next);
 });
 
+router.get("/:id/questions", authenticate, async (req, res, next) => {
+  await quizzesController.findAllQuestions(req, res, next);
+});
+
+router.get(
+  "/:id/questions/:questionId",
+  authenticate,
+  async (req, res, next) => {
+    await quizzesController.findOneQuestion(req, res, next);
+  },
+);
+
+router.post("/:id/questions", authenticate, async (req, res, next) => {
+  await quizzesController.createQuestion(req, res, next);
+});
+
+router.put(
+  "/:id/questions/:questionId",
+  authenticate,
+  async (req, res, next) => {
+    await quizzesController.updateQuestion(req, res, next);
+  },
+);
+
+router.delete(
+  "/:id/questions/:questionId",
+  authenticate,
+  async (req, res, next) => {
+    await quizzesController.deleteQuestion(req, res, next);
+  },
+);
+
+router.get(
+  "/:id/questions/:questionId/answers",
+  authenticate,
+  async (req, res, next) => {
+    await quizzesController.findAllAnswers(req, res, next);
+  },
+);
+
+router.get(
+  "/:id/questions/:questionId/answers/:answerId",
+  authenticate,
+  async (req, res, next) => {
+    await quizzesController.findOneAnswer(req, res, next);
+  },
+);
+
+router.post(
+  "/:id/questions/:questionId/answers",
+  authenticate,
+  async (req, res, next) => {
+    await quizzesController.createAnswer(req, res, next);
+  },
+);
+
+router.put(
+  "/:id/questions/:questionId/answers/:answerId",
+  authenticate,
+  async (req, res, next) => {
+    await quizzesController.updateAnswer(req, res, next);
+  },
+);
+
+router.delete(
+  "/:id/questions/:questionId/answers/:answerId",
+  authenticate,
+  async (req, res, next) => {
+    await quizzesController.deleteAnswer(req, res, next);
+  },
+);
+
 export default router;

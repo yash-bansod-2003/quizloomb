@@ -5,6 +5,8 @@ import QuizzesService from "@/services/quizzes.service.js";
 import UsersService from "@/services/users.service.js";
 import AiService from "@/services/ai.service.js";
 import { quizValidationSchema } from "@/validators/quizzes.validator.js";
+import { questionValidationSchema } from "@/validators/questions.validator.js";
+import { answerValidationSchema } from "@/validators/answers.validator.js";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import SettingsService from "@/services/settings.service.js";
 import QuestionsService from "@/services/questions.service.js";
@@ -275,6 +277,529 @@ class QuizzesController {
       return res.json(quiz);
     } catch (error) {
       this.logger.error(`Delete quiz error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  // Questions endpoints
+  async findAllQuestions(req: Request, res: Response, next: NextFunction) {
+    try {
+      const quizId = Number(req.params.id);
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in findAllQuestions`);
+        return next(createHttpError.NotFound());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+          user: { id: user.id },
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(`Fetching all questions for quiz ${quizId}`);
+      const questions = await this.questionsService.findAll({
+        where: { quiz: { id: quizId } },
+      });
+      return res.json(questions);
+    } catch (error) {
+      this.logger.error(`Find all questions error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  async findOneQuestion(req: Request, res: Response, next: NextFunction) {
+    try {
+      const quizId = Number(req.params.id);
+      const questionId = Number(req.params.questionId);
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in findOneQuestion`);
+        return next(createHttpError.NotFound());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+          user: { id: user.id },
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(`Fetching question ${questionId} for quiz ${quizId}`);
+      const question = await this.questionsService.findOne({
+        where: {
+          id: questionId,
+          quiz: { id: quizId },
+        },
+      });
+
+      if (!question) {
+        this.logger.error(
+          `Question ${questionId} not found for quiz ${quizId}`,
+        );
+        return next(createHttpError.NotFound());
+      }
+
+      return res.json(question);
+    } catch (error) {
+      this.logger.error(`Find one question error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  async createQuestion(req: Request, res: Response, next: NextFunction) {
+    try {
+      const quizId = Number(req.params.id);
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const questionData = req.body as z.infer<typeof questionValidationSchema>;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in createQuestion`);
+        return next(createHttpError.NotFound());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+          user: { id: user.id },
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(`Creating question for quiz ${quizId}`);
+      const question = await this.questionsService.create({
+        ...questionData,
+        quiz,
+      });
+
+      if (!question) {
+        throw new Error("Question creation failed");
+      }
+
+      return res.status(201).json(question);
+    } catch (error) {
+      this.logger.error(`Create question error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  async updateQuestion(req: Request, res: Response, next: NextFunction) {
+    try {
+      const quizId = Number(req.params.id);
+      const questionId = Number(req.params.questionId);
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const questionData = req.body as z.infer<typeof questionValidationSchema>;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in updateQuestion`);
+        return next(createHttpError.NotFound());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+          user: { id: user.id },
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(`Updating question ${questionId} for quiz ${quizId}`);
+      const question = await this.questionsService.update(
+        { id: questionId, quiz: { id: quizId } },
+        questionData,
+      );
+
+      if (!question) {
+        this.logger.error(
+          `Question ${questionId} not found for quiz ${quizId}`,
+        );
+        return next(createHttpError.NotFound());
+      }
+
+      return res.json(question);
+    } catch (error) {
+      this.logger.error(`Update question error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  async deleteQuestion(req: Request, res: Response, next: NextFunction) {
+    try {
+      const quizId = Number(req.params.id);
+      const questionId = Number(req.params.questionId);
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in deleteQuestion`);
+        return next(createHttpError.NotFound());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+          user: { id: user.id },
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(`Deleting question ${questionId} for quiz ${quizId}`);
+      const question = await this.questionsService.delete({
+        id: questionId,
+        quiz: { id: quizId },
+      });
+
+      if (!question) {
+        this.logger.error(
+          `Question ${questionId} not found for quiz ${quizId}`,
+        );
+        return next(createHttpError.NotFound());
+      }
+
+      return res.json(question);
+    } catch (error) {
+      this.logger.error(`Delete question error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  // Answers endpoints
+  async findAllAnswers(req: Request, res: Response, next: NextFunction) {
+    try {
+      const quizId = Number(req.params.id);
+      const questionId = Number(req.params.questionId);
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in findAllAnswers`);
+        return next(createHttpError.NotFound());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+          user: { id: user.id },
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      const question = await this.questionsService.findOne({
+        where: {
+          id: questionId,
+          quiz: { id: quizId },
+        },
+      });
+
+      if (!question) {
+        this.logger.error(
+          `Question ${questionId} not found for quiz ${quizId}`,
+        );
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(`Fetching all answers for question ${questionId}`);
+      const answers = await this.answersService.findAll({
+        where: { question: { id: questionId } },
+      });
+      return res.json(answers);
+    } catch (error) {
+      this.logger.error(`Find all answers error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  async findOneAnswer(req: Request, res: Response, next: NextFunction) {
+    try {
+      const quizId = Number(req.params.id);
+      const questionId = Number(req.params.questionId);
+      const answerId = Number(req.params.answerId);
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in findOneAnswer`);
+        return next(createHttpError.NotFound());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+          user: { id: user.id },
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      const question = await this.questionsService.findOne({
+        where: {
+          id: questionId,
+          quiz: { id: quizId },
+        },
+      });
+
+      if (!question) {
+        this.logger.error(
+          `Question ${questionId} not found for quiz ${quizId}`,
+        );
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(
+        `Fetching answer ${answerId} for question ${questionId}`,
+      );
+      const answer = await this.answersService.findOne({
+        where: {
+          id: answerId,
+          question: { id: questionId },
+        },
+      });
+
+      if (!answer) {
+        this.logger.error(
+          `Answer ${answerId} not found for question ${questionId}`,
+        );
+        return next(createHttpError.NotFound());
+      }
+
+      return res.json(answer);
+    } catch (error) {
+      this.logger.error(`Find one answer error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  async createAnswer(req: Request, res: Response, next: NextFunction) {
+    try {
+      const quizId = Number(req.params.id);
+      const questionId = Number(req.params.questionId);
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const answerData = req.body as z.infer<typeof answerValidationSchema>;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in createAnswer`);
+        return next(createHttpError.NotFound());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+          user: { id: user.id },
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      const question = await this.questionsService.findOne({
+        where: {
+          id: questionId,
+          quiz: { id: quizId },
+        },
+      });
+
+      if (!question) {
+        this.logger.error(
+          `Question ${questionId} not found for quiz ${quizId}`,
+        );
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(`Creating answer for question ${questionId}`);
+      const answer = await this.answersService.create({
+        ...answerData,
+        question,
+      });
+
+      if (!answer) {
+        throw new Error("Answer creation failed");
+      }
+
+      return res.status(201).json(answer);
+    } catch (error) {
+      this.logger.error(`Create answer error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  async updateAnswer(req: Request, res: Response, next: NextFunction) {
+    try {
+      const quizId = Number(req.params.id);
+      const questionId = Number(req.params.questionId);
+      const answerId = Number(req.params.answerId);
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const answerData = req.body as z.infer<typeof answerValidationSchema>;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in updateAnswer`);
+        return next(createHttpError.NotFound());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+          user: { id: user.id },
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      const question = await this.questionsService.findOne({
+        where: {
+          id: questionId,
+          quiz: { id: quizId },
+        },
+      });
+
+      if (!question) {
+        this.logger.error(
+          `Question ${questionId} not found for quiz ${quizId}`,
+        );
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(
+        `Updating answer ${answerId} for question ${questionId}`,
+      );
+      const answer = await this.answersService.update(
+        { id: answerId, question: { id: questionId } },
+        answerData,
+      );
+
+      if (!answer) {
+        this.logger.error(
+          `Answer ${answerId} not found for question ${questionId}`,
+        );
+        return next(createHttpError.NotFound());
+      }
+
+      return res.json(answer);
+    } catch (error) {
+      this.logger.error(`Update answer error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  async deleteAnswer(req: Request, res: Response, next: NextFunction) {
+    try {
+      const quizId = Number(req.params.id);
+      const questionId = Number(req.params.questionId);
+      const answerId = Number(req.params.answerId);
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in deleteAnswer`);
+        return next(createHttpError.NotFound());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+          user: { id: user.id },
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      const question = await this.questionsService.findOne({
+        where: {
+          id: questionId,
+          quiz: { id: quizId },
+        },
+      });
+
+      if (!question) {
+        this.logger.error(
+          `Question ${questionId} not found for quiz ${quizId}`,
+        );
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(
+        `Deleting answer ${answerId} for question ${questionId}`,
+      );
+      const answer = await this.answersService.delete({
+        id: answerId,
+        question: { id: questionId },
+      });
+
+      if (!answer) {
+        this.logger.error(
+          `Answer ${answerId} not found for question ${questionId}`,
+        );
+        return next(createHttpError.NotFound());
+      }
+
+      return res.json(answer);
+    } catch (error) {
+      this.logger.error(`Delete answer error: ${error}`);
       return next(createHttpError.InternalServerError());
     }
   }

@@ -26,11 +26,11 @@ router.post("/", authenticate, AnswerValidator, async (req, res, next) => {
   await answersController.create(req, res, next);
 });
 
-router.get("/", authenticate, async (req, res, next) => {
+router.get("/:questionId", authenticate, async (req, res, next) => {
   await answersController.findAll(req, res, next);
 });
 
-router.get("/:id", authenticate, async (req, res, next) => {
+router.get("/:questionId/:id", authenticate, async (req, res, next) => {
   await answersController.findOne(req, res, next);
 });
 
