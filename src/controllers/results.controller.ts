@@ -23,7 +23,6 @@ class ResultsController {
     this.logger.debug(`Received request body: ${JSON.stringify(req.body)}`);
 
     try {
-      // Validate and fetch user
       const userId = (req as AuthenticatedRequest).user.sub;
       this.logger.debug(`Fetching user with id: ${userId}`);
 

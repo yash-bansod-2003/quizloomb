@@ -16,6 +16,8 @@ import { Question } from "@/models/Question.js";
 import QuestionsService from "@/services/questions.service.js";
 import { Answer } from "@/models/Answer.js";
 import AnswersService from "@/services/answers.service.js";
+import { Result } from "@/models/Result.js";
+import ResultsService from "@/services/results.service.js";
 
 const router = Router();
 
@@ -46,6 +48,8 @@ const quizzesService = new QuizzesService(quizzesRepository);
 const usersService = new UsersService(usersRepository);
 const settingsRepository = AppDataSource.getRepository(Settings);
 const settingsService = new SettingsService(settingsRepository);
+const resultsRepository = AppDataSource.getRepository(Result);
+const resultsService = new ResultsService(resultsRepository);
 const aiService = new Aiservice();
 
 const quizzesController = new QuizzesController(
@@ -54,6 +58,7 @@ const quizzesController = new QuizzesController(
   questionsService,
   answersService,
   settingsService,
+  resultsService,
   aiService,
   logger,
 );
@@ -171,5 +176,17 @@ router.delete(
     await quizzesController.deleteAnswer(req, res, next);
   },
 );
+
+router.get("/:id/settings", authenticate, async (req, res, next) => {
+  await quizzesController.findSettings(req, res, next);
+});
+
+router.put("/:id/settings", authenticate, async (req, res, next) => {
+  await quizzesController.updateSettings(req, res, next);
+});
+
+router.put("/:id/results", authenticate, async (req, res, next) => {
+  await quizzesController.findResults(req, res, next);
+});
 
 export default router;

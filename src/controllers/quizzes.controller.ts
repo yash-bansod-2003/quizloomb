@@ -7,10 +7,12 @@ import AiService from "@/services/ai.service.js";
 import { quizValidationSchema } from "@/validators/quizzes.validator.js";
 import { questionValidationSchema } from "@/validators/questions.validator.js";
 import { answerValidationSchema } from "@/validators/answers.validator.js";
+import { settingsValidationSchema } from "@/validators/settings.validator.js";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import SettingsService from "@/services/settings.service.js";
 import QuestionsService from "@/services/questions.service.js";
 import AnswersService from "@/services/answers.service.js";
+import ResultsService from "@/services/results.service.js";
 import { z } from "zod";
 import fs from "node:fs";
 
@@ -21,6 +23,7 @@ class QuizzesController {
     private readonly questionsService: QuestionsService,
     private readonly answersService: AnswersService,
     private readonly settingsService: SettingsService,
+    private readonly resultsService: ResultsService,
     private readonly aiService: AiService,
     private readonly logger: Logger,
   ) {}
@@ -800,6 +803,136 @@ class QuizzesController {
       return res.json(answer);
     } catch (error) {
       this.logger.error(`Delete answer error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  async findSettings(req: Request, res: Response, next: NextFunction) {
+    try {
+      const quizId = Number(req.params.id);
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in findSettings`);
+        return next(createHttpError.NotFound());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+          user: { id: user.id },
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(`Fetching settings for quiz ${quizId}`);
+      const settings = await this.settingsService.findOne({
+        where: { quiz: { id: quizId } },
+      });
+
+      if (!settings) {
+        this.logger.error(`Settings not found for quiz ${quizId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      return res.json(settings);
+    } catch (error) {
+      this.logger.error(`Find settings error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  async updateSettings(req: Request, res: Response, next: NextFunction) {
+    try {
+      const quizId = Number(req.params.id);
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const updateSettingsDto = req.body as z.infer<
+        typeof settingsValidationSchema
+      >;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in updateSettings`);
+        return next(createHttpError.NotFound());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+          user: { id: user.id },
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(`Updating settings for quiz ${quizId}`);
+      const settings = await this.settingsService.update(
+        { quiz: { id: quizId } },
+        updateSettingsDto,
+      );
+
+      if (!settings) {
+        this.logger.error(`Settings not found for quiz ${quizId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      return res.json(settings);
+    } catch (error) {
+      this.logger.error(`Update settings error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  async findResults(req: Request, res: Response, next: NextFunction) {
+    try {
+      const quizId = Number(req.params.id);
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in findSettings`);
+        return next(createHttpError.NotFound());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+          user: { id: user.id },
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(`Fetching settings for quiz ${quizId}`);
+      const results = await this.resultsService.findOne({
+        where: { quiz: { id: quizId } },
+      });
+
+      if (!results) {
+        this.logger.error(`Settings not found for quiz ${quizId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      return res.json(results);
+    } catch (error) {
+      this.logger.error(`Find settings error: ${error}`);
       return next(createHttpError.InternalServerError());
     }
   }
