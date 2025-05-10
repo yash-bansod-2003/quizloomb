@@ -11,6 +11,7 @@ export const COOKIE_PROPERTIES = {
   SAME_SITE: "strict",
   ACCESS_TOKEN_COOKIE_NAME: "access_token",
   REFRESH_TOKEN_COOKIE_NAME: "refresh_token",
+  QUIZ_TOKEN_COOKIE_NAME: "quiz_token",
   ACCESS_TOKEN_COOKIE_MAX_AGE: 60 * 60 * 24 * 7,
   REFRESH_TOKEN_COOKIE_MAX_AGE: 60 * 60 * 24 * 7,
   DOMAIN: configuration.domain,

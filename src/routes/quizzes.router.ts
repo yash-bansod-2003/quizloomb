@@ -18,7 +18,8 @@ import { Answer } from "@/models/Answer.js";
 import AnswersService from "@/services/answers.service.js";
 import { Result } from "@/models/Result.js";
 import ResultsService from "@/services/results.service.js";
-
+import TokensService from "@/services/tokens.service.js";
+import configuration from "@/config/configuration.js";
 const router = Router();
 
 const storage = multer.diskStorage({
@@ -51,6 +52,7 @@ const settingsService = new SettingsService(settingsRepository);
 const resultsRepository = AppDataSource.getRepository(Result);
 const resultsService = new ResultsService(resultsRepository);
 const aiService = new Aiservice();
+const quizzesTokensService = new TokensService(configuration.jwt.secret.quiz);
 
 const quizzesController = new QuizzesController(
   quizzesService,
@@ -59,6 +61,7 @@ const quizzesController = new QuizzesController(
   answersService,
   settingsService,
   resultsService,
+  quizzesTokensService,
   aiService,
   logger,
 );
@@ -187,6 +190,10 @@ router.put("/:id/settings", authenticate, async (req, res, next) => {
 
 router.put("/:id/results", authenticate, async (req, res, next) => {
   await quizzesController.findResults(req, res, next);
+});
+
+router.put("/:id/start", authenticate, async (req, res, next) => {
+  await quizzesController.start(req, res, next);
 });
 
 export default router;

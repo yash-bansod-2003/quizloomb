@@ -13,8 +13,11 @@ import SettingsService from "@/services/settings.service.js";
 import QuestionsService from "@/services/questions.service.js";
 import AnswersService from "@/services/answers.service.js";
 import ResultsService from "@/services/results.service.js";
+import TokensService from "@/services/tokens.service.js";
 import { z } from "zod";
 import fs from "node:fs";
+import { COOKIE_PROPERTIES } from "@/lib/constants.js";
+import configuration from "@/config/configuration.js";
 
 class QuizzesController {
   constructor(
@@ -24,6 +27,7 @@ class QuizzesController {
     private readonly answersService: AnswersService,
     private readonly settingsService: SettingsService,
     private readonly resultsService: ResultsService,
+    private readonly quizzesTokensService: TokensService,
     private readonly aiService: AiService,
     private readonly logger: Logger,
   ) {}
@@ -841,6 +845,80 @@ class QuizzesController {
         this.logger.error(`Settings not found for quiz ${quizId}`);
         return next(createHttpError.NotFound());
       }
+
+      return res.json(settings);
+    } catch (error) {
+      this.logger.error(`Find settings error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
+  async start(req: Request, res: Response, next: NextFunction) {
+    try {
+      const quizId = Number(req.params.id);
+      const userId = (req as AuthenticatedRequest).user.sub;
+      const user = await this.usersService.findOne({
+        where: { id: Number(userId) },
+      });
+
+      if (!user) {
+        this.logger.error(`User ${userId} not found in findSettings`);
+        return next(createHttpError.NotFound());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+          user: { id: user.id },
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(`Fetching settings for quiz ${quizId}`);
+      const settings = await this.settingsService.findOne({
+        where: { quiz: { id: quizId } },
+      });
+
+      if (!settings) {
+        this.logger.error(`Settings not found for quiz ${quizId}`);
+        return next(createHttpError.NotFound());
+      }
+      const { start_time, end_time, duration_minutes } = settings;
+      const currentTime = new Date();
+      if (currentTime < start_time || currentTime > end_time) {
+        this.logger.error(`Quiz ${quizId} is not available at this time`);
+        return next(
+          createHttpError.Forbidden("Quiz is not available at this time"),
+        );
+      }
+
+      const quizToken = this.quizzesTokensService.sign(
+        {
+          quiz,
+          duration_minutes,
+          user: {
+            id: user.id,
+            email: user.email,
+          },
+        },
+        {
+          expiresIn: `${duration_minutes}m`,
+        },
+      );
+
+      res.cookie(COOKIE_PROPERTIES.QUIZ_TOKEN_COOKIE_NAME, quizToken, {
+        httpOnly: COOKIE_PROPERTIES.HTTP_ONLY,
+        sameSite: COOKIE_PROPERTIES.SAME_SITE,
+        maxAge: duration_minutes * 60 * 1000,
+        secure: COOKIE_PROPERTIES.SECURE,
+        ...(configuration.node_env === "production" && {
+          domain: COOKIE_PROPERTIES.DOMAIN,
+        }),
+      });
 
       return res.json(settings);
     } catch (error) {
