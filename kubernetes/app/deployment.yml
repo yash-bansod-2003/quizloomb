@@ -6,7 +6,7 @@ metadata:
   labels:
     app: quizloom-backend
 spec:
-  replicas: 2
+  replicas: 4
   selector:
     matchLabels:
       app: quizloom-backend
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: quizloom-backend
-          image: yashbansod2003/quizloomb:build-20
+          image: yashbansod2003/quizloomb:build-22
           resources:
             requests:
               memory: "64Mi"

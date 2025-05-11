@@ -6,7 +6,6 @@ import {
   UpdateDateColumn,
   Column,
 } from "typeorm";
-import { User } from "@/models/User.js";
 import { Question } from "@/models/Question.js";
 import { Quiz } from "@/models/Quiz.js";
 import { Answer } from "@/models/Answer.js";
@@ -19,14 +18,14 @@ export class Submission {
   @Column({ type: "int", default: 1 })
   attempt: number;
 
+  @Column({ type: "string", nullable: false })
+  session_id: number;
+
   @CreateDateColumn()
   created_at: Date;
 
   @UpdateDateColumn()
   updated_at: Date;
-
-  @ManyToOne(() => User, (user) => user.submissions)
-  user: User;
 
   @ManyToOne(() => Quiz, (quiz) => quiz.submissions)
   quiz: Quiz;

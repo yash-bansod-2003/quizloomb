@@ -7,8 +7,6 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Quiz } from "@/models/Quiz.js";
-import { Submission } from "@/models/Submission.js";
-import { Result } from "@/models/Result.js";
 import { RefreshToken } from "@/models/RefreshToken.js";
 
 @Entity()
@@ -52,10 +50,4 @@ export class User {
 
   @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
   refreshTokens: RefreshToken[];
-
-  @OneToMany(() => Submission, (submission) => submission.user)
-  submissions: Submission[];
-
-  @OneToMany(() => Result, (result) => result.user)
-  results: Result[];
 }

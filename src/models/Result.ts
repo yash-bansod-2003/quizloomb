@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { User } from "@/models/User.js";
 import { Quiz } from "@/models/Quiz.js";
 
 @Entity("results")
@@ -26,8 +25,8 @@ export class Result {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @ManyToOne(() => User, (user) => user.results)
-  user: User;
+  @Column({ type: "string", nullable: false })
+  session_id: number;
 
   @ManyToOne(() => Quiz, (quiz) => quiz.results)
   quiz: Quiz;
