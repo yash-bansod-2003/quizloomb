@@ -31,6 +31,9 @@ export class User {
   @Column({ type: "boolean", default: false })
   is_verified: boolean;
 
+  @Column({ type: "int", default: 20 })
+  credits: number;
+
   @Column({
     type: "text",
     enum: ["student", "user", "admin"],

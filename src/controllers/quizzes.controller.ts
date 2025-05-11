@@ -77,8 +77,21 @@ class QuizzesController {
         return next(createHttpError.NotFound());
       }
 
+      if (user.credits < 2) {
+        this.logger.error(`User ${userId} does not have enough credits`);
+        return next(createHttpError.Forbidden("Not enough credits"));
+      }
+
       this.logger.info(`Generating quiz for user ${userId}`);
       const quizContent = await this.aiService.improveQuiz(createQuizDto);
+      await this.usersService.update(
+        {
+          id: Number(userId),
+        },
+        {
+          credits: user.credits - 2,
+        },
+      );
       return res.status(200).send(quizContent);
     } catch (error) {
       this.logger.error(`Generate quiz error: ${error}`);
@@ -99,12 +112,25 @@ class QuizzesController {
         return next(createHttpError.NotFound());
       }
 
+      if (user.credits < 2) {
+        this.logger.error(`User ${userId} does not have enough credits`);
+        return next(createHttpError.Forbidden("Not enough credits"));
+      }
+
       this.logger.info(`Generating quiz for user ${userId}`);
       const quiz = await this.aiService.generateQuiz(createQuizDto);
       if (!quiz) {
         this.logger.error(`Quiz generation failed for user ${userId}`);
         return next(createHttpError.InternalServerError());
       }
+      await this.usersService.update(
+        {
+          id: Number(userId),
+        },
+        {
+          credits: user.credits - 2,
+        },
+      );
       return res.status(200).json(quiz);
     } catch (error) {
       this.logger.error(`Generate quiz error: ${error}`);
@@ -123,6 +149,12 @@ class QuizzesController {
         this.logger.error(`User ${userId} not found in generate quiz`);
         return next(createHttpError.NotFound());
       }
+
+      if (user.credits < 1) {
+        this.logger.error(`User ${userId} does not have enough credits`);
+        return next(createHttpError.Forbidden("Not enough credits"));
+      }
+
       this.logger.info(`Generating quiz from file for user ${userId}`);
       const content = (req.body as { content: string }).content;
       const result = this.parserService.parse(content);
@@ -180,7 +212,14 @@ class QuizzesController {
           }
         }
       }
-
+      await this.usersService.update(
+        {
+          id: Number(userId),
+        },
+        {
+          credits: user.credits - 1,
+        },
+      );
       res.status(201).json({ status: "ok" });
       return;
     } catch (error) {
