@@ -43,13 +43,15 @@ class Aiservice {
     createQuizDto: z.infer<typeof quizValidationSchema>,
   ): Promise<string | null> {
     const prompt = `
-    You are a quiz generator. Based on the title ${createQuizDto.name} and description ${createQuizDto.description} provided, generate a quiz in the following file format. Include 4 questions: 1 multiple choice (mcq), 1 true/false (true_false), 1 written response (written), and 1 multi-select (multi_select). Use varied and accurate questions appropriate to the topic.
-
-    Format:
-
+    You are a quiz generator. Based on the title "${createQuizDto.name}" and description "${createQuizDto.description}" provided, generate a quiz in a plain text format following the structure below. Include 4 questions: 1 multiple choice (mcq), 1 true/false (true_false), 1 written response (written), and 1 multi-select (multi_select). Use varied and accurate questions appropriate to the topic.
+    
+    IMPORTANT: Do not use escaped characters like \\n in your output. Return the content as raw text with proper line breaks. Your response will be used directly in a text file.
+    
+    Format your response exactly as follows (with actual line breaks):
+    
     name: <title>
     description: <description>
-
+    
     ---question---
     type: mcq
     question: <MCQ question>
@@ -59,18 +61,18 @@ class Aiservice {
     3. <option>
     4. <option>
     tags: <comma-separated tags>
-
+    
     ---question---
     type: true_false
     question: <true/false question>
     correct: <true/false>
     tags: <comma-separated tags>
-
+    
     ---question---
     type: written
     question: <written response question>
     tags: <comma-separated tags>
-
+    
     ---question---
     type: multi_select
     question: <multi-select question>
@@ -80,10 +82,10 @@ class Aiservice {
     3. <option>
     4. <option>
     tags: <comma-separated tags>
-
+    
     Generate the output now for:
-    Title: Python Basics Quiz  
-    Description: A quiz to test basic knowledge of Python programming.
+    Title: ${createQuizDto.name}  
+    Description: ${createQuizDto.description}
     `;
     const result = await this.model.generateContent(prompt);
     return result.response.candidates[0].content.parts[0].text;

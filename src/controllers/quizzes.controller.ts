@@ -14,8 +14,8 @@ import QuestionsService from "@/services/questions.service.js";
 import AnswersService from "@/services/answers.service.js";
 import ResultsService from "@/services/results.service.js";
 import TokensService from "@/services/tokens.service.js";
+import ParserService from "@/services/parser.service.js";
 import { z } from "zod";
-import fs from "node:fs";
 import { COOKIE_PROPERTIES } from "@/lib/constants.js";
 import configuration from "@/config/configuration.js";
 
@@ -29,6 +29,7 @@ class QuizzesController {
     private readonly resultsService: ResultsService,
     private readonly quizzesTokensService: TokensService,
     private readonly aiService: AiService,
+    private readonly parserService: ParserService,
     private readonly logger: Logger,
   ) {}
 
@@ -100,6 +101,10 @@ class QuizzesController {
 
       this.logger.info(`Generating quiz for user ${userId}`);
       const quiz = await this.aiService.generateQuiz(createQuizDto);
+      if (!quiz) {
+        this.logger.error(`Quiz generation failed for user ${userId}`);
+        return next(createHttpError.InternalServerError());
+      }
       return res.status(200).json(quiz);
     } catch (error) {
       this.logger.error(`Generate quiz error: ${error}`);
@@ -118,12 +123,9 @@ class QuizzesController {
         this.logger.error(`User ${userId} not found in generate quiz`);
         return next(createHttpError.NotFound());
       }
-
       this.logger.info(`Generating quiz from file for user ${userId}`);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      const filename = req.files["document"][0].filename;
-      const content = fs.readFileSync(`src/uploads/${filename}`, "utf-8");
-      const result = this.quizzesService.generateFromFile(content);
+      const content = (req.body as { content: string }).content;
+      const result = this.parserService.parse(content);
       if (result.errors.length > 0) {
         res.status(400).json({
           status: "error",
@@ -179,7 +181,7 @@ class QuizzesController {
         }
       }
 
-      res.status(200).json(result.quiz);
+      res.status(201).json({ status: "ok" });
       return;
     } catch (error) {
       this.logger.error(`Generate quiz error: ${error}`);

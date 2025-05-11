@@ -11,7 +11,6 @@ import { User } from "@/models/User.js";
 import Aiservice from "@/services/ai.service.js";
 import SettingsService from "@/services/settings.service.js";
 import { Settings } from "@/models/Settings.js";
-import multer from "multer";
 import { Question } from "@/models/Question.js";
 import QuestionsService from "@/services/questions.service.js";
 import { Answer } from "@/models/Answer.js";
@@ -20,24 +19,8 @@ import { Result } from "@/models/Result.js";
 import ResultsService from "@/services/results.service.js";
 import TokensService from "@/services/tokens.service.js";
 import configuration from "@/config/configuration.js";
+import ParserService from "@/services/parser.service.js";
 const router = Router();
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "src/uploads/");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const fileExtension = file.originalname.split(".").pop();
-    if (fileExtension !== "ql") {
-      cb(new Error("Invalid file type. Only .ql files are allowed."), null);
-      return;
-    }
-    cb(null, file.fieldname + "-" + uniqueSuffix + "." + fileExtension);
-  },
-});
-
-const upload = multer({ storage: storage });
 
 const questionsRepository = AppDataSource.getRepository(Question);
 const questionsService = new QuestionsService(questionsRepository);
@@ -53,6 +36,7 @@ const resultsRepository = AppDataSource.getRepository(Result);
 const resultsService = new ResultsService(resultsRepository);
 const aiService = new Aiservice();
 const quizzesTokensService = new TokensService(configuration.jwt.secret.quiz);
+const parserService = new ParserService();
 
 const quizzesController = new QuizzesController(
   quizzesService,
@@ -63,6 +47,7 @@ const quizzesController = new QuizzesController(
   resultsService,
   quizzesTokensService,
   aiService,
+  parserService,
   logger,
 );
 
@@ -83,14 +68,9 @@ router.post("/improve", authenticate, QuizValidator, async (req, res, next) => {
   await quizzesController.improve(req, res, next);
 });
 
-router.post(
-  "/create-file",
-  authenticate,
-  upload.fields([{ name: "document", maxCount: 1 }]),
-  async (req, res, next) => {
-    await quizzesController.createFile(req, res, next);
-  },
-);
+router.post("/create-file", authenticate, async (req, res, next) => {
+  await quizzesController.createFile(req, res, next);
+});
 
 router.get("/", authenticate, async (req, res, next) => {
   await quizzesController.findAll(req, res, next);

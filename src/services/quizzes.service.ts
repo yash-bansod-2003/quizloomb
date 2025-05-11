@@ -10,7 +10,6 @@ import {
   FindOptionsWhere,
 } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity.js";
-import { parseQuizFile } from "@/lib/utils.js";
 
 class QuizzesService {
   constructor(private readonly quizzesRepository: Repository<Quiz>) {}
@@ -36,10 +35,6 @@ class QuizzesService {
 
   async delete(criteria: FindOptionsWhere<Quiz>): Promise<DeleteResult> {
     return await this.quizzesRepository.delete(criteria);
-  }
-
-  generateFromFile(content: string) {
-    return parseQuizFile(content);
   }
 }
 
