@@ -20,7 +20,7 @@ RUN npm run build
 FROM node:23-alpine AS runner
 
 # Set environment variable to production
-ENV NODE_ENV=production
+ENV NODE_ENV=test
 
 # Set the working directory inside the container
 WORKDIR /home/node/app
