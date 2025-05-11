@@ -25,8 +25,8 @@ export class Result {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @Column({ type: "string", nullable: false })
-  session_id: number;
+  @Column({ type: "text", nullable: false })
+  session_id: string;
 
   @ManyToOne(() => Quiz, (quiz) => quiz.results)
   quiz: Quiz;

@@ -18,8 +18,8 @@ export class Submission {
   @Column({ type: "int", default: 1 })
   attempt: number;
 
-  @Column({ type: "string", nullable: false })
-  session_id: number;
+  @Column({ type: "text", nullable: false })
+  session_id: string;
 
   @CreateDateColumn()
   created_at: Date;
