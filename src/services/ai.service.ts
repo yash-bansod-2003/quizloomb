@@ -1,17 +1,20 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 import configuration from "@/config/configuration.js";
-import { CreateQuizDto } from "@/dto/quizzes.js";
+import { quizValidationSchema } from "@/validators/quizzes.validator.js";
+import { z } from "zod";
 
 class Aiservice {
   private readonly client: GoogleGenerativeAI;
+  private readonly model: GenerativeModel;
   constructor() {
     this.client = new GoogleGenerativeAI(configuration.ai.key);
+    this.model = this.client.getGenerativeModel({
+      model: "gemini-2.0-flash-lite",
+    });
   }
-  async generateQuiz(
-    createQuizDto: CreateQuizDto,
+  async improveQuiz(
+    createQuizDto: z.infer<typeof quizValidationSchema>,
   ): Promise<Record<string, unknown> | null> {
-    const model = this.client.getGenerativeModel({ model: "gemini-1.5-flash" });
-
     const prompt = `
     I want you to take the following name and description of a quiz application and enhance them to make them more engaging, creative, and appealing. The enhanced name should be concise, attractive, and clearly indicate the purpose of the quiz app. The enhanced description should be detailed, exciting, and communicate the app's unique features and value in a way that entices users to participate.
 
@@ -28,11 +31,64 @@ class Aiservice {
 
     Please return only the enhanced name and description in the JSON format specified.
     `;
-    const result = await model.generateContent(prompt);
+    const result = await this.model.generateContent(prompt);
     const parsedResult = this.extractJsonFromMarkdown(
       result.response.candidates[0].content.parts[0].text,
     );
+
     return parsedResult;
+  }
+
+  async generateQuiz(
+    createQuizDto: z.infer<typeof quizValidationSchema>,
+  ): Promise<string | null> {
+    const prompt = `
+    You are a quiz generator. Based on the title "${createQuizDto.name}" and description "${createQuizDto.description}" provided, generate a quiz in a plain text format following the structure below. Include 4 questions: 1 multiple choice (mcq), 1 true/false (true_false), 1 written response (written), and 1 multi-select (multi_select). Use varied and accurate questions appropriate to the topic.
+    
+    IMPORTANT: Do not use escaped characters like \\n in your output. Return the content as raw text with proper line breaks. Your response will be used directly in a text file.
+    
+    Format your response exactly as follows (with actual line breaks):
+    
+    name: <title>
+    description: <description>
+    
+    ---question---
+    type: mcq
+    question: <MCQ question>
+    options:
+    1. <option>
+    2. <option> [correct]
+    3. <option>
+    4. <option>
+    tags: <comma-separated tags>
+    
+    ---question---
+    type: true_false
+    question: <true/false question>
+    correct: <true/false>
+    tags: <comma-separated tags>
+    
+    ---question---
+    type: written
+    question: <written response question>
+    tags: <comma-separated tags>
+    
+    ---question---
+    type: multi_select
+    question: <multi-select question>
+    options:
+    1. <option> [correct]
+    2. <option> [correct]
+    3. <option>
+    4. <option>
+    tags: <comma-separated tags>
+    
+    Generate the output now for:
+    Title: ${createQuizDto.name}  
+    Description: ${createQuizDto.description}
+    `;
+    const result = await this.model.generateContent(prompt);
+    return result.response.candidates[0].content.parts[0].text;
   }
 
   private extractJsonFromMarkdown(

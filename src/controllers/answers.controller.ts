@@ -46,7 +46,19 @@ class AnswersController {
   async findAll(req: Request, res: Response, next: NextFunction) {
     this.logger.debug("finding all answers");
     try {
-      const answers = await this.answersService.findAll({ where: req.query });
+      const questionId = req.params.questionId;
+      const answers = await this.answersService.findAll({
+        where: {
+          question: { id: Number(questionId) },
+          ...req.query,
+        },
+        select: {
+          id: true,
+          text: true,
+          created_at: true,
+          updated_at: true,
+        },
+      });
       this.logger.debug("answers found");
       res.json(answers);
     } catch (error) {
@@ -58,8 +70,18 @@ class AnswersController {
   async findOne(req: Request, res: Response, next: NextFunction) {
     this.logger.debug("finding answer");
     try {
+      const questionId = req.params.questionId;
       const answer = await this.answersService.findOne({
-        where: { id: Number(req.params.id) },
+        where: {
+          id: Number(req.params.id),
+          question: { id: Number(questionId) },
+        },
+        select: {
+          id: true,
+          text: true,
+          created_at: true,
+          updated_at: true,
+        },
       });
       if (!answer) {
         this.logger.error("answer not found");

@@ -1,11 +1,11 @@
 meta {
-  name: Forgot Password
+  name: Improve
   type: http
-  seq: 4
+  seq: 7
 }
 
 post {
-  url: http://127.0.0.1:5000/auth/forgot
+  url: http://127.0.0.1:5000/quizzes/improve
   body: json
   auth: bearer
 }
@@ -16,6 +16,7 @@ auth:bearer {
 
 body:json {
   {
-    "email": "yash@gmail.com"
+    "name" : "react fundamentals",
+    "description" : "introduce to react"
   }
 }

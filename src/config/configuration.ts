@@ -18,6 +18,7 @@ const configuration = {
       access: process.env.JWT_ACCESS_TOKEN_SECRET,
       refresh: process.env.JWT_REFRESH_TOKEN_SECRET,
       forgot_password: process.env.JWT_FORGOT_PASSWORD_TOKEN_SECRET,
+      quiz: process.env.JWT_QUIZ_TOKEN_SECRET,
     },
   },
   ai: {

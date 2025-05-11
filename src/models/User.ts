@@ -29,7 +29,14 @@ export class User {
   @Column({ type: "boolean", default: false })
   is_verified: boolean;
 
-  @Column({ type: "text", enum: ["user", "manager", "admin"], default: "user" })
+  @Column({ type: "int", default: 20 })
+  credits: number;
+
+  @Column({
+    type: "text",
+    enum: ["student", "user", "admin"],
+    default: "student",
+  })
   role: string;
 
   @CreateDateColumn()
