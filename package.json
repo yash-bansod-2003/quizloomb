@@ -5,11 +5,10 @@
    "type": "module",
    "scripts": {
       "dev": "nodemon",
-      "preview": "cross-env NODE_ENV=development node ./dist/src/index.js",
-      "start": "cross-env NODE_ENV=production node ./src/index.js",
+      "start": "cross-env NODE_ENV=production node ./dist/src/index.js",
       "build": "swc src --out-dir dist --ignore **/*.test.ts",
       "lint": "npx eslint ./src",
-      "format": "npx prettier ./src --write",
+      "format": "prettier ./src --write",
       "prepare": "husky",
       "typeorm": "typeorm-ts-node-esm",
       "migration:generate": "cross-env NODE_ENV=development npx typeorm-ts-node-esm migration:generate",
