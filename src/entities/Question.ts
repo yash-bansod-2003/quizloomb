@@ -2,37 +2,31 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
 } from "typeorm";
-import { Quiz } from "@/models/Quiz.js";
-import { Answer } from "@/models/Answer.js";
-import { Submission } from "@/models/Submission.js";
+import { Quiz } from "@/entities/Quiz.js";
+import { Answer } from "@/entities/Answer.js";
+import { Submission } from "@/entities/Submission.js";
 
 @Entity("questions")
 export class Question {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column({ type: "text" })
   text: string;
 
   @Column({
-    enum: ["mcq", "true_false", "multi_select", "written"],
+    enum: ["mcq", "trueFalse", "multiSelect", "written"],
     type: "text",
   })
   type: string;
 
   @Column("text", { array: true })
   tags: string[];
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
 
   @ManyToOne(() => Quiz, (quiz) => quiz.questions)
   quiz: Quiz;
@@ -42,4 +36,10 @@ export class Question {
 
   @OneToMany(() => Submission, (submission) => submission.question)
   submissions: Submission[];
+
+  @CreateDateColumn({ type: "timestamp" })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: "timestamp" })
+  updatedAt: Date;
 }

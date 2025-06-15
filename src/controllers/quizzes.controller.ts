@@ -36,7 +36,7 @@ class QuizzesController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
       const createQuizDto = req.body as z.infer<typeof quizValidationSchema>;
-      const userId = Number((req as AuthenticatedRequest).user.sub);
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({ where: { id: userId } });
 
       if (!user) {
@@ -67,9 +67,9 @@ class QuizzesController {
   async improve(req: Request, res: Response, next: NextFunction) {
     try {
       const createQuizDto = req.body as z.infer<typeof quizValidationSchema>;
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -86,7 +86,7 @@ class QuizzesController {
       const quizContent = await this.aiService.improveQuiz(createQuizDto);
       await this.usersService.update(
         {
-          id: Number(userId),
+          id: userId,
         },
         {
           credits: user.credits - 2,
@@ -102,9 +102,9 @@ class QuizzesController {
   async generate(req: Request, res: Response, next: NextFunction) {
     try {
       const createQuizDto = req.body as z.infer<typeof quizValidationSchema>;
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -125,7 +125,7 @@ class QuizzesController {
       }
       await this.usersService.update(
         {
-          id: Number(userId),
+          id: userId,
         },
         {
           credits: user.credits - 2,
@@ -140,9 +140,9 @@ class QuizzesController {
 
   async createFile(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -189,7 +189,7 @@ class QuizzesController {
             const answer = await this.answersService.create({
               text: option,
               question: dbQuestion,
-              is_correct: question.correct === option,
+              isCorrect: question.correct === option,
             });
             if (!answer) {
               this.logger.error("Failed to create answer");
@@ -203,7 +203,7 @@ class QuizzesController {
             const answer = await this.answersService.create({
               text: option,
               question: dbQuestion,
-              is_correct: (question.correct as string[]).includes(option),
+              isCorrect: (question.correct as string[]).includes(option),
             });
             if (!answer) {
               this.logger.error("Failed to create answer");
@@ -214,7 +214,7 @@ class QuizzesController {
       }
       await this.usersService.update(
         {
-          id: Number(userId),
+          id: userId,
         },
         {
           credits: user.credits - 1,
@@ -230,9 +230,9 @@ class QuizzesController {
 
   async findAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -253,10 +253,10 @@ class QuizzesController {
 
   async findOne(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -280,11 +280,11 @@ class QuizzesController {
 
   async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const userId = (req as AuthenticatedRequest).user.id;
       const updateQuizDto = req.body as z.infer<typeof quizValidationSchema>;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -306,10 +306,10 @@ class QuizzesController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -332,10 +332,10 @@ class QuizzesController {
   // Questions endpoints
   async findAllQuestions(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -368,11 +368,11 @@ class QuizzesController {
 
   async findOneQuestion(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const questionId = Number(req.params.questionId);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const questionId = req.params.questionId;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -416,11 +416,11 @@ class QuizzesController {
 
   async createQuestion(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const userId = (req as AuthenticatedRequest).user.id;
       const questionData = req.body as z.infer<typeof questionValidationSchema>;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -459,12 +459,12 @@ class QuizzesController {
 
   async updateQuestion(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const questionId = Number(req.params.questionId);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const questionId = req.params.questionId;
+      const userId = (req as AuthenticatedRequest).user.id;
       const questionData = req.body as z.infer<typeof questionValidationSchema>;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -506,11 +506,11 @@ class QuizzesController {
 
   async deleteQuestion(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const questionId = Number(req.params.questionId);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const questionId = req.params.questionId;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -553,11 +553,11 @@ class QuizzesController {
   // Answers endpoints
   async findAllAnswers(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const questionId = Number(req.params.questionId);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const questionId = req.params.questionId;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -604,12 +604,12 @@ class QuizzesController {
 
   async findOneAnswer(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const questionId = Number(req.params.questionId);
-      const answerId = Number(req.params.answerId);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const questionId = req.params.questionId;
+      const answerId = req.params.answerId;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -669,12 +669,12 @@ class QuizzesController {
 
   async createAnswer(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const questionId = Number(req.params.questionId);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const questionId = req.params.questionId;
+      const userId = (req as AuthenticatedRequest).user.id;
       const answerData = req.body as z.infer<typeof answerValidationSchema>;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -727,13 +727,13 @@ class QuizzesController {
 
   async updateAnswer(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const questionId = Number(req.params.questionId);
-      const answerId = Number(req.params.answerId);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const questionId = req.params.questionId;
+      const answerId = req.params.answerId;
+      const userId = (req as AuthenticatedRequest).user.id;
       const answerData = req.body as z.infer<typeof answerValidationSchema>;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -791,12 +791,12 @@ class QuizzesController {
 
   async deleteAnswer(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const questionId = Number(req.params.questionId);
-      const answerId = Number(req.params.answerId);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const questionId = req.params.questionId;
+      const answerId = req.params.answerId;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -854,10 +854,10 @@ class QuizzesController {
 
   async findSettings(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -896,10 +896,10 @@ class QuizzesController {
 
   async start(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -928,9 +928,9 @@ class QuizzesController {
         this.logger.error(`Settings not found for quiz ${quizId}`);
         return next(createHttpError.NotFound());
       }
-      const { start_time, end_time, duration_minutes } = settings;
+      const { startTime, endTime, durationMinutes } = settings;
       const currentTime = new Date();
-      if (currentTime < start_time || currentTime > end_time) {
+      if (currentTime < startTime || currentTime > endTime) {
         this.logger.error(`Quiz ${quizId} is not available at this time`);
         return next(
           createHttpError.Forbidden("Quiz is not available at this time"),
@@ -940,21 +940,21 @@ class QuizzesController {
       const quizToken = this.quizzesTokensService.sign(
         {
           quiz,
-          duration_minutes,
+          durationMinutes,
           user: {
             id: user.id,
             email: user.email,
           },
         },
         {
-          expiresIn: `${duration_minutes}m`,
+          expiresIn: `${durationMinutes}m`,
         },
       );
 
       res.cookie(COOKIE_PROPERTIES.QUIZ_TOKEN_COOKIE_NAME, quizToken, {
         httpOnly: COOKIE_PROPERTIES.HTTP_ONLY,
         sameSite: COOKIE_PROPERTIES.SAME_SITE,
-        maxAge: duration_minutes * 60 * 1000,
+        maxAge: durationMinutes * 60 * 1000,
         secure: COOKIE_PROPERTIES.SECURE,
         ...(configuration.node_env === "production" && {
           domain: COOKIE_PROPERTIES.DOMAIN,
@@ -970,13 +970,13 @@ class QuizzesController {
 
   async updateSettings(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const userId = (req as AuthenticatedRequest).user.id;
       const updateSettingsDto = req.body as z.infer<
         typeof settingsValidationSchema
       >;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {
@@ -1016,10 +1016,10 @@ class QuizzesController {
 
   async findResults(req: Request, res: Response, next: NextFunction) {
     try {
-      const quizId = Number(req.params.id);
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const quizId = req.params.id;
+      const userId = (req as AuthenticatedRequest).user.id;
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
 
       if (!user) {

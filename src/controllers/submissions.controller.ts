@@ -20,9 +20,9 @@ class SubmissionsController {
   ) {}
 
   async create(req: Request, res: Response, next: NextFunction) {
-    const userId = (req as AuthenticatedRequest).user.sub;
+    const userId = (req as AuthenticatedRequest).user.id;
     const user = await this.usersService.findOne({
-      where: { id: Number(userId) },
+      where: { id: userId },
     });
 
     if (!user) {
@@ -92,7 +92,7 @@ class SubmissionsController {
   }
 
   async findOne(req: Request, res: Response, next: NextFunction) {
-    const submissionId = Number(req.params.id);
+    const submissionId = req.params.id;
     const submission = await this.submissionsService.findOne({
       where: { id: submissionId },
     });
@@ -104,7 +104,7 @@ class SubmissionsController {
   }
 
   async delete(req: Request, res: Response, next: NextFunction) {
-    const submissionId = Number(req.params.id);
+    const submissionId = req.params.id;
     const submission = await this.submissionsService.delete({
       id: submissionId,
     });

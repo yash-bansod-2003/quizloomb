@@ -6,21 +6,18 @@ const configuration = {
   domain: process.env.DOMAIN,
   database: {
     host: process.env.DATABASE_HOST,
-    port: process.env.DATABASE_PORT,
+    port: parseInt(process.env.DATABASE_PORT ?? "5432"),
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE,
   },
-  jwt: {
-    secret: {
-      access: process.env.JWT_ACCESS_TOKEN_SECRET,
-      refresh: process.env.JWT_REFRESH_TOKEN_SECRET,
-      forgot_password: process.env.JWT_FORGOT_PASSWORD_TOKEN_SECRET,
-      quiz: process.env.JWT_QUIZ_TOKEN_SECRET,
-    },
-  },
   ai: {
     key: process.env.GEMINIAI_API_KEY,
+  },
+  jwt: {
+    quiz: {
+      secret: process.env.JWT_QUIZ_SECRET,
+    },
   },
   smtp: {
     service: process.env.SMTP_SERVICE,

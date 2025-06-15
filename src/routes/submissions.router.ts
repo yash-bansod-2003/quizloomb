@@ -5,13 +5,13 @@ import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/config/logger.js";
 import { SubmissionValidator } from "@/validators/submissions.validator.js";
-import { Question } from "@/models/Question.js";
-import { Answer } from "@/models/Answer.js";
-import { User } from "@/models/User.js";
-import { Quiz } from "@/models/Quiz.js";
+import { Question } from "@/entities/Question.js";
+import { Answer } from "@/entities/Answer.js";
+import { User } from "@/entities/auth/User.js";
+import { Quiz } from "@/entities/Quiz.js";
 import UserService from "@/services/users.service.js";
 import QuizzesService from "@/services/quizzes.service.js";
-import { Submission } from "@/models/Submission.js";
+import { Submission } from "@/entities/Submission.js";
 import SubmissionsService from "@/services/submissions.service.js";
 import SubmissionsController from "@/controllers/submissions.controller.js";
 

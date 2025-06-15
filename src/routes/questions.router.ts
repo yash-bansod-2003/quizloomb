@@ -8,9 +8,9 @@ import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/config/logger.js";
 import { QuestionValidator } from "@/validators/questions.validator.js";
 import { AnswerValidator } from "@/validators/answers.validator.js";
-import { Quiz } from "@/models/Quiz.js";
-import { Question } from "@/models/Question.js";
-import { Answer } from "@/models/Answer.js";
+import { Quiz } from "@/entities/Quiz.js";
+import { Question } from "@/entities/Question.js";
+import { Answer } from "@/entities/Answer.js";
 
 const router = Router();
 

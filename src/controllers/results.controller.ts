@@ -23,12 +23,13 @@ class ResultsController {
     this.logger.debug(`Received request body: ${JSON.stringify(req.body)}`);
 
     try {
-      const userId = (req as AuthenticatedRequest).user.sub;
+      const userId = (req as AuthenticatedRequest).user.id;
       this.logger.debug(`Fetching user with id: ${userId}`);
 
       const user = await this.usersService.findOne({
-        where: { id: Number(userId) },
+        where: { id: userId },
       });
+
       if (!user) {
         const err = createHttpError.NotFound("user not found");
         this.logger.error(`User not found with id: ${userId}`);
@@ -45,7 +46,6 @@ class ResultsController {
         throw err;
       }
 
-      // Get submissions for user and quiz.
       this.logger.debug(
         `Fetching submissions for user id ${user.id} and quiz id ${quiz.id}`,
       );
@@ -65,11 +65,10 @@ class ResultsController {
 
       // Calculate score.
       const score = submissions.reduce((acc, submission) => {
-        return acc + (submission.answer.is_correct ? 1 : 0);
+        return acc + (submission.answer.isCorrect ? 1 : 0);
       }, 0);
       this.logger.info(`Calculated score: ${score}`);
 
-      // Calculate attempt count.
       const previousResults = await this.resultsService.findAll({
         where: {
           user: { id: user.id },
@@ -112,7 +111,7 @@ class ResultsController {
   }
 
   async findOne(req: Request, res: Response, next: NextFunction) {
-    const resultId = Number(req.params.id);
+    const resultId = req.params.id;
     this.logger.info(`Entered findOne for result id: ${resultId}`);
     try {
       const result = await this.resultsService.findOne({
@@ -132,7 +131,7 @@ class ResultsController {
   }
 
   async delete(req: Request, res: Response, next: NextFunction) {
-    const resultId = Number(req.params.id);
+    const resultId = req.params.id;
     this.logger.info(`Entered delete for result id: ${resultId}`);
     try {
       const result = await this.resultsService.delete({

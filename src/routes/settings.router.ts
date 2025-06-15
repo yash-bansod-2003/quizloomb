@@ -5,7 +5,7 @@ import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/config/logger.js";
 import { SettingsValidator } from "@/validators/settings.validator.js";
-import { Settings } from "@/models/Settings.js";
+import { Settings } from "@/entities/Settings.js";
 
 const router = Router();
 

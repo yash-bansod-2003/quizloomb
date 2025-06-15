@@ -67,3 +67,7 @@ node_modules/.bin/
 # End of https://www.toptal.com/developers/gitignore/api/node
 
 certs
+
+/generated/prisma
+
+/generated/prisma

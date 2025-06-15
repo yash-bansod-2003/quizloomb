@@ -2,14 +2,13 @@ import "reflect-metadata";
 import {
   Column,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
 } from "typeorm";
-import { Quiz } from "@/models/Quiz.js";
+import { Quiz } from "@/entities/Quiz.js";
 
-// Enum for shuffle options
 export enum ShuffleMode {
   NONE = "none",
   QUESTIONS = "questions",
@@ -17,7 +16,6 @@ export enum ShuffleMode {
   BOTH = "both",
 }
 
-// Enum for access control
 export enum AccessControl {
   PUBLIC = "public",
   PASSWORD = "password",
@@ -27,95 +25,95 @@ export enum AccessControl {
 
 @Entity("settings")
 export class Settings {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column({ nullable: true, type: "timestamp" })
-  start_time: Date;
+  startTime: Date;
 
   @Column({ nullable: true, type: "timestamp" })
-  end_time: Date;
+  endTime: Date;
 
   @Column({ default: false, type: "boolean" })
-  has_time_limit: boolean;
+  hasTimeLimit: boolean;
 
   @Column({ default: 30, type: "int" })
-  duration_minutes: number;
+  durationMinutes: number;
 
   @Column({ default: true, type: "boolean" })
   fullscreen: boolean;
 
   @Column({ default: false, type: "boolean" })
-  prevent_new_tab: boolean;
+  preventNewTab: boolean;
 
   @Column({
     type: "enum",
     enum: ShuffleMode,
     default: ShuffleMode.NONE,
   })
-  shuffle_mode: ShuffleMode;
+  shuffleMode: string;
 
   @Column({ default: 1, type: "int" })
-  max_attempts: number;
+  maxAttempts: number;
 
   @Column({ default: true, type: "boolean" })
-  show_results_after_submission: boolean;
+  showResultsAfterSubmission: boolean;
 
   @Column({ default: false, type: "boolean" })
-  show_correct_answers: boolean;
+  showCorrectAnswers: boolean;
 
   @Column({
     type: "enum",
     enum: AccessControl,
     default: AccessControl.PUBLIC,
   })
-  access_control: AccessControl;
+  accessControl: string;
 
   @Column({ nullable: true, type: "varchar" })
-  access_password: string;
+  accessPassword: string;
 
   @Column({ nullable: true, type: "varchar" })
-  allowed_email_domains: string;
+  allowedEmailDomains: string;
 
   @Column({ default: false, type: "boolean" })
-  ip_restriction: boolean;
+  ipRestriction: boolean;
 
   @Column({ nullable: true, type: "simple-array" })
-  allowed_ip_addresses: string[];
+  allowedIpAddresses: string[];
 
   @Column({ default: false, type: "boolean" })
-  enable_proctoring: boolean;
+  enableProctoring: boolean;
 
   @Column({ default: false, type: "boolean" })
-  webcam_required: boolean;
+  webcamRequired: boolean;
 
   @Column({ default: false, type: "boolean" })
-  record_screen: boolean;
+  recordScreen: boolean;
 
   @Column({ default: false, type: "boolean" })
-  prevent_copy_paste: boolean;
+  preventCopyPaste: boolean;
 
   @Column({ default: true, type: "boolean" })
-  allow_navigation_between_questions: boolean;
+  allowNavigationBetweenQuestions: boolean;
 
   @Column({ default: false, type: "boolean" })
-  randomize_questions: boolean;
+  randomizeQuestions: boolean;
 
   @Column({ default: false, type: "boolean" })
-  one_question_per_page: boolean;
+  oneQuestionPerPage: boolean;
 
   @Column({ default: true, type: "boolean" })
-  show_progress: boolean;
+  showProgress: boolean;
 
   @Column({ default: false, type: "boolean" })
-  allow_save_progress: boolean;
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
+  allowSaveProgress: boolean;
 
   @OneToOne(() => Quiz, (quiz) => quiz.settings)
   quiz: Quiz;
+
+  @CreateDateColumn({ type: "timestamp" })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: "timestamp" })
+  updatedAt: Date;
 }

@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import mailgen from "mailgen";
-import SMTPTransport from "nodemailer/lib/smtp-transport";
+import SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
 import { Logger } from "winston";
 import configuration from "@/config/configuration.js";
 

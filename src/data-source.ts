@@ -8,13 +8,12 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
 export const AppDataSource = new DataSource({
   type: "postgres",
   host: configuration.database.host,
-  port: parseInt(configuration.database.port ?? "5432"),
+  port: configuration.database.port,
   username: configuration.database.user,
   password: configuration.database.password,
   database: configuration.database.database,
-  synchronize: true,
+  synchronize: false,
   logging: false,
-  entities: [path.join(__dirname, "models/**/*.{js,ts}")],
+  entities: [path.join(__dirname, "entities/**/*.{js,ts}")],
   migrations: [path.join(__dirname, "migrations/**/*.{js,ts}")],
-  subscribers: [],
 });
