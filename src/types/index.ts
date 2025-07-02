@@ -45,7 +45,7 @@ export interface QuizQuestion {
 
 export interface ParseResult {
   quiz: {
-    name: string;
+    title: string;
     description: string;
     questions: QuizQuestion[];
   };

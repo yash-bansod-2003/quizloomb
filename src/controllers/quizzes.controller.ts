@@ -167,7 +167,7 @@ class QuizzesController {
       }
 
       const quiz = await this.quizzesService.create({
-        name: result.quiz.name,
+        title: result.quiz.title,
         description: result.quiz.description,
         user,
       });

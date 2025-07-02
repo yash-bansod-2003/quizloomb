@@ -21,7 +21,7 @@ export class Quiz {
   id: string;
 
   @Column({ type: "text" })
-  name: string;
+  title: string;
 
   @Column({ type: "text" })
   description: string;

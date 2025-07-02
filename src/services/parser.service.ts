@@ -127,7 +127,7 @@ class Parser {
 
     return {
       quiz: {
-        name: quizName,
+        title: quizName,
         description: quizDescription,
         questions,
       },
