@@ -65,7 +65,7 @@ class QuestionsController {
 
   async findOne(req: Request, res: Response, next: NextFunction) {
     try {
-      const questionId = Number(req.params.id);
+      const questionId = req.params.id;
       this.logger.info(`Fetching question with id: ${questionId}`);
       const question = await this.questionsService.findOne({
         where: { id: questionId },
@@ -87,7 +87,7 @@ class QuestionsController {
 
   async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const questionId = Number(req.params.id);
+      const questionId = req.params.id;
       const updateQuestionDto = req.body as z.infer<
         typeof questionValidationSchema
       >;
@@ -117,7 +117,7 @@ class QuestionsController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const questionId = Number(req.params.id);
+      const questionId = req.params.id;
       this.logger.info(`Deleting question with id: ${questionId}`);
       const deletedQuestion = await this.questionsService.delete({
         id: questionId,
@@ -142,7 +142,7 @@ class QuestionsController {
 
   async findAllAnswers(req: Request, res: Response, next: NextFunction) {
     try {
-      const questionId = Number(req.params.id);
+      const questionId = req.params.id;
       this.logger.info(
         `Fetching all answers for question with id: ${questionId}`,
       );
@@ -177,7 +177,7 @@ class QuestionsController {
 
   async createAnswer(req: Request, res: Response, next: NextFunction) {
     try {
-      const questionId = Number(req.params.id);
+      const questionId = req.params.id;
       this.logger.info(
         `Creating new answer for question with id: ${questionId} with data: ${JSON.stringify(req.body)}`,
       );
@@ -217,13 +217,12 @@ class QuestionsController {
 
   async findOneAnswer(req: Request, res: Response, next: NextFunction) {
     try {
-      const questionId = Number(req.params.id);
-      const answerId = Number(req.params.answerId);
+      const questionId = req.params.id;
+      const answerId = req.params.answerId;
       this.logger.info(
         `Fetching answer with id: ${answerId} for question with id: ${questionId}`,
       );
 
-      // First check if question exists
       const question = await this.questionsService.findOne({
         where: { id: questionId },
       });
@@ -255,8 +254,8 @@ class QuestionsController {
 
   async updateAnswer(req: Request, res: Response, next: NextFunction) {
     try {
-      const questionId = Number(req.params.id);
-      const answerId = Number(req.params.answerId);
+      const questionId = req.params.id;
+      const answerId = req.params.answerId;
       const updateAnswerDto = req.body as z.infer<
         typeof answerValidationSchema
       >;
@@ -275,7 +274,6 @@ class QuestionsController {
         throw createHttpError.NotFound("Question not found");
       }
 
-      // Check if answer exists and belongs to the question
       const existingAnswer = await this.answersService.findOne({
         where: { id: answerId, question: { id: questionId } },
       });
@@ -311,8 +309,8 @@ class QuestionsController {
 
   async deleteAnswer(req: Request, res: Response, next: NextFunction) {
     try {
-      const questionId = Number(req.params.id);
-      const answerId = Number(req.params.answerId);
+      const questionId = req.params.id;
+      const answerId = req.params.answerId;
       this.logger.info(
         `Deleting answer with id: ${answerId} for question with id: ${questionId}`,
       );

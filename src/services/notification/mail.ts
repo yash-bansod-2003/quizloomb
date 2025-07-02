@@ -38,7 +38,6 @@ class MailService {
         },
       });
 
-      // Generate an HTML email with the provided contents
       const emailBody = mailGenerator.generate(content) as string;
 
       const info = await this.transporter.sendMail({

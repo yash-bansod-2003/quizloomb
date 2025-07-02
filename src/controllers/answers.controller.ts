@@ -49,14 +49,14 @@ class AnswersController {
       const questionId = req.params.questionId;
       const answers = await this.answersService.findAll({
         where: {
-          question: { id: Number(questionId) },
+          question: { id: questionId },
           ...req.query,
         },
         select: {
           id: true,
           text: true,
-          created_at: true,
-          updated_at: true,
+          createdAt: true,
+          updatedAt: true,
         },
       });
       this.logger.debug("answers found");
@@ -73,14 +73,14 @@ class AnswersController {
       const questionId = req.params.questionId;
       const answer = await this.answersService.findOne({
         where: {
-          id: Number(req.params.id),
-          question: { id: Number(questionId) },
+          id: req.params.id,
+          question: { id: questionId },
         },
         select: {
           id: true,
           text: true,
-          created_at: true,
-          updated_at: true,
+          createdAt: true,
+          updatedAt: true,
         },
       });
       if (!answer) {
@@ -100,7 +100,7 @@ class AnswersController {
     const updateAnswerDto = req.body as z.infer<typeof answerValidationSchema>;
     try {
       const answer = await this.answersService.update(
-        { id: Number(req.params.id) },
+        { id: req.params.id },
         updateAnswerDto,
       );
       if (!answer) {
@@ -119,7 +119,7 @@ class AnswersController {
     this.logger.debug("deleting answer");
     try {
       const answer = await this.answersService.delete({
-        id: Number(req.params.id),
+        id: req.params.id,
       });
       if (!answer) {
         this.logger.error("answer not deleted");

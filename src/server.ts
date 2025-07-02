@@ -25,11 +25,11 @@ export const createServer = (): Express => {
     .use(cookieParser())
     .all("/api/auth/{*any}", toNodeHandler(auth))
     .use(express.json())
-    .get("/status", (_, res) => {
-      res.json({ ok: true });
-    })
     .get("/message/:name", (req, res) => {
       res.json({ message: `hello ${req.params.name}` });
+    })
+    .get("/api/status", (_, res) => {
+      res.json({ ok: true });
     })
     .use("/api/users", usersRouter)
     .use("/api/quizzes", quizzesRouter)

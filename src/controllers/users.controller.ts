@@ -51,7 +51,7 @@ class UsersController {
     this.logger.debug("finding user by id", { id: req.params.id });
     try {
       const user = await this.usersService.findOne({
-        where: { id: Number(req.params.id) },
+        where: { id: req.params.id },
       });
       if (!user) {
         this.logger.debug("user not found", { id: req.params.id });
@@ -69,7 +69,7 @@ class UsersController {
   }
 
   async update(req: Request, res: Response, next: NextFunction) {
-    const userId = Number(req.params.id);
+    const userId = req.params.id;
     this.logger.debug("updating user", { id: userId, ...req.body });
     const updateUserDto = req.body as z.infer<
       typeof createUserValidationSchema
@@ -98,7 +98,7 @@ class UsersController {
     this.logger.debug("deleting user", { id: req.params.id });
     try {
       const user = await this.usersService.delete({
-        id: Number(req.params.id),
+        id: req.params.id,
       });
       if (!user) {
         this.logger.debug("user not deleted", { id: req.params.id });

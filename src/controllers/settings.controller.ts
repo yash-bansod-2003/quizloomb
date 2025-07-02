@@ -29,7 +29,7 @@ class SettingsController {
 
   async findOne(req: Request, res: Response, next: NextFunction) {
     try {
-      const settingId = Number(req.params.id);
+      const settingId = req.params.id;
       this.logger.info(`Fetching setting with id: ${settingId}`);
       const setting = await this.settingsService.findOne({
         where: { id: settingId },
@@ -51,7 +51,7 @@ class SettingsController {
 
   async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const settingId = Number(req.params.id);
+      const settingId = req.params.id;
       const settingUpdateData = req.body as z.infer<
         typeof settingsValidationSchema
       >;
