@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
-import logger from "@/config/logger.js";
+import logger from "@/lib/logger.js";
 import { ResultValidator } from "@/validators/results.validator.js";
 import { User } from "@/entities/auth/User.js";
 import { Quiz } from "@/entities/Quiz.js";

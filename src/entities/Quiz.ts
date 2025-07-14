@@ -23,6 +23,13 @@ export class Quiz {
   @Column({ type: "text" })
   title: string;
 
+  @Column({
+    enum: ["draft", "live", "paused", "scheduled", "closed"],
+    type: "text",
+    default: "live",
+  })
+  status: string;
+
   @Column({ type: "text" })
   description: string;
 

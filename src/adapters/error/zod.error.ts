@@ -5,7 +5,7 @@ const zodErrorAdapter = (error: ZodError): ErrorResponse => {
   return {
     name: "Validation Error",
     code: 400,
-    errors: error.errors.map((err) => ({
+    errors: error.issues.map((err) => ({
       message: err.message,
       path: err.path.join(","),
     })),

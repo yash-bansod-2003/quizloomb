@@ -5,7 +5,7 @@ import QuizzesService from "@/services/quizzes.service.js";
 import AnswersService from "@/services/answers.service.js";
 import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
-import logger from "@/config/logger.js";
+import logger from "@/lib/logger.js";
 import { QuestionValidator } from "@/validators/questions.validator.js";
 import { AnswerValidator } from "@/validators/answers.validator.js";
 import { Quiz } from "@/entities/Quiz.js";
@@ -28,7 +28,6 @@ const questionsController = new QuestionsController(
   logger,
 );
 
-// Question routes
 router.post("/", authenticate, QuestionValidator, async (req, res, next) => {
   await questionsController.create(req, res, next);
 });
@@ -49,7 +48,6 @@ router.delete("/:id", authenticate, async (req, res, next) => {
   await questionsController.delete(req, res, next);
 });
 
-// Answer routes
 router.get("/:id/answers", authenticate, async (req, res, next) => {
   await questionsController.findAllAnswers(req, res, next);
 });

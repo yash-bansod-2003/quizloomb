@@ -5,7 +5,7 @@ import UsersService from "@/services/users.service.js";
 import { AppDataSource } from "@/data-source.js";
 import { Quiz } from "@/entities/Quiz.js";
 import authenticate from "@/middlewares/authenticate.js";
-import logger from "@/config/logger.js";
+import logger from "@/lib/logger.js";
 import { QuizValidator } from "@/validators/quizzes.validator.js";
 import { User } from "@/entities/auth/User.js";
 import Aiservice from "@/services/ai.service.js";
@@ -18,7 +18,7 @@ import AnswersService from "@/services/answers.service.js";
 import { Result } from "@/entities/Result.js";
 import ResultsService from "@/services/results.service.js";
 import TokensService from "@/services/tokens.service.js";
-import configuration from "@/config/configuration.js";
+import configuration from "@/lib/configuration.js";
 import ParserService from "@/services/parser.service.js";
 const router = Router();
 

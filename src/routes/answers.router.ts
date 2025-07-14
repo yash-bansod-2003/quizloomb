@@ -4,7 +4,7 @@ import AnswersService from "@/services/answers.service.js";
 import QuestionsService from "@/services/questions.service.js";
 import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
-import logger from "@/config/logger.js";
+import logger from "@/lib/logger.js";
 import { AnswerValidator } from "@/validators/answers.validator.js";
 import { Question } from "@/entities/Question.js";
 import { Answer } from "@/entities/Answer.js";

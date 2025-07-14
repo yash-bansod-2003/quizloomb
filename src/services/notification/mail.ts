@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import mailgen from "mailgen";
 import SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
 import { Logger } from "winston";
-import configuration from "@/config/configuration.js";
+import configuration from "@/lib/configuration.js";
 
 export interface MailPayload {
   email: string;

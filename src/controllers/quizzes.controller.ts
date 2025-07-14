@@ -17,7 +17,7 @@ import TokensService from "@/services/tokens.service.js";
 import ParserService from "@/services/parser.service.js";
 import { z } from "zod";
 import { COOKIE_PROPERTIES } from "@/lib/constants.js";
-import configuration from "@/config/configuration.js";
+import configuration from "@/lib/configuration.js";
 
 class QuizzesController {
   constructor(

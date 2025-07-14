@@ -1,4 +1,4 @@
-import configuration from "@/config/configuration.js";
+import configuration from "@/lib/configuration.js";
 export const TOKEN_PROPERTIES = {
   VERIFICATION_TOKEN_EXPIRES_IN: "10m",
   ACCESS_TOKEN_EXPIRES_IN: "1h",

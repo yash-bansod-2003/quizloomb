@@ -10,7 +10,7 @@ import questionsRouter from "@/routes/questions.router.js";
 import answersRouter from "@/routes/answers.router.js";
 import submissionsRouter from "@/routes/submissions.router.js";
 import resultsRouter from "@/routes/results.router.js";
-import configuration from "@/config/configuration.js";
+import configuration from "@/lib/configuration.js";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "@/lib/auth.js";
 
