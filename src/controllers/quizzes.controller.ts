@@ -18,6 +18,7 @@ import ParserService from "@/services/parser.service.js";
 import { z } from "zod";
 import { COOKIE_PROPERTIES } from "@/lib/constants.js";
 import configuration from "@/lib/configuration.js";
+import { v4 as uuidv4 } from "uuid";
 
 class QuizzesController {
   constructor(
@@ -937,10 +938,13 @@ class QuizzesController {
         );
       }
 
+      const sessionId = uuidv4();
+
       const quizToken = this.quizzesTokensService.sign(
         {
           quiz,
           durationMinutes,
+          sessionId,
           user: {
             id: user.id,
             email: user.email,

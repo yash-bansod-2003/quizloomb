@@ -14,6 +14,8 @@ import QuizzesService from "@/services/quizzes.service.js";
 import { Submission } from "@/entities/Submission.js";
 import SubmissionsService from "@/services/submissions.service.js";
 import SubmissionsController from "@/controllers/submissions.controller.js";
+import TokensService from "@/services/tokens.service.js";
+import configuration from "@/lib/configuration.js";
 
 const router = Router();
 
@@ -28,11 +30,13 @@ const quizzessService = new QuizzesService(quizzesRepository);
 const questionsService = new QuestionsService(questionsRepository);
 const answersService = new AnswersService(answersRepository);
 const submissionsService = new SubmissionsService(submissionsRepository);
+const quizzesTokensService = new TokensService(configuration.jwt.quiz.secret);
 
 const submissionsController = new SubmissionsController(
   submissionsService,
   usersService,
   quizzessService,
+  quizzesTokensService,
   questionsService,
   answersService,
   logger,

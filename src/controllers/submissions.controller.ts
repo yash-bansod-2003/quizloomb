@@ -9,11 +9,15 @@ import QuizzesService from "@/services/quizzes.service.js";
 import UserService from "@/services/users.service.js";
 import AnswersService from "@/services/answers.service.js";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
+import TokensService from "@/services/tokens.service.js";
+import { COOKIE_PROPERTIES } from "@/lib/constants.js";
+
 class SubmissionsController {
   constructor(
     private readonly submissionsService: SubmissionsService,
     private readonly usersService: UserService,
     private readonly quizzesService: QuizzesService,
+    private readonly quizzesTokensService: TokensService,
     private readonly questionsService: QuestionsService,
     private readonly answersService: AnswersService,
     private readonly logger: Logger,
@@ -38,6 +42,29 @@ class SubmissionsController {
     if (!quiz) {
       this.logger.error(`Quiz with id ${quizId} not found`);
       return next(createHttpError.NotFound("quiz not found"));
+    }
+
+    if (quiz.status !== "live") {
+      this.logger.error("Quiz is not live");
+      return next(
+        createHttpError.Forbidden("Quiz is not live or available at this time"),
+      );
+    }
+
+    const quizToken = req.cookies[
+      COOKIE_PROPERTIES.QUIZ_TOKEN_COOKIE_NAME
+    ] as string;
+
+    if (!quizToken) {
+      this.logger.error("No Quiz token provided");
+      return next(createHttpError.Unauthorized("no quiz token"));
+    }
+
+    const match = this.quizzesTokensService.verify(quizToken);
+
+    if (!match) {
+      this.logger.error("Quiz token does not match");
+      return next(createHttpError.Unauthorized("quiz token does not match"));
     }
 
     const question = await this.questionsService.findOne({
@@ -77,6 +104,7 @@ class SubmissionsController {
       question,
       answer,
       attempt,
+      sessionId: (match as { sessionId: string }).sessionId,
     });
     this.logger.info(`Created new submission with id: ${Submission.id}`);
     return res.status(201).json(Submission);
