@@ -1,24 +1,30 @@
 import { NextFunction, Request, Response } from "express";
 import { Logger } from "winston";
+import { z } from "zod";
+import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
+
 import QuizzesService from "@/services/quizzes.service.js";
 import UsersService from "@/services/users.service.js";
 import AiService from "@/services/ai.service.js";
-import { quizValidationSchema } from "@/validators/quizzes.validator.js";
-import { questionValidationSchema } from "@/validators/questions.validator.js";
-import { answerValidationSchema } from "@/validators/answers.validator.js";
-import { settingsValidationSchema } from "@/validators/settings.validator.js";
-import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import SettingsService from "@/services/settings.service.js";
 import QuestionsService from "@/services/questions.service.js";
 import AnswersService from "@/services/answers.service.js";
 import ResultsService from "@/services/results.service.js";
 import TokensService from "@/services/tokens.service.js";
 import ParserService from "@/services/parser.service.js";
-import { z } from "zod";
+import SubmissionsService from "@/services/submissions.service.js";
+
+import { quizValidationSchema } from "@/validators/quizzes.validator.js";
+import { questionValidationSchema } from "@/validators/questions.validator.js";
+import { answerValidationSchema } from "@/validators/answers.validator.js";
+import { settingsValidationSchema } from "@/validators/settings.validator.js";
+import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
+import { AuthenticatedQuizRequest } from "@/middlewares/authenticate-quiz.js";
+
 import { COOKIE_PROPERTIES } from "@/lib/constants.js";
 import configuration from "@/lib/configuration.js";
-import { v4 as uuidv4 } from "uuid";
+import { QuizTokenPayload } from "@/types/index.js";
 
 class QuizzesController {
   constructor(
@@ -27,6 +33,7 @@ class QuizzesController {
     private readonly questionsService: QuestionsService,
     private readonly answersService: AnswersService,
     private readonly settingsService: SettingsService,
+    private readonly submissionsService: SubmissionsService,
     private readonly resultsService: ResultsService,
     private readonly quizzesTokensService: TokensService,
     private readonly aiService: AiService,
@@ -853,6 +860,84 @@ class QuizzesController {
     }
   }
 
+  async createSubmission(
+    req: AuthenticatedQuizRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const quizId = req.params.id;
+      const questionId = req.params.questionId;
+      const answerId = req.params.answerId;
+
+      if (quizId !== req.quiz.id) {
+        return next(createHttpError.Unauthorized());
+      }
+
+      const user = await this.usersService.findOne({
+        where: { id: req.quiz.user.id },
+      });
+
+      if (!user) {
+        return next(createHttpError.Unauthorized());
+      }
+
+      const quiz = await this.quizzesService.findOne({
+        where: {
+          id: quizId,
+        },
+      });
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found`);
+        return next(createHttpError.NotFound());
+      }
+
+      const question = await this.questionsService.findOne({
+        where: {
+          id: questionId,
+          quiz: { id: quizId },
+        },
+      });
+
+      if (!question) {
+        this.logger.error(
+          `Question ${questionId} not found for quiz ${quizId}`,
+        );
+        return next(createHttpError.NotFound());
+      }
+
+      this.logger.info(
+        `Updating answer ${answerId} for question ${questionId}`,
+      );
+
+      const answer = await this.answersService.findOne({
+        where: { id: answerId, question: { id: questionId } },
+      });
+
+      if (!answer) {
+        this.logger.error(
+          `Answer ${answerId} not found for question ${questionId}`,
+        );
+        return next(createHttpError.NotFound());
+      }
+
+      const Submission = await this.submissionsService.create({
+        user,
+        quiz,
+        question,
+        answer,
+        sessionId: req.quiz.sessionId,
+      });
+
+      this.logger.info(`Created new submission with id: ${Submission.id}`);
+      return res.status(201).json(Submission);
+    } catch (error) {
+      this.logger.error(`Update answer error: ${error}`);
+      return next(createHttpError.InternalServerError());
+    }
+  }
+
   async findSettings(req: Request, res: Response, next: NextFunction) {
     try {
       const quizId = req.params.id;
@@ -940,20 +1025,19 @@ class QuizzesController {
 
       const sessionId = uuidv4();
 
-      const quizToken = this.quizzesTokensService.sign(
-        {
-          quiz,
-          durationMinutes,
-          sessionId,
-          user: {
-            id: user.id,
-            email: user.email,
-          },
+      const payload: QuizTokenPayload = {
+        id: quiz.id,
+        durationMinutes,
+        sessionId,
+        user: {
+          id: user.id,
+          email: user.email,
         },
-        {
-          expiresIn: `${durationMinutes}m`,
-        },
-      );
+      };
+
+      const quizToken = this.quizzesTokensService.sign(payload, {
+        expiresIn: `${durationMinutes}m`,
+      });
 
       res.cookie(COOKIE_PROPERTIES.QUIZ_TOKEN_COOKIE_NAME, quizToken, {
         httpOnly: COOKIE_PROPERTIES.HTTP_ONLY,

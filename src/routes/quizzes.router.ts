@@ -5,6 +5,9 @@ import UsersService from "@/services/users.service.js";
 import { AppDataSource } from "@/data-source.js";
 import { Quiz } from "@/entities/Quiz.js";
 import authenticate from "@/middlewares/authenticate.js";
+import authenticateQuiz, {
+  AuthenticatedQuizRequest,
+} from "@/middlewares/authenticate-quiz.js";
 import logger from "@/lib/logger.js";
 import { QuizValidator } from "@/validators/quizzes.validator.js";
 import { User } from "@/entities/auth/User.js";
@@ -20,6 +23,8 @@ import ResultsService from "@/services/results.service.js";
 import TokensService from "@/services/tokens.service.js";
 import configuration from "@/lib/configuration.js";
 import ParserService from "@/services/parser.service.js";
+import SubmissionsService from "@/services/submissions.service.js";
+import { Submission } from "@/entities/Submission.js";
 const router = Router();
 
 const questionsRepository = AppDataSource.getRepository(Question);
@@ -30,8 +35,10 @@ const quizzesRepository = AppDataSource.getRepository(Quiz);
 const usersRepository = AppDataSource.getRepository(User);
 const quizzesService = new QuizzesService(quizzesRepository);
 const usersService = new UsersService(usersRepository);
+const submissionsRepository = AppDataSource.getRepository(Submission);
 const settingsRepository = AppDataSource.getRepository(Settings);
 const settingsService = new SettingsService(settingsRepository);
+const submissionsService = new SubmissionsService(submissionsRepository);
 const resultsRepository = AppDataSource.getRepository(Result);
 const resultsService = new ResultsService(resultsRepository);
 const aiService = new Aiservice();
@@ -44,6 +51,7 @@ const quizzesController = new QuizzesController(
   questionsService,
   answersService,
   settingsService,
+  submissionsService,
   resultsService,
   quizzesTokensService,
   aiService,
@@ -157,6 +165,19 @@ router.delete(
   authenticate,
   async (req, res, next) => {
     await quizzesController.deleteAnswer(req, res, next);
+  },
+);
+
+router.post(
+  "/:id/questions/:questionId/answers/:answerId/submission",
+  authenticate,
+  authenticateQuiz,
+  async (req, res, next) => {
+    await quizzesController.createSubmission(
+      req as AuthenticatedQuizRequest,
+      res,
+      next,
+    );
   },
 );
 

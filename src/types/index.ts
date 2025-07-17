@@ -51,3 +51,13 @@ export interface ParseResult {
   };
   errors: string[];
 }
+
+export interface QuizTokenPayload {
+  id: string;
+  durationMinutes: number;
+  sessionId: string;
+  user: {
+    id: string;
+    email: string;
+  };
+}
