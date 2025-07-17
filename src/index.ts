@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { Express } from "express";
 import { createServer } from "@/server.js";
 import { AppDataSource } from "@/data-source.js";
-import logger from "@/config/logger.js";
+import logger from "@/lib/logger.js";
 
 const port = 5000;
 const host = "0.0.0.0";

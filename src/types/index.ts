@@ -45,9 +45,19 @@ export interface QuizQuestion {
 
 export interface ParseResult {
   quiz: {
-    name: string;
+    title: string;
     description: string;
     questions: QuizQuestion[];
   };
   errors: string[];
+}
+
+export interface QuizTokenPayload {
+  id: string;
+  durationMinutes: number;
+  sessionId: string;
+  user: {
+    id: string;
+    email: string;
+  };
 }

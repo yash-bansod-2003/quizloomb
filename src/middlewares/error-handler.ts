@@ -4,7 +4,7 @@ import { ZodError } from "zod";
 import JsonWebToken from "jsonwebtoken";
 import zodErrorAdapter from "@/adapters/error/zod.error.js";
 import httpErrorAdapter from "@/adapters/error/http.error.js";
-import configuration from "@/config/configuration.js";
+import configuration from "@/lib/configuration.js";
 
 export interface ErrorResponse {
   name: string;

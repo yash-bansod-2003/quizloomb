@@ -2,7 +2,7 @@ import { z } from "zod";
 import { NextFunction, Request, Response } from "express";
 
 export const questionValidationSchema = z.object({
-  quizId: z.number(),
+  quizId: z.string(),
   text: z.string(),
   type: z.enum(["mcq", "true_false", "written"]),
 });

@@ -1,4 +1,4 @@
-import { Question } from "@/models/Question.js";
+import { Question } from "@/entities/Question.js";
 import {
   DeepPartial,
   DeleteResult,

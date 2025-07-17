@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 export const answerValidationSchema = z.object({
   text: z.string(),
   is_correct: z.boolean().optional(),
-  questionId: z.number(),
+  questionId: z.string(),
 });
 
 /**

@@ -48,7 +48,6 @@ class Parser {
               ?.split(",")
               .map((tag) => tag.trim()) || [];
         } else if (line.startsWith("options:")) {
-          // start collecting options
           continue;
         } else if (/^\d+\./.test(line)) {
           const match = line.match(/^(\d+)\.\s*(.+?)(\s*\[correct\])?$/);
@@ -128,7 +127,7 @@ class Parser {
 
     return {
       quiz: {
-        name: quizName,
+        title: quizName,
         description: quizDescription,
         questions,
       },

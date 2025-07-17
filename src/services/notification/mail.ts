@@ -1,8 +1,8 @@
 import nodemailer from "nodemailer";
 import mailgen from "mailgen";
-import SMTPTransport from "nodemailer/lib/smtp-transport";
+import SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
 import { Logger } from "winston";
-import configuration from "@/config/configuration.js";
+import configuration from "@/lib/configuration.js";
 
 export interface MailPayload {
   email: string;
@@ -38,7 +38,6 @@ class MailService {
         },
       });
 
-      // Generate an HTML email with the provided contents
       const emailBody = mailGenerator.generate(content) as string;
 
       const info = await this.transporter.sendMail({

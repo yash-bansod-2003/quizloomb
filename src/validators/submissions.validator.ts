@@ -2,9 +2,9 @@ import { z } from "zod";
 import { NextFunction, Request, Response } from "express";
 
 export const submissionValidationSchema = z.object({
-  quizId: z.number(),
-  questionId: z.number(),
-  answerId: z.number(),
+  quizId: z.string(),
+  questionId: z.string(),
+  answerId: z.string(),
 });
 
 /**

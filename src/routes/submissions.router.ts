@@ -3,17 +3,19 @@ import AnswersService from "@/services/answers.service.js";
 import QuestionsService from "@/services/questions.service.js";
 import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
-import logger from "@/config/logger.js";
+import logger from "@/lib/logger.js";
 import { SubmissionValidator } from "@/validators/submissions.validator.js";
-import { Question } from "@/models/Question.js";
-import { Answer } from "@/models/Answer.js";
-import { User } from "@/models/User.js";
-import { Quiz } from "@/models/Quiz.js";
+import { Question } from "@/entities/Question.js";
+import { Answer } from "@/entities/Answer.js";
+import { User } from "@/entities/auth/User.js";
+import { Quiz } from "@/entities/Quiz.js";
 import UserService from "@/services/users.service.js";
 import QuizzesService from "@/services/quizzes.service.js";
-import { Submission } from "@/models/Submission.js";
+import { Submission } from "@/entities/Submission.js";
 import SubmissionsService from "@/services/submissions.service.js";
 import SubmissionsController from "@/controllers/submissions.controller.js";
+import TokensService from "@/services/tokens.service.js";
+import configuration from "@/lib/configuration.js";
 
 const router = Router();
 
@@ -28,11 +30,13 @@ const quizzessService = new QuizzesService(quizzesRepository);
 const questionsService = new QuestionsService(questionsRepository);
 const answersService = new AnswersService(answersRepository);
 const submissionsService = new SubmissionsService(submissionsRepository);
+const quizzesTokensService = new TokensService(configuration.jwt.quiz.secret);
 
 const submissionsController = new SubmissionsController(
   submissionsService,
   usersService,
   quizzessService,
+  quizzesTokensService,
   questionsService,
   answersService,
   logger,

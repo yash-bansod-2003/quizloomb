@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
-import configuration from "@/config/configuration.js";
+import configuration from "@/lib/configuration.js";
 import { quizValidationSchema } from "@/validators/quizzes.validator.js";
 import { z } from "zod";
 
@@ -16,20 +16,20 @@ class Aiservice {
     createQuizDto: z.infer<typeof quizValidationSchema>,
   ): Promise<Record<string, unknown> | null> {
     const prompt = `
-    I want you to take the following name and description of a quiz application and enhance them to make them more engaging, creative, and appealing. The enhanced name should be concise, attractive, and clearly indicate the purpose of the quiz app. The enhanced description should be detailed, exciting, and communicate the app's unique features and value in a way that entices users to participate.
+    I want you to take the following title and description of a quiz application and enhance them to make them more engaging, creative, and appealing. The enhanced title should be concise, attractive, and clearly indicate the purpose of the quiz app. The enhanced description should be detailed, exciting, and communicate the app's unique features and value in a way that entices users to participate.
 
     Make sure the response is strictly in the following JSON format:
 
     {
-        "name": "enhanced name",
+        "title": "enhanced title",
         "description": "enhanced description"
     }
-    Here is the name and description to enhance:
+    Here is the title and description to enhance:
 
-    Name: ${createQuizDto.name}
+    Title: ${createQuizDto.title}
     Description: ${createQuizDto.description}
 
-    Please return only the enhanced name and description in the JSON format specified.
+    Please return only the enhanced title and description in the JSON format specified.
     `;
     const result = await this.model.generateContent(prompt);
     const parsedResult = this.extractJsonFromMarkdown(
@@ -43,13 +43,13 @@ class Aiservice {
     createQuizDto: z.infer<typeof quizValidationSchema>,
   ): Promise<string | null> {
     const prompt = `
-    You are a quiz generator. Based on the title "${createQuizDto.name}" and description "${createQuizDto.description}" provided, generate a quiz in a plain text format following the structure below. Include 4 questions: 1 multiple choice (mcq), 1 true/false (true_false), 1 written response (written), and 1 multi-select (multi_select). Use varied and accurate questions appropriate to the topic.
+    You are a quiz generator. Based on the title "${createQuizDto.title}" and description "${createQuizDto.description}" provided, generate a quiz in a plain text format following the structure below. Include 4 questions: 1 multiple choice (mcq), 1 true/false (true_false), 1 written response (written), and 1 multi-select (multi_select). Use varied and accurate questions appropriate to the topic.
     
     IMPORTANT: Do not use escaped characters like \\n in your output. Return the content as raw text with proper line breaks. Your response will be used directly in a text file.
     
     Format your response exactly as follows (with actual line breaks):
     
-    name: <title>
+    title: <title>
     description: <description>
     
     ---question---
@@ -84,7 +84,7 @@ class Aiservice {
     tags: <comma-separated tags>
     
     Generate the output now for:
-    Title: ${createQuizDto.name}  
+    Title: ${createQuizDto.title}  
     Description: ${createQuizDto.description}
     `;
     const result = await this.model.generateContent(prompt);
