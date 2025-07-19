@@ -5,16 +5,15 @@ meta {
 }
 
 post {
-  url: {{base_url}}/api/auth/register
+  url: {{base_url}}/api/auth/sign-up/email
   body: json
   auth: none
 }
 
 body:json {
   {
-    "firstName": "Yash",
-    "lastName": "Bansod",
+    "name" : "Yash Bansod",
     "email": "yashbansod2020@gmail.com",
-    "password": "password"
+    "password": "12345678"
   }
 }

@@ -15,7 +15,8 @@ class AnswersService {
   constructor(private readonly answersRepository: Repository<Answer>) {}
 
   async create(createAnswerDto: DeepPartial<Answer>, options?: SaveOptions) {
-    return await this.answersRepository.save(createAnswerDto, options);
+    const result = this.answersRepository.create(createAnswerDto);
+    return await this.answersRepository.save(result, options);
   }
 
   async findAll(options?: FindManyOptions<Answer>): Promise<Answer[]> {

@@ -55,6 +55,7 @@ export interface ParseResult {
 export interface QuizTokenPayload {
   id: string;
   durationMinutes: number;
+  startTime: Date;
   sessionId: string;
   user: {
     id: string;

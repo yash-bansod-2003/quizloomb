@@ -43,10 +43,12 @@ class Aiservice {
     createQuizDto: z.infer<typeof quizValidationSchema>,
   ): Promise<string | null> {
     const prompt = `
-    You are a quiz generator. Based on the title "${createQuizDto.title}" and description "${createQuizDto.description}" provided, generate a quiz in a plain text format following the structure below. Include 4 questions: 1 multiple choice (mcq), 1 true/false (true_false), 1 written response (written), and 1 multi-select (multi_select). Use varied and accurate questions appropriate to the topic.
+    You are a quiz generator. Based on the title "${createQuizDto.title}" and description "${createQuizDto.description}" provided, generate a quiz in a plain text format following the structure below. Include 8 questions: 2 multiple choice (mcq), 2 true/false (true_false), 2 written response (written), and 2 multi-select (multi_select). Use varied and accurate questions appropriate to the topic.
     
-    IMPORTANT: Do not use escaped characters like \\n in your output. Return the content as raw text with proper line breaks. Your response will be used directly in a text file.
-    
+    IMPORTANT: 
+    Do not use escaped characters like \\n in your output. Return the content as raw text with proper line breaks. Your response will be used directly in a text file.
+    Tags should be relevant to the quiz topic and separated by commas. and tags only be an high-level topic like React , Expressjs , Nodejs , Java etc.
+
     Format your response exactly as follows (with actual line breaks):
     
     title: <title>

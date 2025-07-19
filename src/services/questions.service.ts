@@ -18,7 +18,8 @@ class QuestionsService {
     createQuestionDto: DeepPartial<Question>,
     options?: SaveOptions,
   ) {
-    return await this.usersRepository.save(createQuestionDto, options);
+    const result = this.usersRepository.create(createQuestionDto);
+    return await this.usersRepository.save(result, options);
   }
 
   async findAll(options?: FindManyOptions<Question>): Promise<Question[]> {

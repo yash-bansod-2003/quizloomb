@@ -16,6 +16,7 @@ import SubmissionsService from "@/services/submissions.service.js";
 import SubmissionsController from "@/controllers/submissions.controller.js";
 import TokensService from "@/services/tokens.service.js";
 import configuration from "@/lib/configuration.js";
+import authenticateQuiz from "@/middlewares/authenticate-quiz.js";
 
 const router = Router();
 
@@ -42,9 +43,15 @@ const submissionsController = new SubmissionsController(
   logger,
 );
 
-router.post("/", authenticate, SubmissionValidator, async (req, res, next) => {
-  await submissionsController.create(req, res, next);
-});
+router.post(
+  "/",
+  authenticate,
+  authenticateQuiz,
+  SubmissionValidator,
+  async (req, res, next) => {
+    await submissionsController.create(req, res, next);
+  },
+);
 
 router.get("/", authenticate, async (req, res, next) => {
   await submissionsController.findAll(req, res, next);

@@ -5,9 +5,6 @@ import UsersService from "@/services/users.service.js";
 import { AppDataSource } from "@/data-source.js";
 import { Quiz } from "@/entities/Quiz.js";
 import authenticate from "@/middlewares/authenticate.js";
-import authenticateQuiz, {
-  AuthenticatedQuizRequest,
-} from "@/middlewares/authenticate-quiz.js";
 import logger from "@/lib/logger.js";
 import { QuizValidator } from "@/validators/quizzes.validator.js";
 import { User } from "@/entities/auth/User.js";
@@ -18,13 +15,9 @@ import { Question } from "@/entities/Question.js";
 import QuestionsService from "@/services/questions.service.js";
 import { Answer } from "@/entities/Answer.js";
 import AnswersService from "@/services/answers.service.js";
-import { Result } from "@/entities/Result.js";
-import ResultsService from "@/services/results.service.js";
 import TokensService from "@/services/tokens.service.js";
 import configuration from "@/lib/configuration.js";
 import ParserService from "@/services/parser.service.js";
-import SubmissionsService from "@/services/submissions.service.js";
-import { Submission } from "@/entities/Submission.js";
 const router = Router();
 
 const questionsRepository = AppDataSource.getRepository(Question);
@@ -35,12 +28,8 @@ const quizzesRepository = AppDataSource.getRepository(Quiz);
 const usersRepository = AppDataSource.getRepository(User);
 const quizzesService = new QuizzesService(quizzesRepository);
 const usersService = new UsersService(usersRepository);
-const submissionsRepository = AppDataSource.getRepository(Submission);
 const settingsRepository = AppDataSource.getRepository(Settings);
 const settingsService = new SettingsService(settingsRepository);
-const submissionsService = new SubmissionsService(submissionsRepository);
-const resultsRepository = AppDataSource.getRepository(Result);
-const resultsService = new ResultsService(resultsRepository);
 const aiService = new Aiservice();
 const quizzesTokensService = new TokensService(configuration.jwt.quiz.secret);
 const parserService = new ParserService();
@@ -51,8 +40,6 @@ const quizzesController = new QuizzesController(
   questionsService,
   answersService,
   settingsService,
-  submissionsService,
-  resultsService,
   quizzesTokensService,
   aiService,
   parserService,
@@ -96,104 +83,7 @@ router.delete("/:id", authenticate, async (req, res, next) => {
   await quizzesController.delete(req, res, next);
 });
 
-router.get("/:id/questions", authenticate, async (req, res, next) => {
-  await quizzesController.findAllQuestions(req, res, next);
-});
-
-router.get(
-  "/:id/questions/:questionId",
-  authenticate,
-  async (req, res, next) => {
-    await quizzesController.findOneQuestion(req, res, next);
-  },
-);
-
-router.post("/:id/questions", authenticate, async (req, res, next) => {
-  await quizzesController.createQuestion(req, res, next);
-});
-
-router.put(
-  "/:id/questions/:questionId",
-  authenticate,
-  async (req, res, next) => {
-    await quizzesController.updateQuestion(req, res, next);
-  },
-);
-
-router.delete(
-  "/:id/questions/:questionId",
-  authenticate,
-  async (req, res, next) => {
-    await quizzesController.deleteQuestion(req, res, next);
-  },
-);
-
-router.get(
-  "/:id/questions/:questionId/answers",
-  authenticate,
-  async (req, res, next) => {
-    await quizzesController.findAllAnswers(req, res, next);
-  },
-);
-
-router.get(
-  "/:id/questions/:questionId/answers/:answerId",
-  authenticate,
-  async (req, res, next) => {
-    await quizzesController.findOneAnswer(req, res, next);
-  },
-);
-
-router.post(
-  "/:id/questions/:questionId/answers",
-  authenticate,
-  async (req, res, next) => {
-    await quizzesController.createAnswer(req, res, next);
-  },
-);
-
-router.put(
-  "/:id/questions/:questionId/answers/:answerId",
-  authenticate,
-  async (req, res, next) => {
-    await quizzesController.updateAnswer(req, res, next);
-  },
-);
-
-router.delete(
-  "/:id/questions/:questionId/answers/:answerId",
-  authenticate,
-  async (req, res, next) => {
-    await quizzesController.deleteAnswer(req, res, next);
-  },
-);
-
-router.post(
-  "/:id/questions/:questionId/answers/:answerId/submission",
-  authenticate,
-  authenticateQuiz,
-  async (req, res, next) => {
-    await quizzesController.createSubmission(
-      req as AuthenticatedQuizRequest,
-      res,
-      next,
-    );
-  },
-);
-
-router.get("/:id/settings", authenticate, async (req, res, next) => {
-  await quizzesController.findSettings(req, res, next);
-});
-
-router.put("/:id/settings", authenticate, async (req, res, next) => {
-  await quizzesController.updateSettings(req, res, next);
-});
-
-router.put("/:id/results", authenticate, async (req, res, next) => {
-  await quizzesController.findResults(req, res, next);
-});
-
-router.put("/:id/start", authenticate, async (req, res, next) => {
+router.post("/start", authenticate, async (req, res, next) => {
   await quizzesController.start(req, res, next);
 });
 

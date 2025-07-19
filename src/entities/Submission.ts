@@ -4,17 +4,24 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
+  BeforeInsert,
 } from "typeorm";
 import { Question } from "@/entities/Question.js";
 import { Quiz } from "@/entities/Quiz.js";
 import { Answer } from "@/entities/Answer.js";
 import { User } from "@/entities/auth/User.js";
+import { generateId } from "better-auth";
 
 @Entity("submissions")
 export class Submission {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryColumn({ type: "text" })
   id: string;
+
+  @BeforeInsert()
+  beforeInsert() {
+    this.id = generateId();
+  }
 
   @Column({ type: "int", default: 1 })
   attempt: number;

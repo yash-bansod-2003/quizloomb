@@ -11,6 +11,7 @@ import answersRouter from "@/routes/answers.router.js";
 import submissionsRouter from "@/routes/submissions.router.js";
 import resultsRouter from "@/routes/results.router.js";
 import configuration from "@/lib/configuration.js";
+import settingsRouter from "@/routes/settings.router.js";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "@/lib/auth.js";
 
@@ -37,6 +38,7 @@ export const createServer = (): Express => {
     .use("/api/answers", answersRouter)
     .use("/api/submissions", submissionsRouter)
     .use("/api/results", resultsRouter)
+    .use("/api/settings", settingsRouter)
     .use(globalErrorHandler);
   return app;
 };

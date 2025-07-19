@@ -15,7 +15,8 @@ class QuizzesService {
   constructor(private readonly quizzesRepository: Repository<Quiz>) {}
 
   async create(createQuizDto: DeepPartial<Quiz>, options?: SaveOptions) {
-    return await this.quizzesRepository.save(createQuizDto, options);
+    const quiz = this.quizzesRepository.create(createQuizDto);
+    return await this.quizzesRepository.save(quiz, options);
   }
 
   async findAll(options?: FindManyOptions<Quiz>): Promise<Quiz[]> {

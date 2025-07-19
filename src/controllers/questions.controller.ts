@@ -69,6 +69,9 @@ class QuestionsController {
       this.logger.info(`Fetching question with id: ${questionId}`);
       const question = await this.questionsService.findOne({
         where: { id: questionId },
+        relations: {
+          answers: true,
+        },
       });
 
       if (!question) {

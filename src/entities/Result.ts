@@ -2,17 +2,24 @@ import {
   Column,
   Entity,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  BeforeInsert,
 } from "typeorm";
 import { Quiz } from "@/entities/Quiz.js";
 import { User } from "@/entities/auth/User.js";
+import { generateId } from "better-auth";
 
 @Entity("results")
 export class Result {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryColumn({ type: "text" })
   id: string;
+
+  @BeforeInsert()
+  beforeInsert() {
+    this.id = generateId();
+  }
 
   @Column({ type: "int" })
   score: number;

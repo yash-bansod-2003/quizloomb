@@ -1,0 +1,72 @@
+meta {
+  name: Update
+  type: http
+  seq: 1
+}
+
+put {
+  url: {{base_url}}/api/settings/-NUAVFzjf0KW3IlHHozWI7jhNF0-oq14
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjc4NjcwMzV9.EblhUijUGNgfXuFYChIS2w7TJFQohjxFZDRj9yCfQPE
+}
+
+body:json {
+  {
+    "id": "-NUAVFzjf0KW3IlHHozWI7jhNF0-oq14",
+    "startTime": "2025-07-19T19:14:53.262Z",
+    "endTime": "2025-07-19T22:14:53.262Z",
+    "hasTimeLimit": false,
+    "durationMinutes": 30,
+    "numberOfQuestionsToDisplay": null,
+    "showTotalQuestionsAtStart": true,
+    "fullscreen": true,
+    "preventNewTab": false,
+    "shuffleMode": "none",
+    "maxAttempts": 1,
+    "showResultsAfterSubmission": true,
+    "showCorrectAnswers": false,
+    "accessControl": "public",
+    "accessPassword": null,
+    "allowedEmailDomains": null,
+    "showCountdownTimer": true,
+    "autoProgressToNextQuiz": false,
+    "progressOnlyOnPass": false,
+    "nextQuizTransitionMode": "manual",
+    "timeZone": null,
+    "ipRestriction": false,
+    "allowedIpAddresses": null,
+    "ipRangeStart": null,
+    "ipRangeEnd": null,
+    "enableProctoring": false,
+    "webcamRequired": false,
+    "recordScreen": false,
+    "preventCopyPaste": false,
+    "disablePrintScreen": false,
+    "disableCopy": false,
+    "restrictTabSwitching": false,
+    "disablePasteInEssay": false,
+    "highlightPastedEssayContent": false,
+    "allowNavigationBetweenQuestions": true,
+    "randomizeQuestions": false,
+    "oneQuestionPerPage": false,
+    "showProgress": true,
+    "allowSaveProgress": false,
+    "totalPoints": 100,
+    "passingScore": null,
+    "negativeMarking": false,
+    "negativePointsPerWrongAnswer": null,
+    "allowSkipQuestions": true,
+    "detectAbsence": false,
+    "detectDeskExit": false,
+    "detectMultiplePeople": false,
+    "detectWindowSwitch": false,
+    "enableGazeDetection": false,
+    "gazeAwayThresholdSeconds": 5,
+    "createdAt": "2025-07-19T16:55:42.232Z",
+    "updatedAt": "2025-07-19T16:55:42.232Z"
+  }
+}

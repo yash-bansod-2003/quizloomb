@@ -12,6 +12,7 @@ import ResultsService from "@/services/results.service.js";
 import ResultsController from "@/controllers/results.controller.js";
 import { Submission } from "@/entities/Submission.js";
 import SubmissionsService from "@/services/submissions.service.js";
+import authenticateQuiz from "@/middlewares/authenticate-quiz.js";
 
 const router = Router();
 
@@ -33,9 +34,15 @@ const resultsController = new ResultsController(
   logger,
 );
 
-router.post("/", authenticate, ResultValidator, async (req, res, next) => {
-  await resultsController.create(req, res, next);
-});
+router.post(
+  "/",
+  authenticate,
+  authenticateQuiz,
+  ResultValidator,
+  async (req, res, next) => {
+    await resultsController.create(req, res, next);
+  },
+);
 
 router.get("/", authenticate, async (req, res, next) => {
   await resultsController.findAll(req, res, next);

@@ -4,27 +4,27 @@ import { z } from "zod";
 config();
 
 const configurationSchema = z.object({
-  node_env: z.string().optional(),
+  node_env: z.string(),
   domain: z.string().optional(),
   database: z.object({
-    host: z.string().optional(),
+    host: z.string(),
     port: z.number(),
-    user: z.string().optional(),
-    password: z.string().optional(),
-    database: z.string().optional(),
+    user: z.string(),
+    password: z.string(),
+    database: z.string(),
   }),
   ai: z.object({
-    key: z.string().optional(),
+    key: z.string(),
   }),
   jwt: z.object({
     quiz: z.object({
-      secret: z.string().optional(),
+      secret: z.string(),
     }),
   }),
   smtp: z.object({
-    service: z.string().optional(),
-    username: z.string().optional(),
-    password: z.string().optional(),
+    service: z.string(),
+    username: z.string(),
+    password: z.string(),
   }),
 });
 

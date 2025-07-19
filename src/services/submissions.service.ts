@@ -18,7 +18,8 @@ class SubmissionsService {
     createSubmissionDto: DeepPartial<Submission>,
     options?: SaveOptions,
   ) {
-    return await this.submissionsRepository.save(createSubmissionDto, options);
+    const result = this.submissionsRepository.create(createSubmissionDto);
+    return await this.submissionsRepository.save(result, options);
   }
 
   async findAll(options?: FindManyOptions<Submission>): Promise<Submission[]> {

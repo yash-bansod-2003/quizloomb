@@ -7,7 +7,7 @@ class Parser {
     const errors: string[] = [];
     const questions: QuizQuestion[] = [];
 
-    let quizName = "";
+    let quizTitle = "";
     let quizDescription = "";
 
     let currentQuestionLines: string[] = [];
@@ -103,8 +103,8 @@ class Parser {
     lines.forEach((line, index) => {
       const trimmed = line.trim();
 
-      if (index === 0 && trimmed.startsWith("name:")) {
-        quizName = trimmed.split(":")[1]?.trim() || "";
+      if (index === 0 && trimmed.startsWith("title:")) {
+        quizTitle = trimmed.split(":")[1]?.trim() || "";
       } else if (index === 1 && trimmed.startsWith("description:")) {
         quizDescription = trimmed.split(":")[1]?.trim() || "";
       } else if (trimmed === "---question---") {
@@ -127,7 +127,7 @@ class Parser {
 
     return {
       quiz: {
-        title: quizName,
+        title: quizTitle,
         description: quizDescription,
         questions,
       },

@@ -1,11 +1,11 @@
 meta {
-  name: Create
+  name: Find
   type: http
-  seq: 1
+  seq: 3
 }
 
-post {
-  url: {{base_url}}/api/results
+get {
+  url: {{base_url}}/api/settings
   body: json
   auth: bearer
 }
@@ -16,6 +16,6 @@ auth:bearer {
 
 body:json {
   {
-    "quizId" : "zC6lg6r4H8fXVmWrcicVdd2irb4NGI7a"
+    "quizId" : 2
   }
 }
