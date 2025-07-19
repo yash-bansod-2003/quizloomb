@@ -5,20 +5,27 @@ import {
   OneToMany,
   OneToOne,
   JoinColumn,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  PrimaryColumn,
+  BeforeInsert,
 } from "typeorm";
 import { User } from "@/entities/auth/User.js";
 import { Question } from "@/entities/Question.js";
 import { Submission } from "@/entities/Submission.js";
 import { Result } from "@/entities/Result.js";
 import { Settings } from "@/entities/Settings.js";
+import { generateId } from "@/lib/utils.js";
 
 @Entity("quizzes")
 export class Quiz {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryColumn({ type: "text" })
   id: string;
+
+  @BeforeInsert()
+  beforeInsert() {
+    this.id = generateId();
+  }
 
   @Column({ type: "text" })
   title: string;

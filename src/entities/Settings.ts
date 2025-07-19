@@ -3,11 +3,13 @@ import {
   Column,
   Entity,
   OneToOne,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  BeforeInsert,
 } from "typeorm";
 import { Quiz } from "@/entities/Quiz.js";
+import { generateId } from "@/lib/utils.js";
 
 export enum ShuffleMode {
   NONE = "none",
@@ -25,8 +27,13 @@ export enum AccessControl {
 
 @Entity("settings")
 export class Settings {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryColumn({ type: "text" })
   id: string;
+
+  @BeforeInsert()
+  beforeInsert() {
+    this.id = generateId();
+  }
 
   @Column({ nullable: true, type: "timestamp" })
   startTime: Date;

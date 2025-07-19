@@ -4,17 +4,24 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  BeforeInsert,
 } from "typeorm";
 import { Question } from "@/entities/Question.js";
 import { Submission } from "@/entities/Submission.js";
+import { generateId } from "@/lib/utils.js";
 
 @Entity("answers")
 export class Answer {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryColumn({ type: "text" })
   id: string;
+
+  @BeforeInsert()
+  beforeInsert() {
+    this.id = generateId();
+  }
 
   @Column({ type: "text" })
   text: string;

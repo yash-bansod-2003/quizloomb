@@ -12,6 +12,7 @@
       "prepare": "husky",
       "typeorm": "typeorm-ts-node-esm",
       "migration:generate": "cross-env NODE_ENV=development npx typeorm-ts-node-esm migration:generate",
+      "migration:dev": "cross-env NODE_ENV=production typeorm-ts-node-esm migration:run -d ./dist/src/data-source.js",
       "migration:run": "cross-env NODE_ENV=production typeorm-ts-node-esm migration:run -d ./src/data-source.js"
    },
    "keywords": [

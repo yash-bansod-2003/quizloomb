@@ -3,18 +3,25 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  PrimaryColumn,
+  BeforeInsert,
 } from "typeorm";
 import { Quiz } from "@/entities/Quiz.js";
 import { Answer } from "@/entities/Answer.js";
 import { Submission } from "@/entities/Submission.js";
+import { generateId } from "@/lib/utils.js";
 
 @Entity("questions")
 export class Question {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryColumn({ type: "text" })
   id: string;
+
+  @BeforeInsert()
+  beforeInsert() {
+    this.id = generateId();
+  }
 
   @Column({ type: "text" })
   text: string;
