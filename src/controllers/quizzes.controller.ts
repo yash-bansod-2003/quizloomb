@@ -243,6 +243,7 @@ class QuizzesController {
       this.logger.info(`Fetching all quizzes for user ${userId}`);
       const quizzes = await this.quizzesService.findAll({
         where: { user: { id: user.id } },
+        order: { createdAt: "DESC" },
       });
       return res.json(quizzes);
     } catch (error) {
@@ -269,6 +270,9 @@ class QuizzesController {
         where: {
           id: quizId,
           user: { id: user.id },
+        },
+        relations: {
+          questions: true,
         },
       });
       return res.json(quiz);
