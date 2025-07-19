@@ -1,11 +1,13 @@
 import { z } from "zod";
 import { NextFunction, Request, Response } from "express";
 
-export const answerValidationSchema = z.object({
-  text: z.string(),
-  is_correct: z.boolean().optional(),
-  questionId: z.string(),
-});
+export const answerValidationSchema = z
+  .object({
+    text: z.string(),
+    isCorrect: z.boolean().optional(),
+    questionId: z.string(),
+  })
+  .strict();
 
 /**
  * Validates the body of a request to create a new answer.

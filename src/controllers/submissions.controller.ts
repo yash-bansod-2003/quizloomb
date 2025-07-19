@@ -10,7 +10,7 @@ import UserService from "@/services/users.service.js";
 import AnswersService from "@/services/answers.service.js";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import TokensService from "@/services/tokens.service.js";
-import { COOKIE_PROPERTIES } from "@/lib/constants.js";
+import { AuthenticatedQuizRequest } from "@/middlewares/authenticate-quiz.js";
 
 class SubmissionsController {
   constructor(
@@ -51,20 +51,20 @@ class SubmissionsController {
       );
     }
 
-    const quizToken = req.cookies[
-      COOKIE_PROPERTIES.QUIZ_TOKEN_COOKIE_NAME
-    ] as string;
-
-    if (!quizToken) {
-      this.logger.error("No Quiz token provided");
-      return next(createHttpError.Unauthorized("no quiz token"));
-    }
-
-    const match = this.quizzesTokensService.verify(quizToken);
+    const match = (req as AuthenticatedQuizRequest).quiz;
 
     if (!match) {
       this.logger.error("Quiz token does not match");
       return next(createHttpError.Unauthorized("quiz token does not match"));
+    }
+
+    const quizEndTime = new Date(
+      match.startTime.getTime() + match.durationMinutes * 60 * 1000,
+    );
+
+    if (new Date() > quizEndTime) {
+      this.logger.error("Quiz has ended");
+      return next(createHttpError.Forbidden("Quiz has ended"));
     }
 
     const question = await this.questionsService.findOne({
@@ -85,26 +85,13 @@ class SubmissionsController {
       return next(createHttpError.NotFound("answer not found"));
     }
 
-    const previousSubmissions = await this.submissionsService.findAll({
-      where: {
-        user: { id: user.id },
-        quiz: { id: quiz.id },
-        question: { id: question.id },
-      },
-    });
-
-    const attempt =
-      previousSubmissions.length > 0
-        ? Math.max(...previousSubmissions.map((sub) => sub.attempt)) + 1
-        : 1;
-
     const Submission = await this.submissionsService.create({
       user,
       quiz,
       question,
       answer,
-      attempt,
-      sessionId: (match as { sessionId: string }).sessionId,
+      attempt: 1,
+      sessionId: match.sessionId,
     });
     this.logger.info(`Created new submission with id: ${Submission.id}`);
     return res.status(201).json(Submission);

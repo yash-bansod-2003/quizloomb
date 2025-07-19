@@ -8,6 +8,7 @@ import UserService from "@/services/users.service.js";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import SubmissionsService from "@/services/submissions.service.js";
 import { z } from "zod";
+import { AuthenticatedQuizRequest } from "@/middlewares/authenticate-quiz.js";
 
 class ResultsController {
   constructor(
@@ -46,15 +47,41 @@ class ResultsController {
         throw err;
       }
 
+      const match = (req as AuthenticatedQuizRequest).quiz;
+
+      if (!match) {
+        this.logger.error("Quiz token does not match");
+        return next(createHttpError.Unauthorized("quiz token does not match"));
+      }
+
+      const result = await this.resultsService.findOne({
+        where: {
+          sessionId: match.sessionId,
+        },
+      });
+
+      if (result) {
+        this.logger.error(
+          `Result already exists for user id ${user.id} and quiz id ${quiz.id}`,
+        );
+        return next(createHttpError.Conflict("result already generated"));
+      }
+
       this.logger.debug(
         `Fetching submissions for user id ${user.id} and quiz id ${quiz.id}`,
       );
+
       const submissions = await this.submissionsService.findAll({
         where: {
           user: { id: user.id },
           quiz: { id: quiz.id },
+          sessionId: match.sessionId,
+        },
+        relations: {
+          answer: true,
         },
       });
+
       if (!submissions || submissions.length === 0) {
         const err = createHttpError.NotFound("submissions not found");
         this.logger.error(
@@ -63,10 +90,10 @@ class ResultsController {
         throw err;
       }
 
-      // Calculate score.
       const score = submissions.reduce((acc, submission) => {
         return acc + (submission.answer.isCorrect ? 1 : 0);
       }, 0);
+
       this.logger.info(`Calculated score: ${score}`);
 
       const previousResults = await this.resultsService.findAll({
@@ -75,18 +102,20 @@ class ResultsController {
           quiz: { id: quiz.id },
         },
       });
+
       const attempt = previousResults.length + 1;
       this.logger.debug(`User attempt number: ${attempt}`);
 
-      // Create result.
       this.logger.info(
         `Creating result for user id ${user.id} with quiz id ${quiz.id}`,
       );
+
       const newResult = await this.resultsService.create({
         user,
         quiz,
         score,
         attempt,
+        sessionId: match.sessionId,
       });
       this.logger.info(
         `Successfully created result with id: ${newResult.id || "unknown"}`,

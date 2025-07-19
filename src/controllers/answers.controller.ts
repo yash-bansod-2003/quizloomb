@@ -97,18 +97,25 @@ class AnswersController {
 
   async update(req: Request, res: Response, next: NextFunction) {
     this.logger.debug("updating answer");
-    const updateAnswerDto = req.body as z.infer<typeof answerValidationSchema>;
+    const { questionId, text, isCorrect } = req.body as z.infer<
+      typeof answerValidationSchema
+    >;
     try {
       const answer = await this.answersService.update(
-        { id: req.params.id },
-        updateAnswerDto,
+        { id: req.params.id, question: { id: questionId } },
+        { text, isCorrect },
       );
       if (!answer) {
         this.logger.error("answer not updated");
         throw createHttpError.InternalServerError("answer not updated");
       }
       this.logger.debug("answer updated");
-      res.json(answer);
+
+      const updatedAnswer = await this.answersService.findOne({
+        where: { id: req.params.id },
+      });
+
+      res.json(updatedAnswer);
     } catch (error) {
       this.logger.error(`error updating answer: ${error}`);
       next(error);
