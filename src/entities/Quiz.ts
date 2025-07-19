@@ -30,6 +30,9 @@ export class Quiz {
   @Column({ type: "text" })
   title: string;
 
+  @Column({ type: "text", nullable: true })
+  image?: string;
+
   @Column({
     enum: ["draft", "live", "paused", "scheduled", "closed"],
     type: "text",
