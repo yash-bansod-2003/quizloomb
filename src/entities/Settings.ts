@@ -9,7 +9,7 @@ import {
   BeforeInsert,
 } from "typeorm";
 import { Quiz } from "@/entities/Quiz.js";
-import { generateId } from "@/lib/utils.js";
+import { generateId } from "better-auth";
 
 export enum ShuffleMode {
   NONE = "none",

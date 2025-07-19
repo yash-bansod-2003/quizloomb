@@ -15,7 +15,8 @@ class ResultsService {
   constructor(private readonly resultsRepository: Repository<Result>) {}
 
   async create(createResultDto: DeepPartial<Result>, options?: SaveOptions) {
-    return await this.resultsRepository.save(createResultDto, options);
+    const result = this.resultsRepository.create(createResultDto);
+    return await this.resultsRepository.save(result, options);
   }
 
   async findAll(options?: FindManyOptions<Result>): Promise<Result[]> {

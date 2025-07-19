@@ -11,7 +11,7 @@ import {
 } from "typeorm";
 import { Question } from "@/entities/Question.js";
 import { Submission } from "@/entities/Submission.js";
-import { generateId } from "@/lib/utils.js";
+import { generateId } from "better-auth";
 
 @Entity("answers")
 export class Answer {

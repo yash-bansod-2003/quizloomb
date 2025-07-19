@@ -18,7 +18,8 @@ class SettingsService {
     createSettingsDto: DeepPartial<Settings>,
     options?: SaveOptions,
   ) {
-    return await this.settingsRepository.save(createSettingsDto, options);
+    const settings = this.settingsRepository.create(createSettingsDto);
+    return await this.settingsRepository.save(settings, options);
   }
 
   async findAll(options?: FindManyOptions<Settings>): Promise<Settings[]> {

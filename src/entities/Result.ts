@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 import { Quiz } from "@/entities/Quiz.js";
 import { User } from "@/entities/auth/User.js";
-import { generateId } from "@/lib/utils.js";
+import { generateId } from "better-auth";
 
 @Entity("results")
 export class Result {

@@ -15,7 +15,8 @@ class UsersService {
   constructor(private readonly usersRepository: Repository<User>) {}
 
   async create(createUserDto: DeepPartial<User>, options?: SaveOptions) {
-    return await this.usersRepository.save(createUserDto, options);
+    const result = this.usersRepository.create(createUserDto);
+    return await this.usersRepository.save(result, options);
   }
 
   async findAll(options?: FindManyOptions<User>): Promise<User[]> {

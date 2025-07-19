@@ -15,7 +15,7 @@ import { Question } from "@/entities/Question.js";
 import { Submission } from "@/entities/Submission.js";
 import { Result } from "@/entities/Result.js";
 import { Settings } from "@/entities/Settings.js";
-import { generateId } from "@/lib/utils.js";
+import { generateId } from "better-auth";
 
 @Entity("quizzes")
 export class Quiz {
@@ -24,7 +24,8 @@ export class Quiz {
 
   @BeforeInsert()
   beforeInsert() {
-    this.id = generateId();
+    const id = generateId();
+    this.id = id;
   }
 
   @Column({ type: "text" })

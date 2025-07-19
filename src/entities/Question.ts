@@ -11,7 +11,7 @@ import {
 import { Quiz } from "@/entities/Quiz.js";
 import { Answer } from "@/entities/Answer.js";
 import { Submission } from "@/entities/Submission.js";
-import { generateId } from "@/lib/utils.js";
+import { generateId } from "better-auth";
 
 @Entity("questions")
 export class Question {
