@@ -75,5 +75,13 @@ jobs:
           ignore-unfixed: true
           vuln-type: "os,library"
           severity: "CRITICAL,HIGH"
+      
       - name: Push to DockerHub
         run: docker push ${{ env.DOCKERIMAGE_NAME }}:${{ env.DOCKERIMAGE_TAG }}
+      
+      - name: Deploy to production
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+          wait-for-success: true
