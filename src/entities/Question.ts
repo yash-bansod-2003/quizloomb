@@ -13,6 +13,24 @@ import { Answer } from "@/entities/Answer.js";
 import { Submission } from "@/entities/Submission.js";
 import { generateId } from "better-auth";
 
+export enum QuestionType {
+  MCQ = "mcq",
+  TRUE_FALSE = "trueFalse",
+  MULTI_SELECT = "multiSelect",
+  WRITTEN = "written",
+  VIDEO = "video",
+  RATING = "rating",
+  FILE_UPLOAD = "fileUpload",
+  RANKING = "ranking",
+  MATRIX = "matrix",
+}
+
+export enum Difficulty {
+  HIGH = "high",
+  LOW = "low",
+  MEDIUM = "medium",
+}
+
 @Entity("questions")
 export class Question {
   @PrimaryColumn({ type: "text" })
@@ -27,18 +45,32 @@ export class Question {
   text: string;
 
   @Column({
-    enum: ["mcq", "trueFalse", "multiSelect", "written"],
-    type: "text",
+    type: "enum",
+    enum: QuestionType,
   })
-  type: string;
+  type: QuestionType;
+
+  @Column({ type: "int", default: 1 })
+  points: number;
+
+  @Column({
+    type: "enum",
+    enum: Difficulty,
+    default: Difficulty.MEDIUM,
+  })
+  difficulty: Difficulty;
 
   @Column("text", { array: true })
   tags: string[];
 
-  @ManyToOne(() => Quiz, (quiz) => quiz.questions)
+  @ManyToOne(() => Quiz, (quiz) => quiz.questions, {
+    onDelete: "CASCADE",
+  })
   quiz: Quiz;
 
-  @OneToMany(() => Answer, (answer) => answer.question)
+  @OneToMany(() => Answer, (answer) => answer.question, {
+    cascade: true,
+  })
   answers: Answer[];
 
   @OneToMany(() => Submission, (submission) => submission.question)

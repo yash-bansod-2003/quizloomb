@@ -1,4 +1,5 @@
-import { QuestionType, QuizQuestion } from "@/types/index.js";
+import { QuizQuestion } from "@/types/index.js";
+import { QuestionType } from "@/entities/Question.js";
 
 class Parser {
   constructor() {}
@@ -26,7 +27,12 @@ class Parser {
         if (line.startsWith("type:")) {
           const type = line.split(":")[1]?.trim() as QuestionType;
           if (
-            !["mcq", "true_false", "written", "multi_select"].includes(type)
+            ![
+              QuestionType.MCQ,
+              QuestionType.TRUE_FALSE,
+              QuestionType.WRITTEN,
+              QuestionType.MULTI_SELECT,
+            ].includes(type)
           ) {
             errors.push(`Line ${lineNumber}: Unknown question type "${type}"`);
           } else {
@@ -83,7 +89,9 @@ class Parser {
         errors.push(`Line ${lineStart}: Missing or empty "tags" field`);
       }
 
-      if (["mcq", "multi_select"].includes(questionObj.type)) {
+      if (
+        [QuestionType.MCQ, QuestionType.MULTI_SELECT].includes(questionObj.type)
+      ) {
         if (options.length === 0) {
           errors.push(`Line ${lineStart}: No options provided`);
           return;
@@ -94,7 +102,9 @@ class Parser {
           return;
         }
         questionObj.correct =
-          questionObj.type === "mcq" ? correctOptions[0] : correctOptions;
+          questionObj.type === QuestionType.MCQ
+            ? correctOptions[0]
+            : correctOptions;
       }
 
       questions.push(questionObj as QuizQuestion);

@@ -11,6 +11,7 @@ import AnswersService from "@/services/answers.service.js";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import TokensService from "@/services/tokens.service.js";
 import { AuthenticatedQuizRequest } from "@/middlewares/authenticate-quiz.js";
+import { QuizStatus } from "@/entities/Quiz.js";
 
 class SubmissionsController {
   constructor(
@@ -44,7 +45,7 @@ class SubmissionsController {
       return next(createHttpError.NotFound("quiz not found"));
     }
 
-    if (quiz.status !== "live") {
+    if (quiz.status !== QuizStatus.LIVE) {
       this.logger.error("Quiz is not live");
       return next(
         createHttpError.Forbidden("Quiz is not live or available at this time"),
@@ -85,16 +86,40 @@ class SubmissionsController {
       return next(createHttpError.NotFound("answer not found"));
     }
 
-    const Submission = await this.submissionsService.create({
-      user,
+    const submission = await this.submissionsService.findOne({
+      where: {
+        quiz: { id: quizId },
+        question: { id: questionId },
+        answer: { id: answerId },
+        sessionId: match.sessionId,
+      },
+    });
+
+    if (submission) {
+      await this.submissionsService.update(
+        { id: submission.id },
+        {
+          quiz,
+          question,
+          answer,
+          sessionId: match.sessionId,
+        },
+      );
+      this.logger.info(`Updated existing submission with id: ${submission.id}`);
+      res.status(200).json(submission);
+      return;
+    }
+
+    await this.submissionsService.create({
       quiz,
       question,
       answer,
-      attempt: 1,
       sessionId: match.sessionId,
     });
-    this.logger.info(`Created new submission with id: ${Submission.id}`);
-    return res.status(201).json(Submission);
+
+    this.logger.info(`Created new submission with id: ${submission.id}`);
+    res.status(201).json(submission);
+    return;
   }
 
   async findAll(req: Request, res: Response, next: NextFunction) {

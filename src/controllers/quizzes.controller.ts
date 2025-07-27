@@ -18,7 +18,8 @@ import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 
 import { COOKIE_PROPERTIES } from "@/lib/constants.js";
 import configuration from "@/lib/configuration.js";
-import { QuizTokenPayload } from "@/types/index.js";
+import { Field, QuizTokenPayload } from "@/types/index.js";
+import { QuestionType } from "@/entities/Question.js";
 
 class QuizzesController {
   constructor(
@@ -156,7 +157,13 @@ class QuizzesController {
       }
 
       this.logger.info(`Generating quiz from file for user ${userId}`);
-      const content = (req.body as { content: string }).content;
+      const content = (req.body as { content: string })?.content;
+
+      if (!content) {
+        this.logger.error("no content provided");
+        return next(createHttpError.Forbidden("No content provided"));
+      }
+
       const result = this.parserService.parse(content);
       if (result.errors.length > 0) {
         res.status(400).json({
@@ -184,7 +191,7 @@ class QuizzesController {
           return next(createHttpError.InternalServerError());
         }
 
-        if (question.type === "mcq") {
+        if (question.type === QuestionType.MCQ) {
           for (const option of question.options) {
             const answer = await this.answersService.create({
               text: option,
@@ -198,7 +205,7 @@ class QuizzesController {
           }
         }
 
-        if (question.type === "multi_select") {
+        if (question.type === QuestionType.MULTI_SELECT) {
           for (const option of question.options) {
             const answer = await this.answersService.create({
               text: option,
@@ -335,26 +342,16 @@ class QuizzesController {
 
   async start(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id: quizId } = req.body as { id: string };
-      const userId = (req as AuthenticatedRequest).user.id;
-      const user = await this.usersService.findOne({
-        where: { id: userId },
-      });
-
-      if (!user) {
-        this.logger.error(`User ${userId} not found in findSettings`);
-        return next(createHttpError.NotFound());
-      }
+      const { id: quizId } = req.params as { id: string };
 
       const quiz = await this.quizzesService.findOne({
         where: {
           id: quizId,
-          user: { id: user.id },
         },
       });
 
       if (!quiz) {
-        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        this.logger.error(`Quiz ${quizId} not found`);
         return next(createHttpError.NotFound());
       }
 
@@ -367,6 +364,14 @@ class QuizzesController {
         this.logger.error(`Settings not found for quiz ${quizId}`);
         return next(createHttpError.NotFound());
       }
+
+      const fields: Record<string, string> = {};
+
+      Array.from(settings.fields as unknown as Field[]).forEach((field) => {
+        if (field.enabled) {
+          fields[field.name] = (req.body as Record<string, string>)[field.name];
+        }
+      });
 
       const { startTime, endTime, durationMinutes } = settings;
       const currentTime = new Date();
@@ -384,10 +389,7 @@ class QuizzesController {
         durationMinutes,
         startTime: currentTime,
         sessionId,
-        user: {
-          id: user.id,
-          email: user.email,
-        },
+        fields,
       };
 
       const quizToken = this.quizzesTokensService.sign(payload, {

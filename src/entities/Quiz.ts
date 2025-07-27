@@ -17,6 +17,14 @@ import { Result } from "@/entities/Result.js";
 import { Settings } from "@/entities/Settings.js";
 import { generateId } from "better-auth";
 
+export enum QuizStatus {
+  DRAFT = "draft",
+  LIVE = "live",
+  PAUSED = "paused",
+  SCHEDULED = "scheduled",
+  CLOSED = "closed",
+}
+
 @Entity("quizzes")
 export class Quiz {
   @PrimaryColumn({ type: "text" })
@@ -34,12 +42,15 @@ export class Quiz {
   @Column({ type: "text", nullable: true })
   image?: string;
 
+  @Column({ type: "text", nullable: true })
+  bannerImage?: string;
+
   @Column({
-    enum: ["draft", "live", "paused", "scheduled", "closed"],
-    type: "text",
-    default: "live",
+    type: "enum",
+    enum: QuizStatus,
+    default: QuizStatus.LIVE,
   })
-  status: string;
+  status: QuizStatus;
 
   @Column({ type: "text" })
   description: string;

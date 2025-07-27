@@ -1,3 +1,5 @@
+import { QuestionType } from "@/entities/Question.js";
+
 export type Question =
   | MCQQuestion
   | TrueFalseQuestion
@@ -32,8 +34,6 @@ export interface MultiSelectQuestion extends BaseQuestion {
   correct: string[];
 }
 
-export type QuestionType = "mcq" | "true_false" | "written" | "multi_select";
-
 export interface QuizQuestion {
   type: QuestionType;
   question: string;
@@ -57,8 +57,14 @@ export interface QuizTokenPayload {
   durationMinutes: number;
   startTime: Date;
   sessionId: string;
-  user: {
-    id: string;
-    email: string;
-  };
+  fields: Record<string, string>;
+}
+
+export interface Field {
+  name: string;
+  type: string;
+  label: string;
+  enabled: boolean;
+  required: boolean;
+  placeholder: string;
 }

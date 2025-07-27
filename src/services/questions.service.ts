@@ -26,6 +26,18 @@ class QuestionsService {
     return this.usersRepository.find(options);
   }
 
+  async findTags(): Promise<string[]> {
+    const questions = await this.usersRepository.find({
+      select: ["tags"],
+    });
+    const tags = Array.from(
+      new Set(
+        questions.flatMap((q) => q.tags).map((tag) => tag.trim().toLowerCase()),
+      ),
+    );
+    return tags;
+  }
+
   async findOne(options: FindOneOptions<Question>): Promise<Question | null> {
     return this.usersRepository.findOne(options);
   }

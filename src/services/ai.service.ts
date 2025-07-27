@@ -2,6 +2,7 @@ import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 import configuration from "@/lib/configuration.js";
 import { quizValidationSchema } from "@/validators/quizzes.validator.js";
 import { z } from "zod";
+import { QuestionType } from "@/entities/Question.js";
 
 class Aiservice {
   private readonly client: GoogleGenerativeAI;
@@ -43,7 +44,7 @@ class Aiservice {
     createQuizDto: z.infer<typeof quizValidationSchema>,
   ): Promise<string | null> {
     const prompt = `
-    You are a quiz generator. Based on the title "${createQuizDto.title}" and description "${createQuizDto.description}" provided, generate a quiz in a plain text format following the structure below. Include 8 questions: 2 multiple choice (mcq), 2 true/false (true_false), 2 written response (written), and 2 multi-select (multi_select). Use varied and accurate questions appropriate to the topic.
+    You are a quiz generator. Based on the title "${createQuizDto.title}" and description "${createQuizDto.description}" provided, generate a quiz in a plain text format following the structure below. Include 8 questions: 2 multiple choice (${QuestionType.MCQ}), 2 true/false (${QuestionType.TRUE_FALSE}), 2 written response (${QuestionType.WRITTEN}), and 2 multi-select (${QuestionType.WRITTEN}). Use varied and accurate questions appropriate to the topic.
     
     IMPORTANT: 
     Do not use escaped characters like \\n in your output. Return the content as raw text with proper line breaks. Your response will be used directly in a text file.
@@ -55,7 +56,7 @@ class Aiservice {
     description: <description>
     
     ---question---
-    type: mcq
+    type: ${QuestionType.MCQ}
     question: <MCQ question>
     options:
     1. <option>
@@ -65,18 +66,18 @@ class Aiservice {
     tags: <comma-separated tags>
     
     ---question---
-    type: true_false
+    type: ${QuestionType.TRUE_FALSE}
     question: <true/false question>
     correct: <true/false>
     tags: <comma-separated tags>
     
     ---question---
-    type: written
+    type: ${QuestionType.WRITTEN}
     question: <written response question>
     tags: <comma-separated tags>
     
     ---question---
-    type: multi_select
+    type: ${QuestionType.MULTI_SELECT}
     question: <multi-select question>
     options:
     1. <option> [correct]

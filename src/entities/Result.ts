@@ -6,10 +6,17 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BeforeInsert,
+  OneToMany,
 } from "typeorm";
 import { Quiz } from "@/entities/Quiz.js";
-import { User } from "@/entities/auth/User.js";
 import { generateId } from "better-auth";
+import { Submission } from "./Submission.js";
+
+export enum ResultStatus {
+  PENDING = "pending",
+  COMPLETED = "completed",
+  FAILED = "failed",
+}
 
 @Entity("results")
 export class Result {
@@ -30,13 +37,28 @@ export class Result {
   @Column({ type: "text", nullable: false })
   sessionId: string;
 
-  @ManyToOne(() => Quiz, (quiz) => quiz.results)
-  quiz: Quiz;
+  @Column({
+    type: "enum",
+    enum: ResultStatus,
+    default: ResultStatus.PENDING,
+  })
+  status: ResultStatus;
 
-  @ManyToOne(() => User, (user) => user.results, {
+  @Column({ type: "text", nullable: false })
+  system: string;
+
+  @Column({ type: "jsonb", nullable: true })
+  location?: string;
+
+  @ManyToOne(() => Quiz, (quiz) => quiz.results, {
     onDelete: "CASCADE",
   })
-  user: User;
+  quiz: Quiz;
+
+  @OneToMany(() => Submission, (submission) => submission.result, {
+    cascade: true,
+  })
+  submissions: Submission[];
 
   @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;

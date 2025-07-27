@@ -83,7 +83,7 @@ router.delete("/:id", authenticate, async (req, res, next) => {
   await quizzesController.delete(req, res, next);
 });
 
-router.post("/start", authenticate, async (req, res, next) => {
+router.post("/start/:id", async (req, res, next) => {
   await quizzesController.start(req, res, next);
 });
 

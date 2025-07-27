@@ -29,7 +29,9 @@ export class Answer {
   @Column({ default: false, type: "boolean" })
   isCorrect: boolean;
 
-  @ManyToOne(() => Question, (question) => question.answers)
+  @ManyToOne(() => Question, (question) => question.answers, {
+    onDelete: "CASCADE",
+  })
   question: Question;
 
   @OneToMany(() => Submission, (submission) => submission.answer)

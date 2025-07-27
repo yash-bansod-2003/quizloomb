@@ -10,8 +10,8 @@ import {
 import { Question } from "@/entities/Question.js";
 import { Quiz } from "@/entities/Quiz.js";
 import { Answer } from "@/entities/Answer.js";
-import { User } from "@/entities/auth/User.js";
 import { generateId } from "better-auth";
+import { Result } from "./Result.js";
 
 @Entity("submissions")
 export class Submission {
@@ -23,25 +23,31 @@ export class Submission {
     this.id = generateId();
   }
 
-  @Column({ type: "int", default: 1 })
-  attempt: number;
-
   @Column({ type: "text", nullable: false })
   sessionId: string;
 
-  @ManyToOne(() => Quiz, (quiz) => quiz.submissions)
-  quiz: Quiz;
+  @Column({ type: "jsonb", nullable: false })
+  fields: string;
 
-  @ManyToOne(() => Question, (question) => question.submissions)
-  question: Question;
-
-  @ManyToOne(() => Answer, (answer) => answer.submissions)
-  answer: Answer;
-
-  @ManyToOne(() => User, (user) => user.submissions, {
+  @ManyToOne(() => Quiz, (quiz) => quiz.submissions, {
     onDelete: "CASCADE",
   })
-  user: User;
+  quiz: Quiz;
+
+  @ManyToOne(() => Question, (question) => question.submissions, {
+    onDelete: "CASCADE",
+  })
+  question: Question;
+
+  @ManyToOne(() => Answer, (answer) => answer.submissions, {
+    onDelete: "CASCADE",
+  })
+  answer: Answer;
+
+  @ManyToOne(() => Result, (result) => result.submissions, {
+    onDelete: "CASCADE",
+  })
+  result: Result;
 
   @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;

@@ -7,7 +7,6 @@ import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/lib/logger.js";
 import { QuestionValidator } from "@/validators/questions.validator.js";
-import { AnswerValidator } from "@/validators/answers.validator.js";
 import { Quiz } from "@/entities/Quiz.js";
 import { Question } from "@/entities/Question.js";
 import { Answer } from "@/entities/Answer.js";
@@ -47,39 +46,5 @@ router.put("/:id", authenticate, QuestionValidator, async (req, res, next) => {
 router.delete("/:id", authenticate, async (req, res, next) => {
   await questionsController.delete(req, res, next);
 });
-
-router.get("/:id/answers", authenticate, async (req, res, next) => {
-  await questionsController.findAllAnswers(req, res, next);
-});
-
-router.post(
-  "/:id/answers",
-  authenticate,
-  AnswerValidator,
-  async (req, res, next) => {
-    await questionsController.createAnswer(req, res, next);
-  },
-);
-
-router.get("/:id/answers/:answerId", authenticate, async (req, res, next) => {
-  await questionsController.findOneAnswer(req, res, next);
-});
-
-router.put(
-  "/:id/answers/:answerId",
-  authenticate,
-  AnswerValidator,
-  async (req, res, next) => {
-    await questionsController.updateAnswer(req, res, next);
-  },
-);
-
-router.delete(
-  "/:id/answers/:answerId",
-  authenticate,
-  async (req, res, next) => {
-    await questionsController.deleteAnswer(req, res, next);
-  },
-);
 
 export default router;
