@@ -10,7 +10,7 @@ class Aiservice {
   constructor() {
     this.client = new GoogleGenerativeAI(configuration.ai.key);
     this.model = this.client.getGenerativeModel({
-      model: "gemini-2.0-flash-lite",
+      model: "gemini-2.5-flash",
     });
   }
   async improveQuiz(

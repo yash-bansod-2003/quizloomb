@@ -182,6 +182,17 @@ class QuizzesController {
         user,
       });
 
+      if (!quiz) {
+        this.logger.error("Failed to create quiz from file");
+        return next(createHttpError.InternalServerError());
+      }
+
+      const settings = await this.settingsService.create({ quiz });
+      if (!settings) {
+        this.logger.error("Failed to create settings for quiz");
+        return next(createHttpError.InternalServerError());
+      }
+
       for (const question of result.quiz.questions) {
         const dbQuestion = await this.questionsService.create({
           text: question.question,
