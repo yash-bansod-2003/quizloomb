@@ -7,10 +7,13 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   OneToMany,
+  OneToOne,
+  JoinColumn,
 } from "typeorm";
 import { Quiz } from "@/entities/Quiz.js";
 import { generateId } from "better-auth";
 import { Submission } from "./Submission.js";
+import { QuizSession } from "./QuizSession.js";
 
 export enum ResultStatus {
   PENDING = "pending",
@@ -34,9 +37,6 @@ export class Result {
   @Column({ type: "int", default: 1 })
   attempt: number;
 
-  @Column({ type: "text", nullable: false })
-  sessionId: string;
-
   @Column({
     type: "enum",
     enum: ResultStatus,
@@ -59,6 +59,10 @@ export class Result {
     cascade: true,
   })
   submissions: Submission[];
+
+  @OneToOne(() => QuizSession, (quizSession) => quizSession.result)
+  @JoinColumn()
+  quizSession: QuizSession;
 
   @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;

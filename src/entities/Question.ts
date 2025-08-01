@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
   PrimaryColumn,
   BeforeInsert,
+  JoinColumn,
 } from "typeorm";
 import { Quiz } from "@/entities/Quiz.js";
 import { Answer } from "@/entities/Answer.js";
@@ -66,6 +67,7 @@ export class Question {
   @ManyToOne(() => Quiz, (quiz) => quiz.questions, {
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "quizId" })
   quiz: Quiz;
 
   @OneToMany(() => Answer, (answer) => answer.question, {
@@ -73,7 +75,9 @@ export class Question {
   })
   answers: Answer[];
 
-  @OneToMany(() => Submission, (submission) => submission.question)
+  @OneToMany(() => Submission, (submission) => submission.question, {
+    cascade: true,
+  })
   submissions: Submission[];
 
   @CreateDateColumn({ type: "timestamp" })

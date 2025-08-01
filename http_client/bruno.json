@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "quizloom",
+  "name": "demo_quiz",
   "type": "collection",
   "ignore": [
     "node_modules",

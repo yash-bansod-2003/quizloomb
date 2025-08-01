@@ -1,15 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { Logger } from "winston";
 import { z } from "zod";
-import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
 
 import QuizzesService from "@/services/quizzes.service.js";
+import QuizSessionsService from "@/services/quizSessions.service.js";
 import UsersService from "@/services/users.service.js";
 import AiService from "@/services/ai.service.js";
 import SettingsService from "@/services/settings.service.js";
 import QuestionsService from "@/services/questions.service.js";
 import AnswersService from "@/services/answers.service.js";
+import ResultsService from "@/services/results.service.js";
 import TokensService from "@/services/tokens.service.js";
 import ParserService from "@/services/parser.service.js";
 
@@ -24,15 +25,17 @@ import { QuestionType } from "@/entities/Question.js";
 class QuizzesController {
   constructor(
     private readonly quizzesService: QuizzesService,
+    private readonly quizSessionsService: QuizSessionsService,
     private readonly usersService: UsersService,
     private readonly questionsService: QuestionsService,
     private readonly answersService: AnswersService,
+    private readonly resultsService: ResultsService,
     private readonly settingsService: SettingsService,
     private readonly quizzesTokensService: TokensService,
     private readonly aiService: AiService,
     private readonly parserService: ParserService,
     private readonly logger: Logger,
-  ) {}
+  ) { }
 
   async create(req: Request, res: Response, next: NextFunction) {
     try {
@@ -382,18 +385,41 @@ class QuizzesController {
         );
       }
 
-      const sessionId = uuidv4();
+      const result = await this.resultsService.create({
+        quiz,
+        attempt: 1,
+        system: req.get("user-agent") || ""
+      });
+
+      if (!result) {
+        this.logger.error(`Failed to create result for quiz ${quizId}`);
+        return next(createHttpError.InternalServerError("Result not created"));
+      }
+
+      const quizSession = await this.quizSessionsService.create({
+        quiz,
+        result,
+        expiry: new Date(
+          currentTime.getTime() + durationMinutes * 60 * 1000,
+        ).toISOString(),
+        fields: JSON.stringify(fields),
+        questions: quiz.questions.map((q) => q.id),
+      })
+
+      if (!quizSession) {
+        this.logger.error(`Failed to create quiz session for quiz ${quizId}`);
+        return next(createHttpError.InternalServerError("Quiz session not created"));
+      }
 
       const payload: QuizTokenPayload = {
         id: quiz.id,
-        durationMinutes,
-        startTime: currentTime,
-        sessionId,
-        fields,
+        sessionId: quizSession.id,
+        resultId: result.id,
+        expiry: quizSession.expiry,
       };
 
       const quizToken = this.quizzesTokensService.sign(payload, {
-        expiresIn: `${durationMinutes + 15}m`,
+        expiresIn: `1d`,
       });
 
       res.cookie(COOKIE_PROPERTIES.QUIZ_TOKEN_COOKIE_NAME, quizToken, {

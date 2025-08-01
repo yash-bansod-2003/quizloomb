@@ -34,7 +34,9 @@ export class Answer {
   })
   question: Question;
 
-  @OneToMany(() => Submission, (submission) => submission.answer)
+  @OneToMany(() => Submission, (submission) => submission.answer, {
+    cascade: true,
+  })
   submissions: Submission[];
 
   @CreateDateColumn({ type: "timestamp" })

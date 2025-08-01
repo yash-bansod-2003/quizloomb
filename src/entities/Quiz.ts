@@ -16,6 +16,7 @@ import { Submission } from "@/entities/Submission.js";
 import { Result } from "@/entities/Result.js";
 import { Settings } from "@/entities/Settings.js";
 import { generateId } from "better-auth";
+import { QuizSession } from "./QuizSession.js";
 
 export enum QuizStatus {
   DRAFT = "draft",
@@ -60,16 +61,29 @@ export class Quiz {
   })
   user: User;
 
-  @OneToMany(() => Question, (question) => question.quiz)
+  @OneToMany(() => Question, (question) => question.quiz, {
+    cascade: true,
+  })
   questions: Question[];
 
-  @OneToMany(() => Submission, (submission) => submission.quiz)
+  @OneToMany(() => Submission, (submission) => submission.quiz, {
+    cascade: true,
+  })
   submissions: Submission[];
 
-  @OneToMany(() => Result, (result) => result.quiz)
+  @OneToMany(() => Result, (result) => result.quiz, {
+    cascade: true,
+  })
   results: Result[];
 
-  @OneToOne(() => Settings, (settings) => settings.quiz)
+  @OneToMany(() => QuizSession, (quizSession) => quizSession.quiz, {
+    cascade: true,
+  })
+  quizSessions: QuizSession[];
+
+  @OneToOne(() => Settings, (settings) => settings.quiz, {
+    cascade: true,
+  })
   @JoinColumn()
   settings: Settings;
 
