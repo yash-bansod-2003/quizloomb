@@ -12,7 +12,7 @@ First, install TypeScript using npm by running the following command:
 npm install --save-dev typescript
 ```
 
-Next, initialize TypeScript by running the following command:
+Next, initialize TypeScript by running the following command: Yes
 
 ```bash
 npx tsc --init
