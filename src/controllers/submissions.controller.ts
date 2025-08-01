@@ -11,7 +11,6 @@ import UserService from "@/services/users.service.js";
 import AnswersService from "@/services/answers.service.js";
 import ResultsService from "@/services/results.service.js";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
-import TokensService from "@/services/tokens.service.js";
 import { AuthenticatedQuizRequest } from "@/middlewares/authenticate-quiz.js";
 import { QuizStatus } from "@/entities/Quiz.js";
 
@@ -20,13 +19,12 @@ class SubmissionsController {
     private readonly submissionsService: SubmissionsService,
     private readonly usersService: UserService,
     private readonly quizzesService: QuizzesService,
-    private readonly quizzesTokensService: TokensService,
     private readonly resultsService: ResultsService,
     private readonly quizSessionsService: QuizSessionsService,
     private readonly questionsService: QuestionsService,
     private readonly answersService: AnswersService,
     private readonly logger: Logger,
-  ) { }
+  ) {}
 
   async create(req: Request, res: Response, next: NextFunction) {
     const userId = (req as AuthenticatedRequest).user.id;
@@ -83,7 +81,7 @@ class SubmissionsController {
 
     const result = await this.resultsService.findOne({
       where: { id: match.resultId, quiz: { id: quizId } },
-    })
+    });
 
     if (!result) {
       this.logger.error(`Result with id ${match.resultId} not found`);
@@ -91,7 +89,11 @@ class SubmissionsController {
     }
 
     const quizSession = await this.quizSessionsService.findOne({
-      where: { id: match.sessionId, quiz: { id: quizId }, result: { id: match.resultId } },
+      where: {
+        id: match.sessionId,
+        quiz: { id: quizId },
+        result: { id: match.resultId },
+      },
     });
 
     if (!quizSession) {
@@ -104,9 +106,12 @@ class SubmissionsController {
       return next(createHttpError.Forbidden("Quiz has ended"));
     }
 
-    await this.quizSessionsService.update({ id: quizSession.id }, {
-      questions: quizSession.questions.filter(q => q !== questionId),
-    })
+    await this.quizSessionsService.update(
+      { id: quizSession.id },
+      {
+        questions: quizSession.questions.filter((q) => q !== questionId),
+      },
+    );
 
     const submission = await this.submissionsService.findOne({
       where: {

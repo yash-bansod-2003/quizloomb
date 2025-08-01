@@ -35,7 +35,7 @@ class QuizzesController {
     private readonly aiService: AiService,
     private readonly parserService: ParserService,
     private readonly logger: Logger,
-  ) { }
+  ) {}
 
   async create(req: Request, res: Response, next: NextFunction) {
     try {
@@ -282,7 +282,9 @@ class QuizzesController {
           user: { id: user.id },
         },
         relations: {
-          questions: true,
+          questions: {
+            answers: true,
+          },
         },
       });
       return res.json(quiz);
@@ -388,7 +390,7 @@ class QuizzesController {
       const result = await this.resultsService.create({
         quiz,
         attempt: 1,
-        system: req.get("user-agent") || ""
+        system: req.get("user-agent") || "",
       });
 
       if (!result) {
@@ -404,11 +406,13 @@ class QuizzesController {
         ).toISOString(),
         fields: JSON.stringify(fields),
         questions: quiz.questions.map((q) => q.id),
-      })
+      });
 
       if (!quizSession) {
         this.logger.error(`Failed to create quiz session for quiz ${quizId}`);
-        return next(createHttpError.InternalServerError("Quiz session not created"));
+        return next(
+          createHttpError.InternalServerError("Quiz session not created"),
+        );
       }
 
       const payload: QuizTokenPayload = {

@@ -18,8 +18,14 @@ import AnswersService from "@/services/answers.service.js";
 import TokensService from "@/services/tokens.service.js";
 import configuration from "@/lib/configuration.js";
 import ParserService from "@/services/parser.service.js";
+import QuizSessionsService from "@/services/quizSessions.service.js";
+import { QuizSession } from "@/entities/QuizSession.js";
+import { Result } from "@/entities/Result.js";
+import ResultsService from "@/services/results.service.js";
 const router = Router();
 
+const quizSessionsRepository = AppDataSource.getRepository(QuizSession);
+const quizSessionsService = new QuizSessionsService(quizSessionsRepository);
 const questionsRepository = AppDataSource.getRepository(Question);
 const questionsService = new QuestionsService(questionsRepository);
 const answersRepository = AppDataSource.getRepository(Answer);
@@ -30,15 +36,19 @@ const quizzesService = new QuizzesService(quizzesRepository);
 const usersService = new UsersService(usersRepository);
 const settingsRepository = AppDataSource.getRepository(Settings);
 const settingsService = new SettingsService(settingsRepository);
+const resultsRepository = AppDataSource.getRepository(Result);
+const resultsService = new ResultsService(resultsRepository);
 const aiService = new Aiservice();
 const quizzesTokensService = new TokensService(configuration.jwt.quiz.secret);
 const parserService = new ParserService();
 
 const quizzesController = new QuizzesController(
   quizzesService,
+  quizSessionsService,
   usersService,
   questionsService,
   answersService,
+  resultsService,
   settingsService,
   quizzesTokensService,
   aiService,
