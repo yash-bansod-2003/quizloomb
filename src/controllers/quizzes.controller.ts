@@ -364,6 +364,9 @@ class QuizzesController {
         where: {
           id: quizId,
         },
+        relations: {
+          questions: true,
+        },
       });
 
       if (!quiz) {
@@ -390,25 +393,29 @@ class QuizzesController {
       });
 
       const { startTime, endTime, durationMinutes } = settings;
+
       const currentTime = new Date();
-      if (currentTime < startTime || currentTime > endTime) {
-        this.logger.error(`Quiz ${quizId} is not available at this time`);
-        return next(
-          createHttpError.Forbidden("Quiz is not available at this time"),
-        );
+
+      if (startTime && endTime) {
+        if (currentTime < startTime || currentTime > endTime) {
+          this.logger.error(`Quiz ${quizId} is not available at this time`);
+          return next(
+            createHttpError.Forbidden("Quiz is not available at this time"),
+          );
+        }
       }
 
       const result = await this.resultsService.create({
         quiz,
         attempt: 1,
         system: req.get("user-agent") || "",
+        score: 0,
       });
 
       if (!result) {
         this.logger.error(`Failed to create result for quiz ${quizId}`);
         return next(createHttpError.InternalServerError("Result not created"));
       }
-
       const quizSession = await this.quizSessionsService.create({
         quiz,
         result,
