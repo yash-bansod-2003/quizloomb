@@ -1,5 +1,5 @@
 # Use the official Node.js 23 Alpine image as the builder
-FROM node:23-alpine AS builder
+FROM node:25-alpine AS builder
 
 # Set the working directory inside the container
 WORKDIR /build
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Use a smaller Node.js 23 Alpine image for the runner
-FROM node:23-alpine AS runner
+FROM node:25-alpine AS runner
 
 # Set environment variable to production
 ENV NODE_ENV=test
