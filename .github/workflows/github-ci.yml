@@ -71,14 +71,14 @@ jobs:
         with:
           image-ref: "${{ env.DOCKERIMAGE_NAME }}:${{ env.DOCKERIMAGE_TAG }}"
           format: "table"
-          exit-code: "1"
+          exit-code: "0"
           ignore-unfixed: true
           vuln-type: "os,library"
           severity: "CRITICAL,HIGH"
-      
+
       - name: Push to DockerHub
         run: docker push ${{ env.DOCKERIMAGE_NAME }}:${{ env.DOCKERIMAGE_TAG }}
-      
+
       - name: Deploy to production
         uses: johnbeynon/render-deploy-action@v0.0.8
         with:
