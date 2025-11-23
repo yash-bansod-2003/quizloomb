@@ -1,12 +1,12 @@
 import { Router } from "express";
-import AnswersService from "@/services/answers.service.js";
+import OptionsService from "@/services/options.service.js";
 import QuestionsService from "@/services/questions.service.js";
 import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/lib/logger.js";
 import { SubmissionValidator } from "@/validators/submissions.validator.js";
 import { Question } from "@/entities/Question.js";
-import { Answer } from "@/entities/Answer.js";
+import { Option } from "@/entities/Option.js";
 import { User } from "@/entities/auth/User.js";
 import { Quiz } from "@/entities/Quiz.js";
 import UserService from "@/services/users.service.js";
@@ -14,32 +14,38 @@ import QuizzesService from "@/services/quizzes.service.js";
 import { Submission } from "@/entities/Submission.js";
 import SubmissionsService from "@/services/submissions.service.js";
 import SubmissionsController from "@/controllers/submissions.controller.js";
-import TokensService from "@/services/tokens.service.js";
-import configuration from "@/lib/configuration.js";
 import authenticateQuiz from "@/middlewares/authenticate-quiz.js";
+import ResultsService from "@/services/results.service.js";
+import QuizSessionsService from "@/services/quizSessions.service.js";
+import { QuizSession } from "@/entities/QuizSession.js";
+import { Result } from "@/entities/Result.js";
 
 const router = Router();
 
 const usersRepository = AppDataSource.getRepository(User);
 const quizzesRepository = AppDataSource.getRepository(Quiz);
 const questionsRepository = AppDataSource.getRepository(Question);
-const answersRepository = AppDataSource.getRepository(Answer);
+const optionsRepository = AppDataSource.getRepository(Option);
 const submissionsRepository = AppDataSource.getRepository(Submission);
 
 const usersService = new UserService(usersRepository);
 const quizzessService = new QuizzesService(quizzesRepository);
 const questionsService = new QuestionsService(questionsRepository);
-const answersService = new AnswersService(answersRepository);
+const optionsService = new OptionsService(optionsRepository);
 const submissionsService = new SubmissionsService(submissionsRepository);
-const quizzesTokensService = new TokensService(configuration.jwt.quiz.secret);
+const quizSessionsRepository = AppDataSource.getRepository(QuizSession);
+const quizSessionsService = new QuizSessionsService(quizSessionsRepository);
+const resultsRepository = AppDataSource.getRepository(Result);
+const resultsService = new ResultsService(resultsRepository);
 
 const submissionsController = new SubmissionsController(
   submissionsService,
   usersService,
   quizzessService,
-  quizzesTokensService,
+  resultsService,
+  quizSessionsService,
   questionsService,
-  answersService,
+  optionsService,
   logger,
 );
 

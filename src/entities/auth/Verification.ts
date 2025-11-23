@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from "typeorm";
 
 @Entity("verification")
@@ -11,6 +12,7 @@ export class Verification {
   @PrimaryColumn({ type: "text" })
   id: string;
 
+  @Index()
   @Column({ type: "text" })
   identifier: string;
 

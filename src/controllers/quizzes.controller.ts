@@ -1,15 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { Logger } from "winston";
 import { z } from "zod";
-import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
 
 import QuizzesService from "@/services/quizzes.service.js";
+import QuizSessionsService from "@/services/quizSessions.service.js";
 import UsersService from "@/services/users.service.js";
 import AiService from "@/services/ai.service.js";
 import SettingsService from "@/services/settings.service.js";
 import QuestionsService from "@/services/questions.service.js";
-import AnswersService from "@/services/answers.service.js";
+import AnswersService from "@/services/options.service.js";
+import ResultsService from "@/services/results.service.js";
 import TokensService from "@/services/tokens.service.js";
 import ParserService from "@/services/parser.service.js";
 
@@ -18,14 +19,17 @@ import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 
 import { COOKIE_PROPERTIES } from "@/lib/constants.js";
 import configuration from "@/lib/configuration.js";
-import { QuizTokenPayload } from "@/types/index.js";
+import { Field, QuizTokenPayload } from "@/types/index.js";
+import { QuestionType } from "@/entities/Question.js";
 
 class QuizzesController {
   constructor(
     private readonly quizzesService: QuizzesService,
+    private readonly quizSessionsService: QuizSessionsService,
     private readonly usersService: UsersService,
     private readonly questionsService: QuestionsService,
     private readonly answersService: AnswersService,
+    private readonly resultsService: ResultsService,
     private readonly settingsService: SettingsService,
     private readonly quizzesTokensService: TokensService,
     private readonly aiService: AiService,
@@ -156,7 +160,13 @@ class QuizzesController {
       }
 
       this.logger.info(`Generating quiz from file for user ${userId}`);
-      const content = (req.body as { content: string }).content;
+      const content = (req.body as { content: string })?.content;
+
+      if (!content) {
+        this.logger.error("no content provided");
+        return next(createHttpError.Forbidden("No content provided"));
+      }
+
       const result = this.parserService.parse(content);
       if (result.errors.length > 0) {
         res.status(400).json({
@@ -172,11 +182,23 @@ class QuizzesController {
         user,
       });
 
+      if (!quiz) {
+        this.logger.error("Failed to create quiz from file");
+        return next(createHttpError.InternalServerError());
+      }
+
+      const settings = await this.settingsService.create({ quiz });
+      if (!settings) {
+        this.logger.error("Failed to create settings for quiz");
+        return next(createHttpError.InternalServerError());
+      }
+
       for (const question of result.quiz.questions) {
         const dbQuestion = await this.questionsService.create({
           text: question.question,
           type: question.type,
           tags: question.tags,
+          difficulty: question.difficulty,
           quiz,
         });
         if (!dbQuestion) {
@@ -184,7 +206,7 @@ class QuizzesController {
           return next(createHttpError.InternalServerError());
         }
 
-        if (question.type === "mcq") {
+        if (question.type === QuestionType.MCQ) {
           for (const option of question.options) {
             const answer = await this.answersService.create({
               text: option,
@@ -198,7 +220,7 @@ class QuizzesController {
           }
         }
 
-        if (question.type === "multi_select") {
+        if (question.type === QuestionType.MULTI_SELECT) {
           for (const option of question.options) {
             const answer = await this.answersService.create({
               text: option,
@@ -272,7 +294,9 @@ class QuizzesController {
           user: { id: user.id },
         },
         relations: {
-          questions: true,
+          questions: {
+            answers: true,
+          },
         },
       });
       return res.json(quiz);
@@ -335,26 +359,19 @@ class QuizzesController {
 
   async start(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id: quizId } = req.body as { id: string };
-      const userId = (req as AuthenticatedRequest).user.id;
-      const user = await this.usersService.findOne({
-        where: { id: userId },
-      });
-
-      if (!user) {
-        this.logger.error(`User ${userId} not found in findSettings`);
-        return next(createHttpError.NotFound());
-      }
+      const { id: quizId } = req.params as { id: string };
 
       const quiz = await this.quizzesService.findOne({
         where: {
           id: quizId,
-          user: { id: user.id },
+        },
+        relations: {
+          questions: true,
         },
       });
 
       if (!quiz) {
-        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        this.logger.error(`Quiz ${quizId} not found`);
         return next(createHttpError.NotFound());
       }
 
@@ -368,30 +385,65 @@ class QuizzesController {
         return next(createHttpError.NotFound());
       }
 
+      const fields: Record<string, string> = {};
+
+      Array.from(settings.fields as unknown as Field[]).forEach((field) => {
+        if (field.enabled) {
+          fields[field.name] = (req.body as Record<string, string>)[field.name];
+        }
+      });
+
       const { startTime, endTime, durationMinutes } = settings;
+
       const currentTime = new Date();
-      if (currentTime < startTime || currentTime > endTime) {
-        this.logger.error(`Quiz ${quizId} is not available at this time`);
+
+      if (startTime && endTime) {
+        if (currentTime < startTime || currentTime > endTime) {
+          this.logger.error(`Quiz ${quizId} is not available at this time`);
+          return next(
+            createHttpError.Forbidden("Quiz is not available at this time"),
+          );
+        }
+      }
+
+      const result = await this.resultsService.create({
+        quiz,
+        attempt: 1,
+        system: req.get("user-agent") || "",
+        score: 0,
+      });
+
+      if (!result) {
+        this.logger.error(`Failed to create result for quiz ${quizId}`);
+        return next(createHttpError.InternalServerError("Result not created"));
+      }
+
+      const quizSession = await this.quizSessionsService.create({
+        quiz,
+        result,
+        expiry: new Date(
+          currentTime.getTime() + durationMinutes * 60 * 1000,
+        ).toISOString(),
+        fields: JSON.stringify(fields),
+        questions: quiz.questions.map((q) => q.id),
+      });
+
+      if (!quizSession) {
+        this.logger.error(`Failed to create quiz session for quiz ${quizId}`);
         return next(
-          createHttpError.Forbidden("Quiz is not available at this time"),
+          createHttpError.InternalServerError("Quiz session not created"),
         );
       }
 
-      const sessionId = uuidv4();
-
       const payload: QuizTokenPayload = {
         id: quiz.id,
-        durationMinutes,
-        startTime: currentTime,
-        sessionId,
-        user: {
-          id: user.id,
-          email: user.email,
-        },
+        sessionId: quizSession.id,
+        resultId: result.id,
+        expiry: quizSession.expiry,
       };
 
       const quizToken = this.quizzesTokensService.sign(payload, {
-        expiresIn: `${durationMinutes + 15}m`,
+        expiresIn: `1d`,
       });
 
       res.cookie(COOKIE_PROPERTIES.QUIZ_TOKEN_COOKIE_NAME, quizToken, {

@@ -3,18 +3,18 @@ import {
   Column,
   Entity,
   ManyToOne,
-  OneToMany,
   PrimaryColumn,
   CreateDateColumn,
   UpdateDateColumn,
   BeforeInsert,
+  ManyToMany,
 } from "typeorm";
 import { Question } from "@/entities/Question.js";
 import { Submission } from "@/entities/Submission.js";
 import { generateId } from "better-auth";
 
-@Entity("answers")
-export class Answer {
+@Entity("options")
+export class Option {
   @PrimaryColumn({ type: "text" })
   id: string;
 
@@ -29,10 +29,12 @@ export class Answer {
   @Column({ default: false, type: "boolean" })
   isCorrect: boolean;
 
-  @ManyToOne(() => Question, (question) => question.answers)
+  @ManyToOne(() => Question, (question) => question.options, {
+    onDelete: "CASCADE",
+  })
   question: Question;
 
-  @OneToMany(() => Submission, (submission) => submission.answer)
+  @ManyToMany(() => Submission, (submission) => submission.options)
   submissions: Submission[];
 
   @CreateDateColumn({ type: "timestamp" })

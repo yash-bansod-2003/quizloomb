@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { organization } from "better-auth/plugins";
 import { typeormAdapter } from "@/adapters/typeorm-adapter.js";
 import { AppDataSource } from "@/data-source.js";
 import configuration from "@/lib/configuration.js";
@@ -9,6 +10,7 @@ const mailService = new MailNotificationService(logger);
 
 export const auth = betterAuth({
   database: typeormAdapter(AppDataSource),
+  plugins: [organization()],
   trustedOrigins: [configuration.domain],
   emailAndPassword: {
     enabled: true,

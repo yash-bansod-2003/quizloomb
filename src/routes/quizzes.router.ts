@@ -13,32 +13,42 @@ import SettingsService from "@/services/settings.service.js";
 import { Settings } from "@/entities/Settings.js";
 import { Question } from "@/entities/Question.js";
 import QuestionsService from "@/services/questions.service.js";
-import { Answer } from "@/entities/Answer.js";
-import AnswersService from "@/services/answers.service.js";
+import { Option } from "@/entities/Option.js";
+import OptionsService from "@/services/options.service.js";
 import TokensService from "@/services/tokens.service.js";
 import configuration from "@/lib/configuration.js";
 import ParserService from "@/services/parser.service.js";
+import QuizSessionsService from "@/services/quizSessions.service.js";
+import { QuizSession } from "@/entities/QuizSession.js";
+import { Result } from "@/entities/Result.js";
+import ResultsService from "@/services/results.service.js";
 const router = Router();
 
+const quizSessionsRepository = AppDataSource.getRepository(QuizSession);
+const quizSessionsService = new QuizSessionsService(quizSessionsRepository);
 const questionsRepository = AppDataSource.getRepository(Question);
 const questionsService = new QuestionsService(questionsRepository);
-const answersRepository = AppDataSource.getRepository(Answer);
-const answersService = new AnswersService(answersRepository);
+const optionsRepository = AppDataSource.getRepository(Option);
+const optionsService = new OptionsService(optionsRepository);
 const quizzesRepository = AppDataSource.getRepository(Quiz);
 const usersRepository = AppDataSource.getRepository(User);
 const quizzesService = new QuizzesService(quizzesRepository);
 const usersService = new UsersService(usersRepository);
 const settingsRepository = AppDataSource.getRepository(Settings);
 const settingsService = new SettingsService(settingsRepository);
+const resultsRepository = AppDataSource.getRepository(Result);
+const resultsService = new ResultsService(resultsRepository);
 const aiService = new Aiservice();
 const quizzesTokensService = new TokensService(configuration.jwt.quiz.secret);
 const parserService = new ParserService();
 
 const quizzesController = new QuizzesController(
   quizzesService,
+  quizSessionsService,
   usersService,
   questionsService,
-  answersService,
+  optionsService,
+  resultsService,
   settingsService,
   quizzesTokensService,
   aiService,
@@ -83,7 +93,7 @@ router.delete("/:id", authenticate, async (req, res, next) => {
   await quizzesController.delete(req, res, next);
 });
 
-router.post("/start", authenticate, async (req, res, next) => {
+router.post("/start/:id", async (req, res, next) => {
   await quizzesController.start(req, res, next);
 });
 

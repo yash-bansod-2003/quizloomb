@@ -56,7 +56,7 @@ class ResultsController {
 
       const result = await this.resultsService.findOne({
         where: {
-          sessionId: match.sessionId,
+          quizSession: { id: match.sessionId },
         },
       });
 
@@ -73,12 +73,11 @@ class ResultsController {
 
       const submissions = await this.submissionsService.findAll({
         where: {
-          user: { id: user.id },
           quiz: { id: quiz.id },
           sessionId: match.sessionId,
         },
         relations: {
-          answer: true,
+          options: true,
         },
       });
 
@@ -91,14 +90,13 @@ class ResultsController {
       }
 
       const score = submissions.reduce((acc, submission) => {
-        return acc + (submission.answer.isCorrect ? 1 : 0);
+        return acc + (submission.options[0].isCorrect ? 1 : 0);
       }, 0);
 
       this.logger.info(`Calculated score: ${score}`);
 
       const previousResults = await this.resultsService.findAll({
         where: {
-          user: { id: user.id },
           quiz: { id: quiz.id },
         },
       });
@@ -111,11 +109,9 @@ class ResultsController {
       );
 
       const newResult = await this.resultsService.create({
-        user,
         quiz,
         score,
         attempt,
-        sessionId: match.sessionId,
       });
       this.logger.info(
         `Successfully created result with id: ${newResult.id || "unknown"}`,
@@ -130,7 +126,15 @@ class ResultsController {
   async findAll(req: Request, res: Response, next: NextFunction) {
     this.logger.info("Entered findAll function for results");
     try {
-      const results = await this.resultsService.findAll();
+      const quizId = req.params.quizId;
+      this.logger.debug(`Fetching results for quiz id: ${quizId}`);
+      if (!quizId) {
+        this.logger.error("Quiz ID parameter is missing");
+        return next(createHttpError.BadRequest("quizId parameter is required"));
+      }
+      const results = await this.resultsService.findAll({
+        where: { quiz: { id: quizId } },
+      });
       this.logger.info(`Returned ${results.length} results`);
       res.json(results);
     } catch (error) {
@@ -140,9 +144,17 @@ class ResultsController {
   }
 
   async findOne(req: Request, res: Response, next: NextFunction) {
-    const resultId = req.params.id;
-    this.logger.info(`Entered findOne for result id: ${resultId}`);
     try {
+      const quizId = req.params.quizId;
+      if (!quizId) {
+        const err = createHttpError.UnprocessableEntity("quizId is required");
+        this.logger.error("quizId parameter is missing");
+        throw err;
+      }
+      const resultId = req.params.id;
+
+      this.logger.info(`Entered findOne for result id: ${resultId}`);
+
       const result = await this.resultsService.findOne({
         where: { id: resultId },
       });
@@ -154,7 +166,7 @@ class ResultsController {
       this.logger.info(`Successfully fetched result with id: ${resultId}`);
       res.json(result);
     } catch (error) {
-      this.logger.error(`Error in findOne for id ${resultId}: ${error}`);
+      this.logger.error(`Error : ${error}`);
       next(error);
     }
   }

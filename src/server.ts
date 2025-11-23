@@ -7,7 +7,7 @@ import morgan from "morgan";
 import usersRouter from "@/routes/users.router.js";
 import quizzesRouter from "@/routes/quizzes.router.js";
 import questionsRouter from "@/routes/questions.router.js";
-import answersRouter from "@/routes/answers.router.js";
+import optionsRouter from "@/routes/options.router.js";
 import submissionsRouter from "@/routes/submissions.router.js";
 import resultsRouter from "@/routes/results.router.js";
 import configuration from "@/lib/configuration.js";
@@ -35,7 +35,7 @@ export const createServer = (): Express => {
     .use("/api/users", usersRouter)
     .use("/api/quizzes", quizzesRouter)
     .use("/api/questions", questionsRouter)
-    .use("/api/answers", answersRouter)
+    .use("/api/options", optionsRouter)
     .use("/api/submissions", submissionsRouter)
     .use("/api/results", resultsRouter)
     .use("/api/settings", settingsRouter)

@@ -6,7 +6,6 @@ const logger = createLogger({
   defaultMeta: { serviceName: "templete" },
   transports: [
     new transports.Console({
-      level: "debug",
       format: format.combine(format.timestamp(), format.simple()),
       silent: configuration.node_env === "test",
     }),

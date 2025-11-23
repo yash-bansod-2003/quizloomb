@@ -6,33 +6,26 @@ import { submissionValidationSchema } from "@/validators/submissions.validator.j
 import { z } from "zod";
 import QuestionsService from "@/services/questions.service.js";
 import QuizzesService from "@/services/quizzes.service.js";
+import QuizSessionsService from "@/services/quizSessions.service.js";
 import UserService from "@/services/users.service.js";
-import AnswersService from "@/services/answers.service.js";
-import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
-import TokensService from "@/services/tokens.service.js";
+import AnswersService from "@/services/options.service.js";
+import ResultsService from "@/services/results.service.js";
 import { AuthenticatedQuizRequest } from "@/middlewares/authenticate-quiz.js";
+import { QuizStatus } from "@/entities/Quiz.js";
 
 class SubmissionsController {
   constructor(
     private readonly submissionsService: SubmissionsService,
     private readonly usersService: UserService,
     private readonly quizzesService: QuizzesService,
-    private readonly quizzesTokensService: TokensService,
+    private readonly resultsService: ResultsService,
+    private readonly quizSessionsService: QuizSessionsService,
     private readonly questionsService: QuestionsService,
     private readonly answersService: AnswersService,
     private readonly logger: Logger,
   ) {}
 
   async create(req: Request, res: Response, next: NextFunction) {
-    const userId = (req as AuthenticatedRequest).user.id;
-    const user = await this.usersService.findOne({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      this.logger.error(`User with id ${userId} not found`);
-      return next(createHttpError.NotFound("user not found"));
-    }
     const { quizId, questionId, answerId } = req.body as z.infer<
       typeof submissionValidationSchema
     >;
@@ -44,7 +37,7 @@ class SubmissionsController {
       return next(createHttpError.NotFound("quiz not found"));
     }
 
-    if (quiz.status !== "live") {
+    if (quiz.status !== QuizStatus.LIVE) {
       this.logger.error("Quiz is not live");
       return next(
         createHttpError.Forbidden("Quiz is not live or available at this time"),
@@ -52,19 +45,10 @@ class SubmissionsController {
     }
 
     const match = (req as AuthenticatedQuizRequest).quiz;
-
+    console.log(match);
     if (!match) {
       this.logger.error("Quiz token does not match");
       return next(createHttpError.Unauthorized("quiz token does not match"));
-    }
-
-    const quizEndTime = new Date(
-      match.startTime.getTime() + match.durationMinutes * 60 * 1000,
-    );
-
-    if (new Date() > quizEndTime) {
-      this.logger.error("Quiz has ended");
-      return next(createHttpError.Forbidden("Quiz has ended"));
     }
 
     const question = await this.questionsService.findOne({
@@ -77,7 +61,7 @@ class SubmissionsController {
     }
 
     const answer = await this.answersService.findOne({
-      where: { id: answerId },
+      where: { id: answerId, question: { id: question.id } },
     });
 
     if (!answer) {
@@ -85,16 +69,75 @@ class SubmissionsController {
       return next(createHttpError.NotFound("answer not found"));
     }
 
-    const Submission = await this.submissionsService.create({
-      user,
+    const result = await this.resultsService.findOne({
+      where: { id: match.resultId, quiz: { id: quizId } },
+    });
+
+    if (!result) {
+      this.logger.error(`Result with id ${match.resultId} not found`);
+      return next(createHttpError.NotFound("result not found"));
+    }
+
+    const quizSession = await this.quizSessionsService.findOne({
+      where: {
+        id: match.sessionId,
+        quiz: { id: quizId },
+        result: { id: match.resultId },
+      },
+    });
+
+    if (!quizSession) {
+      this.logger.error(`Quiz session with id ${match.sessionId} not found`);
+      return next(createHttpError.NotFound("quiz session not found"));
+    }
+
+    if (new Date() > match.expiry) {
+      this.logger.error("Quiz has ended");
+      return next(createHttpError.Forbidden("Quiz has ended"));
+    }
+
+    await this.quizSessionsService.update(
+      { id: quizSession.id },
+      {
+        questions: quizSession.questions.filter((q) => q !== questionId),
+      },
+    );
+
+    const submission = await this.submissionsService.findOne({
+      where: {
+        quiz: { id: quizId },
+        question: { id: questionId },
+        answer: { id: answerId },
+        sessionId: match.sessionId,
+      },
+    });
+
+    if (submission) {
+      await this.submissionsService.update(
+        { id: submission.id },
+        {
+          quiz,
+          question,
+          answer,
+          sessionId: match.sessionId,
+        },
+      );
+      this.logger.info(`Updated existing submission with id: ${submission.id}`);
+      res.status(200).json(submission);
+      return;
+    }
+
+    const createdSubmission = await this.submissionsService.create({
       quiz,
       question,
       answer,
-      attempt: 1,
       sessionId: match.sessionId,
+      result: result,
     });
-    this.logger.info(`Created new submission with id: ${Submission.id}`);
-    return res.status(201).json(Submission);
+
+    this.logger.info(`Created new submission with id: ${createdSubmission.id}`);
+    res.status(201).json({ id: createdSubmission.id });
+    return;
   }
 
   async findAll(req: Request, res: Response, next: NextFunction) {

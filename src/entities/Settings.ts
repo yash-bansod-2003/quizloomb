@@ -25,6 +25,45 @@ export enum AccessControl {
   INVITE_ONLY = "invite_only",
 }
 
+export enum TransitionMode {
+  MANUAL = "manual",
+  AUTOMATIC = "automatic",
+}
+const defaultFields = [
+  {
+    name: "name",
+    type: "text",
+    label: "Name",
+    enabled: true,
+    required: true,
+    placeholder: "Enter your name",
+  },
+  {
+    name: "email",
+    type: "email",
+    label: "Email",
+    enabled: true,
+    required: true,
+    placeholder: "Enter your email",
+  },
+  {
+    name: "phone",
+    type: "tel",
+    label: "Phone",
+    enabled: false,
+    required: false,
+    placeholder: "Enter your phone number",
+  },
+  {
+    name: "organization",
+    type: "text",
+    label: "Organization",
+    enabled: false,
+    required: false,
+    placeholder: "Enter your organization name",
+  },
+];
+
 @Entity("settings")
 export class Settings {
   @PrimaryColumn({ type: "text" })
@@ -64,7 +103,7 @@ export class Settings {
     enum: ShuffleMode,
     default: ShuffleMode.NONE,
   })
-  shuffleMode: string;
+  shuffleMode: ShuffleMode;
 
   @Column({ default: 1, type: "int" })
   maxAttempts: number;
@@ -80,7 +119,7 @@ export class Settings {
     enum: AccessControl,
     default: AccessControl.PUBLIC,
   })
-  accessControl: string;
+  accessControl: AccessControl;
 
   @Column({ nullable: true, type: "varchar" })
   accessPassword: string;
@@ -97,8 +136,12 @@ export class Settings {
   @Column({ default: false, type: "boolean" })
   progressOnlyOnPass: boolean;
 
-  @Column({ type: "enum", enum: ["manual", "automatic"], default: "manual" })
-  nextQuizTransitionMode: "manual" | "automatic";
+  @Column({
+    type: "enum",
+    enum: TransitionMode,
+    default: TransitionMode.MANUAL,
+  })
+  nextQuizTransitionMode: TransitionMode;
 
   @Column({ nullable: true, type: "varchar" })
   timeZone: string;
@@ -189,6 +232,9 @@ export class Settings {
 
   @Column({ default: 5, type: "int" })
   gazeAwayThresholdSeconds: number;
+
+  @Column({ type: "jsonb", default: defaultFields })
+  fields: string;
 
   @OneToOne(() => Quiz, (quiz) => quiz.settings)
   quiz: Quiz;

@@ -9,19 +9,19 @@ import {
 import { Session } from "./Session.js";
 import { Account } from "./Account.js";
 import { Quiz } from "../Quiz.js";
-import { Result } from "../Result.js";
-import { Submission } from "../Submission.js";
+import { Member } from "../Member.js";
+import { Invitation } from "../Invitation.js";
 
 @Entity("user")
 export class User {
   @PrimaryColumn({ type: "text" })
   id: string;
 
-  @Column({ type: "text", unique: true })
-  email: string;
-
   @Column({ type: "text", nullable: true })
   name: string;
+
+  @Column({ type: "text", unique: true })
+  email: string;
 
   @Column({ type: "boolean" })
   emailVerified: boolean;
@@ -44,14 +44,14 @@ export class User {
   @OneToMany(() => Account, (account) => account.user, { cascade: true })
   accounts: Account[];
 
-  @OneToMany(() => Quiz, (quiz) => quiz.user, { cascade: true })
-  quizzes: Quiz[];
+  @OneToMany(() => Member, (member) => member.user, { cascade: true })
+  members: Member[];
 
-  @OneToMany(() => Result, (result) => result.user, { cascade: true })
-  results: Result[];
-
-  @OneToMany(() => Submission, (submission) => submission.user, {
+  @OneToMany(() => Invitation, (invitation) => invitation.user, {
     cascade: true,
   })
-  submissions: Result[];
+  invitations: Invitation[];
+
+  @OneToMany(() => Quiz, (quiz) => quiz.user, { cascade: true })
+  quizzes: Quiz[];
 }

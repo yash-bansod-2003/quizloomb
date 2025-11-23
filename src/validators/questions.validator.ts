@@ -1,10 +1,11 @@
 import { z } from "zod";
 import { NextFunction, Request, Response } from "express";
+import { QuestionType } from "@/entities/Question.js";
 
 export const questionValidationSchema = z.object({
   quizId: z.string(),
   text: z.string(),
-  type: z.enum(["mcq", "true_false", "written"]),
+  type: z.enum(QuestionType),
 });
 
 export const QuestionValidator = (

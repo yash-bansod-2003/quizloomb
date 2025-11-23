@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { NextFunction, Request, Response } from "express";
 
-export const answerValidationSchema = z
+export const optionValidationSchema = z
   .object({
     text: z.string(),
     isCorrect: z.boolean().optional(),
@@ -16,13 +16,13 @@ export const answerValidationSchema = z
  * @param {Response} res The Express.js response object.
  * @param {NextFunction} next The Express.js next function.
  */
-export const AnswerValidator = (
+export const OptionValidator = (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    answerValidationSchema.parse(req.body);
+    optionValidationSchema.parse(req.body);
     next();
   } catch (error) {
     return next(error);

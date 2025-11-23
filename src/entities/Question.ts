@@ -9,9 +9,32 @@ import {
   BeforeInsert,
 } from "typeorm";
 import { Quiz } from "@/entities/Quiz.js";
-import { Answer } from "@/entities/Answer.js";
+import { Option } from "@/entities/Option.js";
 import { Submission } from "@/entities/Submission.js";
 import { generateId } from "better-auth";
+
+export enum QuestionType {
+  MCQ = "mcq",
+  TRUE_FALSE = "trueFalse",
+  WRITTEN = "written",
+  MULTI_SELECT = "multiSelect",
+  SHORT_ANSWER = "shortAnswer",
+  FILL_IN_THE_BLANK = "fillInTheBlank",
+  MATCHING = "matching",
+  ORDERING = "ordering",
+  VIDEO_RESPONSE = "videoResponse",
+  AUDIO_RESPONSE = "audioResponse",
+  RATING = "rating",
+  FILE_UPLOAD = "fileUpload",
+  SURVEY = "survey",
+  CODE_SNIPPET = "codeSnippet",
+}
+
+export enum Difficulty {
+  HIGH = "high",
+  LOW = "low",
+  MEDIUM = "medium",
+}
 
 @Entity("questions")
 export class Question {
@@ -27,21 +50,37 @@ export class Question {
   text: string;
 
   @Column({
-    enum: ["mcq", "trueFalse", "multiSelect", "written"],
-    type: "text",
+    type: "enum",
+    enum: QuestionType,
   })
-  type: string;
+  type: QuestionType;
+
+  @Column({ type: "int", default: 1 })
+  points: number;
+
+  @Column({
+    type: "enum",
+    enum: Difficulty,
+    default: Difficulty.MEDIUM,
+  })
+  difficulty: Difficulty;
 
   @Column("text", { array: true })
   tags: string[];
 
-  @ManyToOne(() => Quiz, (quiz) => quiz.questions)
+  @ManyToOne(() => Quiz, (quiz) => quiz.questions, {
+    onDelete: "CASCADE",
+  })
   quiz: Quiz;
 
-  @OneToMany(() => Answer, (answer) => answer.question)
-  answers: Answer[];
+  @OneToMany(() => Option, (option) => option.question, {
+    cascade: true,
+  })
+  options: Option[];
 
-  @OneToMany(() => Submission, (submission) => submission.question)
+  @OneToMany(() => Submission, (submission) => submission.question, {
+    cascade: true,
+  })
   submissions: Submission[];
 
   @CreateDateColumn({ type: "timestamp" })
