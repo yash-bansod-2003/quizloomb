@@ -1,4 +1,4 @@
-import { QuestionType } from "@/entities/Question.js";
+import { Difficulty, QuestionType } from "@/entities/Question.js";
 
 export type Question =
   | MCQQuestion
@@ -37,6 +37,7 @@ export interface MultiSelectQuestion extends BaseQuestion {
 export interface QuizQuestion {
   type: QuestionType;
   question: string;
+  difficulty: Difficulty;
   options?: string[];
   correct?: string | string[] | boolean;
   tags: string[];

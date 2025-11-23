@@ -8,9 +8,8 @@ import QuestionsService from "@/services/questions.service.js";
 import QuizzesService from "@/services/quizzes.service.js";
 import QuizSessionsService from "@/services/quizSessions.service.js";
 import UserService from "@/services/users.service.js";
-import AnswersService from "@/services/answers.service.js";
+import AnswersService from "@/services/options.service.js";
 import ResultsService from "@/services/results.service.js";
-import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import { AuthenticatedQuizRequest } from "@/middlewares/authenticate-quiz.js";
 import { QuizStatus } from "@/entities/Quiz.js";
 
@@ -27,15 +26,6 @@ class SubmissionsController {
   ) {}
 
   async create(req: Request, res: Response, next: NextFunction) {
-    const userId = (req as AuthenticatedRequest).user.id;
-    const user = await this.usersService.findOne({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      this.logger.error(`User with id ${userId} not found`);
-      return next(createHttpError.NotFound("user not found"));
-    }
     const { quizId, questionId, answerId } = req.body as z.infer<
       typeof submissionValidationSchema
     >;
@@ -55,7 +45,7 @@ class SubmissionsController {
     }
 
     const match = (req as AuthenticatedQuizRequest).quiz;
-
+    console.log(match);
     if (!match) {
       this.logger.error("Quiz token does not match");
       return next(createHttpError.Unauthorized("quiz token does not match"));
@@ -71,7 +61,7 @@ class SubmissionsController {
     }
 
     const answer = await this.answersService.findOne({
-      where: { id: answerId },
+      where: { id: answerId, question: { id: question.id } },
     });
 
     if (!answer) {
@@ -137,7 +127,7 @@ class SubmissionsController {
       return;
     }
 
-    await this.submissionsService.create({
+    const createdSubmission = await this.submissionsService.create({
       quiz,
       question,
       answer,
@@ -145,8 +135,8 @@ class SubmissionsController {
       result: result,
     });
 
-    this.logger.info(`Created new submission with id: ${submission.id}`);
-    res.status(201).json({ id: submission.id });
+    this.logger.info(`Created new submission with id: ${createdSubmission.id}`);
+    res.status(201).json({ id: createdSubmission.id });
     return;
   }
 

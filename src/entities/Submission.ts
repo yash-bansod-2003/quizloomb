@@ -6,10 +6,11 @@ import {
   UpdateDateColumn,
   PrimaryColumn,
   BeforeInsert,
+  ManyToMany,
 } from "typeorm";
 import { Question } from "@/entities/Question.js";
 import { Quiz } from "@/entities/Quiz.js";
-import { Answer } from "@/entities/Answer.js";
+import { Option } from "@/entities/Option.js";
 import { generateId } from "better-auth";
 import { Result } from "./Result.js";
 
@@ -26,9 +27,6 @@ export class Submission {
   @Column({ type: "text", nullable: false })
   sessionId: string;
 
-  @Column({ type: "jsonb", nullable: false })
-  fields: string;
-
   @ManyToOne(() => Quiz, (quiz) => quiz.submissions, {
     onDelete: "CASCADE",
   })
@@ -39,10 +37,10 @@ export class Submission {
   })
   question: Question;
 
-  @ManyToOne(() => Answer, (answer) => answer.submissions, {
-    onDelete: "CASCADE",
+  @ManyToMany(() => Option, (option) => option.submissions, {
+    cascade: true,
   })
-  answer: Answer;
+  options: Option[];
 
   @ManyToOne(() => Result, (result) => result.submissions, {
     onDelete: "CASCADE",

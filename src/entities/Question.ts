@@ -7,23 +7,27 @@ import {
   UpdateDateColumn,
   PrimaryColumn,
   BeforeInsert,
-  JoinColumn,
 } from "typeorm";
 import { Quiz } from "@/entities/Quiz.js";
-import { Answer } from "@/entities/Answer.js";
+import { Option } from "@/entities/Option.js";
 import { Submission } from "@/entities/Submission.js";
 import { generateId } from "better-auth";
 
 export enum QuestionType {
   MCQ = "mcq",
   TRUE_FALSE = "trueFalse",
-  MULTI_SELECT = "multiSelect",
   WRITTEN = "written",
-  VIDEO = "video",
+  MULTI_SELECT = "multiSelect",
+  SHORT_ANSWER = "shortAnswer",
+  FILL_IN_THE_BLANK = "fillInTheBlank",
+  MATCHING = "matching",
+  ORDERING = "ordering",
+  VIDEO_RESPONSE = "videoResponse",
+  AUDIO_RESPONSE = "audioResponse",
   RATING = "rating",
   FILE_UPLOAD = "fileUpload",
-  RANKING = "ranking",
-  MATRIX = "matrix",
+  SURVEY = "survey",
+  CODE_SNIPPET = "codeSnippet",
 }
 
 export enum Difficulty {
@@ -67,13 +71,12 @@ export class Question {
   @ManyToOne(() => Quiz, (quiz) => quiz.questions, {
     onDelete: "CASCADE",
   })
-  @JoinColumn({ name: "quizId" })
   quiz: Quiz;
 
-  @OneToMany(() => Answer, (answer) => answer.question, {
+  @OneToMany(() => Option, (option) => option.question, {
     cascade: true,
   })
-  answers: Answer[];
+  options: Option[];
 
   @OneToMany(() => Submission, (submission) => submission.question, {
     cascade: true,

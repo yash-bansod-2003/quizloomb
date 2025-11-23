@@ -9,7 +9,7 @@ import UsersService from "@/services/users.service.js";
 import AiService from "@/services/ai.service.js";
 import SettingsService from "@/services/settings.service.js";
 import QuestionsService from "@/services/questions.service.js";
-import AnswersService from "@/services/answers.service.js";
+import AnswersService from "@/services/options.service.js";
 import ResultsService from "@/services/results.service.js";
 import TokensService from "@/services/tokens.service.js";
 import ParserService from "@/services/parser.service.js";
@@ -198,6 +198,7 @@ class QuizzesController {
           text: question.question,
           type: question.type,
           tags: question.tags,
+          difficulty: question.difficulty,
           quiz,
         });
         if (!dbQuestion) {
@@ -416,6 +417,7 @@ class QuizzesController {
         this.logger.error(`Failed to create result for quiz ${quizId}`);
         return next(createHttpError.InternalServerError("Result not created"));
       }
+
       const quizSession = await this.quizSessionsService.create({
         quiz,
         result,

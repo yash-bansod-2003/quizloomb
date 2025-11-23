@@ -44,15 +44,15 @@ router.post(
   },
 );
 
-router.get("/", authenticate, async (req, res, next) => {
+router.get("/:quizId", authenticate, async (req, res, next) => {
   await resultsController.findAll(req, res, next);
 });
 
-router.get("/:id", authenticate, async (req, res, next) => {
+router.get("/:quizId/:id", authenticate, async (req, res, next) => {
   await resultsController.findOne(req, res, next);
 });
 
-router.delete("/:id", authenticate, async (req, res, next) => {
+router.delete("/:quizId/:id", authenticate, async (req, res, next) => {
   await resultsController.delete(req, res, next);
 });
 

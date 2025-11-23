@@ -4,7 +4,7 @@ import { Logger } from "winston";
 import QuestionsService from "@/services/questions.service.js";
 import createHttpError from "http-errors";
 import QuizzesService from "@/services/quizzes.service.js";
-import AnswersService from "@/services/answers.service.js";
+import AnswersService from "@/services/options.service.js";
 import { questionValidationSchema } from "@/validators/questions.validator.js";
 
 class QuestionsController {
@@ -50,7 +50,13 @@ class QuestionsController {
   async findAll(req: Request, res: Response, next: NextFunction) {
     try {
       this.logger.info("Fetching all questions");
+      const quizId = req.params.quizId;
+      if (!quizId) {
+        this.logger.error("Quiz ID parameter is missing");
+        throw createHttpError.BadRequest("Quiz ID parameter is required");
+      }
       const questions = await this.questionsService.findAll({
+        where: { quiz: { id: quizId } },
         order: { createdAt: "DESC" },
       });
       if (!questions) {
@@ -66,12 +72,17 @@ class QuestionsController {
 
   async findOne(req: Request, res: Response, next: NextFunction) {
     try {
+      const quizId = req.params.quizId;
+      if (!quizId) {
+        this.logger.error("Quiz ID parameter is missing");
+        throw createHttpError.BadRequest("Quiz ID parameter is required");
+      }
       const questionId = req.params.id;
       this.logger.info(`Fetching question with id: ${questionId}`);
       const question = await this.questionsService.findOne({
-        where: { id: questionId },
+        where: { id: questionId, quiz: { id: quizId } },
         relations: {
-          answers: true,
+          options: true,
         },
       });
 

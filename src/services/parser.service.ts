@@ -1,5 +1,5 @@
 import { QuizQuestion } from "@/types/index.js";
-import { QuestionType } from "@/entities/Question.js";
+import { Difficulty, QuestionType } from "@/entities/Question.js";
 
 class Parser {
   constructor() {}
@@ -37,6 +37,19 @@ class Parser {
             errors.push(`Line ${lineNumber}: Unknown question type "${type}"`);
           } else {
             questionObj.type = type;
+          }
+        } else if (line.startsWith("difficulty:")) {
+          const difficulty = line.split(":")[1]?.trim() as Difficulty;
+          if (
+            ![Difficulty.HIGH, Difficulty.MEDIUM, Difficulty.LOW].includes(
+              difficulty,
+            )
+          ) {
+            errors.push(
+              `Line ${lineNumber}: Unknown question difficulty "${difficulty}"`,
+            );
+          } else {
+            questionObj.difficulty = difficulty;
           }
         } else if (line.startsWith("question:")) {
           questionObj.question = line.substring(9).trim();

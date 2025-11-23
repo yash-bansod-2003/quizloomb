@@ -1,12 +1,12 @@
 import { Router } from "express";
-import AnswersService from "@/services/answers.service.js";
+import OptionsService from "@/services/options.service.js";
 import QuestionsService from "@/services/questions.service.js";
 import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/lib/logger.js";
 import { SubmissionValidator } from "@/validators/submissions.validator.js";
 import { Question } from "@/entities/Question.js";
-import { Answer } from "@/entities/Answer.js";
+import { Option } from "@/entities/Option.js";
 import { User } from "@/entities/auth/User.js";
 import { Quiz } from "@/entities/Quiz.js";
 import UserService from "@/services/users.service.js";
@@ -25,13 +25,13 @@ const router = Router();
 const usersRepository = AppDataSource.getRepository(User);
 const quizzesRepository = AppDataSource.getRepository(Quiz);
 const questionsRepository = AppDataSource.getRepository(Question);
-const answersRepository = AppDataSource.getRepository(Answer);
+const optionsRepository = AppDataSource.getRepository(Option);
 const submissionsRepository = AppDataSource.getRepository(Submission);
 
 const usersService = new UserService(usersRepository);
 const quizzessService = new QuizzesService(quizzesRepository);
 const questionsService = new QuestionsService(questionsRepository);
-const answersService = new AnswersService(answersRepository);
+const optionsService = new OptionsService(optionsRepository);
 const submissionsService = new SubmissionsService(submissionsRepository);
 const quizSessionsRepository = AppDataSource.getRepository(QuizSession);
 const quizSessionsService = new QuizSessionsService(quizSessionsRepository);
@@ -45,7 +45,7 @@ const submissionsController = new SubmissionsController(
   resultsService,
   quizSessionsService,
   questionsService,
-  answersService,
+  optionsService,
   logger,
 );
 

@@ -2,7 +2,7 @@ import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 import configuration from "@/lib/configuration.js";
 import { quizValidationSchema } from "@/validators/quizzes.validator.js";
 import { z } from "zod";
-import { QuestionType } from "@/entities/Question.js";
+import { QuestionType, Difficulty } from "@/entities/Question.js";
 
 class Aiservice {
   private readonly client: GoogleGenerativeAI;
@@ -44,7 +44,7 @@ class Aiservice {
     createQuizDto: z.infer<typeof quizValidationSchema>,
   ): Promise<string | null> {
     const prompt = `
-    You are a quiz generator. Based on the title "${createQuizDto.title}" and description "${createQuizDto.description}" provided, generate a quiz in a plain text format following the structure below. Include 8 questions: 2 multiple choice (${QuestionType.MCQ}), 2 true/false (${QuestionType.TRUE_FALSE}), 2 written response (${QuestionType.WRITTEN}), and 2 multi-select (${QuestionType.WRITTEN}). Use varied and accurate questions appropriate to the topic.
+    You are a quiz generator. Based on the title "${createQuizDto.title}" and description "${createQuizDto.description}" provided, generate a quiz in a plain text format following the structure below. Include 16 questions: 4 multiple choice (${QuestionType.MCQ}), 4 true/false (${QuestionType.TRUE_FALSE}), 4 written response (${QuestionType.WRITTEN}), and 4 multi-select (${QuestionType.WRITTEN}). Use varied and accurate questions appropriate to the topic.
     
     IMPORTANT: 
     Do not use escaped characters like \\n in your output. Return the content as raw text with proper line breaks. Your response will be used directly in a text file.
@@ -58,6 +58,7 @@ class Aiservice {
     ---question---
     type: ${QuestionType.MCQ}
     question: <MCQ question>
+    difficulty: <${Difficulty.HIGH}|${Difficulty.MEDIUM}|${Difficulty.LOW}>
     options:
     1. <option>
     2. <option> [correct]
@@ -68,17 +69,20 @@ class Aiservice {
     ---question---
     type: ${QuestionType.TRUE_FALSE}
     question: <true/false question>
+    difficulty: <${Difficulty.HIGH}|${Difficulty.MEDIUM}|${Difficulty.LOW}>
     correct: <true/false>
     tags: <comma-separated tags>
     
     ---question---
     type: ${QuestionType.WRITTEN}
     question: <written response question>
+    difficulty: <${Difficulty.HIGH}|${Difficulty.MEDIUM}|${Difficulty.LOW}>
     tags: <comma-separated tags>
     
     ---question---
     type: ${QuestionType.MULTI_SELECT}
     question: <multi-select question>
+    difficulty: <${Difficulty.HIGH}|${Difficulty.MEDIUM}|${Difficulty.LOW}>
     options:
     1. <option> [correct]
     2. <option> [correct]

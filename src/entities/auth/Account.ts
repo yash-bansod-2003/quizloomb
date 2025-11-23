@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  Index,
 } from "typeorm";
 import { User } from "./User.js";
 
@@ -20,12 +21,9 @@ export class Account {
   @Column({ type: "text" })
   providerId: string;
 
+  @Index()
   @Column({ type: "text" })
   userId: string;
-
-  @ManyToOne(() => User, (user) => user.accounts, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "userId" })
-  user: User;
 
   @Column({ type: "text", nullable: true })
   accessToken: string;
@@ -53,4 +51,8 @@ export class Account {
 
   @UpdateDateColumn({ type: "timestamp" })
   updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.accounts, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "userId" })
+  user: User;
 }

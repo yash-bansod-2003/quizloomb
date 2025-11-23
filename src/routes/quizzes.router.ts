@@ -13,8 +13,8 @@ import SettingsService from "@/services/settings.service.js";
 import { Settings } from "@/entities/Settings.js";
 import { Question } from "@/entities/Question.js";
 import QuestionsService from "@/services/questions.service.js";
-import { Answer } from "@/entities/Answer.js";
-import AnswersService from "@/services/answers.service.js";
+import { Option } from "@/entities/Option.js";
+import OptionsService from "@/services/options.service.js";
 import TokensService from "@/services/tokens.service.js";
 import configuration from "@/lib/configuration.js";
 import ParserService from "@/services/parser.service.js";
@@ -28,8 +28,8 @@ const quizSessionsRepository = AppDataSource.getRepository(QuizSession);
 const quizSessionsService = new QuizSessionsService(quizSessionsRepository);
 const questionsRepository = AppDataSource.getRepository(Question);
 const questionsService = new QuestionsService(questionsRepository);
-const answersRepository = AppDataSource.getRepository(Answer);
-const answersService = new AnswersService(answersRepository);
+const optionsRepository = AppDataSource.getRepository(Option);
+const optionsService = new OptionsService(optionsRepository);
 const quizzesRepository = AppDataSource.getRepository(Quiz);
 const usersRepository = AppDataSource.getRepository(User);
 const quizzesService = new QuizzesService(quizzesRepository);
@@ -47,7 +47,7 @@ const quizzesController = new QuizzesController(
   quizSessionsService,
   usersService,
   questionsService,
-  answersService,
+  optionsService,
   resultsService,
   settingsService,
   quizzesTokensService,
