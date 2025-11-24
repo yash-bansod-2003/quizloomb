@@ -62,6 +62,9 @@ export class Quiz {
   @JoinColumn({ name: "userId" })
   user: User;
 
+  @Column({ type: "text", nullable: true })
+  userId?: string;
+
   @OneToMany(() => Question, (question) => question.quiz, {
     cascade: true,
   })
@@ -81,6 +84,9 @@ export class Quiz {
   })
   @JoinColumn()
   settings: Settings;
+
+  @Column({ type: "text", nullable: true })
+  settingsId?: string;
 
   @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;

@@ -30,6 +30,9 @@ export class Team {
   @JoinColumn({ name: "organizationId" })
   organization: Organization;
 
+  @Column({ type: "text", nullable: true })
+  organizationId?: string;
+
   @OneToMany(() => TeamMember, (teamMember) => teamMember.team, {
     cascade: true,
   })

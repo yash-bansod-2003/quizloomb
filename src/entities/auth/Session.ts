@@ -39,6 +39,9 @@ export class Session {
   user: User;
 
   @Column({ type: "text", nullable: true })
+  userId?: string;
+
+  @Column({ type: "text", nullable: true })
   activeOrganizationId: string;
 
   @Column({ type: "text", nullable: true })

@@ -36,6 +36,9 @@ export class Option {
   @JoinColumn({ name: "questionId" })
   question: Question;
 
+  @Column({ type: "text", nullable: true })
+  questionId?: string;
+
   @ManyToMany(() => Submission, (submission) => submission.options)
   submissions: Submission[];
 

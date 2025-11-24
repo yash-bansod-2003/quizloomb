@@ -28,6 +28,9 @@ export class Submission {
   @Column({ type: "text", nullable: false })
   sessionId: string;
 
+  @Column({ type: "text", nullable: true })
+  quizId?: string;
+
   @Column({ type: "boolean", default: false })
   isCorrect: boolean;
 
@@ -43,6 +46,9 @@ export class Submission {
   @JoinColumn({ name: "quizId" })
   quiz: Quiz;
 
+  @Column({ type: "text", nullable: true })
+  questionId?: string;
+
   @ManyToOne(() => Question, (question) => question.submissions, {
     onDelete: "CASCADE",
   })
@@ -57,6 +63,9 @@ export class Submission {
   })
   @JoinColumn({ name: "resultId" })
   result: Result;
+
+  @Column({ type: "text", nullable: true })
+  resultId?: string;
 
   @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;

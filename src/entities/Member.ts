@@ -20,6 +20,12 @@ export class Member {
   @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;
 
+  @Column({ type: "text", nullable: true })
+  userId?: string;
+
+  @Column({ type: "text", nullable: true })
+  organizationId?: string;
+
   @ManyToOne(() => User, (user) => user.members, { onDelete: "CASCADE" })
   @JoinColumn({ name: "userId" })
   user: User;

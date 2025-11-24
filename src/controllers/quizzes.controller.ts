@@ -295,7 +295,7 @@ class QuizzesController {
         },
         relations: {
           questions: {
-            answers: true,
+            options: true,
           },
         },
       });

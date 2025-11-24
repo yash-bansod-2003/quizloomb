@@ -27,6 +27,15 @@ export class Invitation {
   @CreateDateColumn({ type: "timestamp" })
   expiresAt: Date;
 
+  @Column({ type: "text", nullable: true })
+  userId?: string;
+
+  @Column({ type: "text", nullable: true })
+  organizationId?: string;
+
+  @Column({ type: "text", nullable: true })
+  teamId?: string;
+
   @ManyToOne(() => User, (user) => user.invitations, { onDelete: "CASCADE" })
   @JoinColumn({ name: "userId" })
   user: User;

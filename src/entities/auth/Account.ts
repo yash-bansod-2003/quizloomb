@@ -50,4 +50,7 @@ export class Account {
   @ManyToOne(() => User, (user) => user.accounts, { onDelete: "CASCADE" })
   @JoinColumn({ name: "userId" })
   user: User;
+
+  @Column({ type: "text", nullable: true })
+  userId?: string;
 }

@@ -56,6 +56,9 @@ export class Result {
   @JoinColumn({ name: "quizId" })
   quiz: Quiz;
 
+  @Column({ type: "text", nullable: true })
+  quizId?: string;
+
   @OneToMany(() => Submission, (submission) => submission.result, {
     cascade: true,
   })
@@ -64,6 +67,9 @@ export class Result {
   @OneToOne(() => QuizSession, (quizSession) => quizSession.result)
   @JoinColumn()
   quizSession: QuizSession;
+
+  @Column({ type: "text", nullable: true })
+  quizSessionId?: string;
 
   @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;

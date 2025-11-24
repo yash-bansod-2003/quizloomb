@@ -39,6 +39,9 @@ export class QuizSession {
   @JoinColumn({ name: "quizId" })
   quiz: Quiz;
 
+  @Column({ type: "text", nullable: true })
+  quizId?: string;
+
   @OneToOne(() => Result, (result) => result.quizSession)
   result: Result;
 

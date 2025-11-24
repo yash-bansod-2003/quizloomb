@@ -75,6 +75,9 @@ export class Question {
   @JoinColumn({ name: "quizId" })
   quiz: Quiz;
 
+  @Column({ type: "text", nullable: true })
+  quizId?: string;
+
   @OneToMany(() => Option, (option) => option.question, {
     cascade: true,
   })
