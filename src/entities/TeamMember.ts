@@ -1,4 +1,10 @@
-import { Entity, PrimaryColumn, ManyToOne, CreateDateColumn } from "typeorm";
+import {
+  Entity,
+  PrimaryColumn,
+  ManyToOne,
+  CreateDateColumn,
+  JoinColumn,
+} from "typeorm";
 import { User } from "./auth/User.js";
 import { Team } from "./Team.js";
 
@@ -11,8 +17,10 @@ export class TeamMember {
   createdAt: Date;
 
   @ManyToOne(() => User, (user) => user.teamMembers)
+  @JoinColumn({ name: "userId" })
   user: User;
 
   @ManyToOne(() => Team, (team) => team.teamMembers)
+  @JoinColumn({ name: "teamId" })
   team: Team;
 }

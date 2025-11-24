@@ -53,6 +53,7 @@ export class Result {
   @ManyToOne(() => Quiz, (quiz) => quiz.results, {
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "quizId" })
   quiz: Quiz;
 
   @OneToMany(() => Submission, (submission) => submission.result, {

@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   ManyToMany,
+  JoinColumn,
 } from "typeorm";
 import { Question } from "@/entities/Question.js";
 import { Submission } from "@/entities/Submission.js";
@@ -32,6 +33,7 @@ export class Option {
   @ManyToOne(() => Question, (question) => question.options, {
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "questionId" })
   question: Question;
 
   @ManyToMany(() => Submission, (submission) => submission.options)

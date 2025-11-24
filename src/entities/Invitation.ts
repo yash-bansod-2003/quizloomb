@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   PrimaryColumn,
   ManyToOne,
+  JoinColumn,
 } from "typeorm";
 import { User } from "./auth/User.js";
 import { Organization } from "./Organization.js";
@@ -27,11 +28,14 @@ export class Invitation {
   expiresAt: Date;
 
   @ManyToOne(() => User, (user) => user.invitations, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "userId" })
   user: User;
 
   @ManyToOne(() => Organization, (organization) => organization.members)
+  @JoinColumn({ name: "organizationId" })
   organization: Organization;
 
   @ManyToOne(() => Team, (team) => team.invitations)
+  @JoinColumn({ name: "teamId" })
   team: Team;
 }

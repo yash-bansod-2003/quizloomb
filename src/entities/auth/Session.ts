@@ -34,17 +34,13 @@ export class Session {
   @Column({ type: "text", nullable: true })
   userAgent: string;
 
-  @Index()
-  @Column({ type: "text" })
-  userId: string;
+  @ManyToOne(() => User, (user) => user.sessions, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "userId" })
+  user: User;
 
   @Column({ type: "text", nullable: true })
   activeOrganizationId: string;
 
   @Column({ type: "text", nullable: true })
   activeTeamId: string;
-
-  @ManyToOne(() => User, (user) => user.sessions, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "userId" })
-  user: User;
 }

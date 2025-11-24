@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   PrimaryColumn,
   ManyToOne,
+  JoinColumn,
 } from "typeorm";
 import { User } from "./auth/User.js";
 import { Organization } from "./Organization.js";
@@ -20,10 +21,12 @@ export class Member {
   createdAt: Date;
 
   @ManyToOne(() => User, (user) => user.members, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "userId" })
   user: User;
 
   @ManyToOne(() => Organization, (organization) => organization.members, {
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "organizationId" })
   organization: Organization;
 }

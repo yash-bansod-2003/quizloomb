@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   OneToMany,
+  JoinColumn,
 } from "typeorm";
 import { Organization } from "./Organization.js";
 import { TeamMember } from "./TeamMember.js";
@@ -26,6 +27,7 @@ export class Team {
   updatedAt: Date;
 
   @ManyToOne(() => Organization, (organization) => organization.teams)
+  @JoinColumn({ name: "organizationId" })
   organization: Organization;
 
   @OneToMany(() => TeamMember, (teamMember) => teamMember.team, {

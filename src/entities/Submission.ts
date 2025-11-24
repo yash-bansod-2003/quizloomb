@@ -7,6 +7,7 @@ import {
   PrimaryColumn,
   BeforeInsert,
   ManyToMany,
+  JoinColumn,
 } from "typeorm";
 import { Question } from "@/entities/Question.js";
 import { Quiz } from "@/entities/Quiz.js";
@@ -39,11 +40,13 @@ export class Submission {
   @ManyToOne(() => Quiz, (quiz) => quiz.submissions, {
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "quizId" })
   quiz: Quiz;
 
   @ManyToOne(() => Question, (question) => question.submissions, {
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "questionId" })
   question: Question;
 
   @ManyToMany(() => Option, (option) => option.submissions)
@@ -52,6 +55,7 @@ export class Submission {
   @ManyToOne(() => Result, (result) => result.submissions, {
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "resultId" })
   result: Result;
 
   @CreateDateColumn({ type: "timestamp" })

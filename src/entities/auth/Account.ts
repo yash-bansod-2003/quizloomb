@@ -6,7 +6,6 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
-  Index,
 } from "typeorm";
 import { User } from "./User.js";
 
@@ -20,10 +19,6 @@ export class Account {
 
   @Column({ type: "text" })
   providerId: string;
-
-  @Index()
-  @Column({ type: "text" })
-  userId: string;
 
   @Column({ type: "text", nullable: true })
   accessToken: string;
