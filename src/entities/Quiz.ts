@@ -66,19 +66,13 @@ export class Quiz {
   })
   questions: Question[];
 
-  @OneToMany(() => Submission, (submission) => submission.quiz, {
-    cascade: true,
-  })
+  @OneToMany(() => Submission, (submission) => submission.quiz)
   submissions: Submission[];
 
-  @OneToMany(() => Result, (result) => result.quiz, {
-    cascade: true,
-  })
+  @OneToMany(() => Result, (result) => result.quiz)
   results: Result[];
 
-  @OneToMany(() => QuizSession, (quizSession) => quizSession.quiz, {
-    cascade: true,
-  })
+  @OneToMany(() => QuizSession, (quizSession) => quizSession.quiz)
   quizSessions: QuizSession[];
 
   @OneToOne(() => Settings, (settings) => settings.quiz, {

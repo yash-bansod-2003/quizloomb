@@ -78,9 +78,7 @@ export class Question {
   })
   options: Option[];
 
-  @OneToMany(() => Submission, (submission) => submission.question, {
-    cascade: true,
-  })
+  @OneToMany(() => Submission, (submission) => submission.question)
   submissions: Submission[];
 
   @CreateDateColumn({ type: "timestamp" })

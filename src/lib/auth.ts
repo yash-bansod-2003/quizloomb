@@ -10,7 +10,13 @@ const mailService = new MailNotificationService(logger);
 
 export const auth = betterAuth({
   database: typeormAdapter(AppDataSource),
-  plugins: [organization()],
+  plugins: [
+    organization({
+      teams: {
+        enabled: true,
+      },
+    }),
+  ],
   trustedOrigins: [configuration.domain],
   emailAndPassword: {
     enabled: true,

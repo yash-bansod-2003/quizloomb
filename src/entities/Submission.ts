@@ -27,6 +27,15 @@ export class Submission {
   @Column({ type: "text", nullable: false })
   sessionId: string;
 
+  @Column({ type: "boolean", default: false })
+  isCorrect: boolean;
+
+  @Column({ type: "int", default: 0 })
+  pointsEarned: number;
+
+  @Column({ type: "text", nullable: true })
+  text?: string;
+
   @ManyToOne(() => Quiz, (quiz) => quiz.submissions, {
     onDelete: "CASCADE",
   })
@@ -37,9 +46,7 @@ export class Submission {
   })
   question: Question;
 
-  @ManyToMany(() => Option, (option) => option.submissions, {
-    cascade: true,
-  })
+  @ManyToMany(() => Option, (option) => option.submissions)
   options: Option[];
 
   @ManyToOne(() => Result, (result) => result.submissions, {

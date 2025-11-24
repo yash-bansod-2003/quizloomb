@@ -11,6 +11,7 @@ import { Account } from "./Account.js";
 import { Quiz } from "../Quiz.js";
 import { Member } from "../Member.js";
 import { Invitation } from "../Invitation.js";
+import { TeamMember } from "../TeamMember.js";
 
 @Entity("user")
 export class User {
@@ -46,6 +47,9 @@ export class User {
 
   @OneToMany(() => Member, (member) => member.user, { cascade: true })
   members: Member[];
+
+  @OneToMany(() => TeamMember, (teamMember) => teamMember.user)
+  teamMembers: TeamMember[];
 
   @OneToMany(() => Invitation, (invitation) => invitation.user, {
     cascade: true,

@@ -7,6 +7,7 @@ import {
 } from "typeorm";
 import { Member } from "./Member.js";
 import { Invitation } from "./Invitation.js";
+import { Team } from "./Team.js";
 
 @Entity("organization")
 export class Organization {
@@ -33,4 +34,7 @@ export class Organization {
 
   @OneToMany(() => Invitation, (invitation) => invitation.organization)
   invitations: Invitation[];
+
+  @OneToMany(() => Team, (team) => team.organization)
+  teams: Team[];
 }

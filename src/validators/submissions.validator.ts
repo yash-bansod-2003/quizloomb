@@ -4,7 +4,8 @@ import { NextFunction, Request, Response } from "express";
 export const submissionValidationSchema = z.object({
   quizId: z.string(),
   questionId: z.string(),
-  answerId: z.string(),
+  optionIds: z.array(z.string()).optional(),
+  text: z.string().optional(),
 });
 
 /**

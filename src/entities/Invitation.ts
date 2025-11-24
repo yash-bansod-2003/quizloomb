@@ -7,6 +7,7 @@ import {
 } from "typeorm";
 import { User } from "./auth/User.js";
 import { Organization } from "./Organization.js";
+import { Team } from "./Team.js";
 
 @Entity("invitation")
 export class Invitation {
@@ -25,9 +26,12 @@ export class Invitation {
   @CreateDateColumn({ type: "timestamp" })
   expiresAt: Date;
 
-  @ManyToOne(() => User, (user) => user.members, { onDelete: "CASCADE" })
+  @ManyToOne(() => User, (user) => user.invitations, { onDelete: "CASCADE" })
   user: User;
 
   @ManyToOne(() => Organization, (organization) => organization.members)
   organization: Organization;
+
+  @ManyToOne(() => Team, (team) => team.invitations)
+  team: Team;
 }
