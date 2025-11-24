@@ -29,7 +29,7 @@ const optionsRepository = AppDataSource.getRepository(Option);
 const submissionsRepository = AppDataSource.getRepository(Submission);
 
 const usersService = new UserService(usersRepository);
-const quizzessService = new QuizzesService(quizzesRepository);
+const quizzesService = new QuizzesService(quizzesRepository);
 const questionsService = new QuestionsService(questionsRepository);
 const optionsService = new OptionsService(optionsRepository);
 const submissionsService = new SubmissionsService(submissionsRepository);
@@ -41,7 +41,7 @@ const resultsService = new ResultsService(resultsRepository);
 const submissionsController = new SubmissionsController(
   submissionsService,
   usersService,
-  quizzessService,
+  quizzesService,
   resultsService,
   quizSessionsService,
   questionsService,

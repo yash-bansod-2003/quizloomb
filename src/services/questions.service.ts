@@ -12,22 +12,22 @@ import {
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity.js";
 
 class QuestionsService {
-  constructor(private readonly usersRepository: Repository<Question>) {}
+  constructor(private readonly questionsRepository: Repository<Question>) {}
 
   async create(
     createQuestionDto: DeepPartial<Question>,
     options?: SaveOptions,
   ) {
-    const result = this.usersRepository.create(createQuestionDto);
-    return await this.usersRepository.save(result, options);
+    const result = this.questionsRepository.create(createQuestionDto);
+    return await this.questionsRepository.save(result, options);
   }
 
   async findAll(options?: FindManyOptions<Question>): Promise<Question[]> {
-    return this.usersRepository.find(options);
+    return this.questionsRepository.find(options);
   }
 
   async findTags(): Promise<string[]> {
-    const questions = await this.usersRepository.find({
+    const questions = await this.questionsRepository.find({
       select: ["tags"],
     });
     const tags = Array.from(
@@ -39,18 +39,18 @@ class QuestionsService {
   }
 
   async findOne(options: FindOneOptions<Question>): Promise<Question | null> {
-    return this.usersRepository.findOne(options);
+    return this.questionsRepository.findOne(options);
   }
 
   async update(
     options: FindOptionsWhere<Question>,
     updateQuestionDto: QueryDeepPartialEntity<Question>,
   ): Promise<UpdateResult> {
-    return this.usersRepository.update(options, updateQuestionDto);
+    return this.questionsRepository.update(options, updateQuestionDto);
   }
 
   async delete(criteria: FindOptionsWhere<Question>): Promise<DeleteResult> {
-    return this.usersRepository.delete(criteria);
+    return this.questionsRepository.delete(criteria);
   }
 }
 

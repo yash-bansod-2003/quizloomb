@@ -22,14 +22,14 @@ const resultsRepository = AppDataSource.getRepository(Result);
 const submissionsRepository = AppDataSource.getRepository(Submission);
 
 const usersService = new UserService(usersRepository);
-const quizzessService = new QuizzesService(quizzesRepository);
+const quizzesService = new QuizzesService(quizzesRepository);
 const resultsService = new ResultsService(resultsRepository);
 const submissionsService = new SubmissionsService(submissionsRepository);
 
 const resultsController = new ResultsController(
   resultsService,
   usersService,
-  quizzessService,
+  quizzesService,
   submissionsService,
   logger,
 );
