@@ -8,6 +8,12 @@ export const questionValidationSchema = z.object({
   type: z.enum(QuestionType),
 });
 
+export const questionQueryValidationSchema = z.object({
+  page: z.number().optional(),
+  perPage: z.number().optional(),
+  search: z.string().optional(),
+});
+
 export const QuestionValidator = (
   req: Request,
   res: Response,

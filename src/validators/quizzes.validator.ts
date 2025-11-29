@@ -6,6 +6,12 @@ export const quizValidationSchema = z.object({
   description: z.string(),
 });
 
+export const quizQueryValidationSchema = z.object({
+  page: z.number().optional(),
+  perPage: z.number().optional(),
+  search: z.string().optional(),
+});
+
 export const QuizValidator = (
   req: Request,
   res: Response,
@@ -13,6 +19,7 @@ export const QuizValidator = (
 ) => {
   try {
     quizValidationSchema.parse(req.body);
+    quizQueryValidationSchema.parse(req.query);
     next();
   } catch (error) {
     return next(error);

@@ -2,7 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import { Logger } from "winston";
 import createHttpError from "http-errors";
 import ResultsService from "@/services/results.service.js";
-import { resultValidationSchema } from "@/validators/results.validator.js";
+import {
+  resultValidationSchema,
+  resultQueryValidationSchema,
+} from "@/validators/results.validator.js";
 import QuizzesService from "@/services/quizzes.service.js";
 import UserService from "@/services/users.service.js";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
@@ -132,11 +135,35 @@ class ResultsController {
         this.logger.error("Quiz ID parameter is missing");
         return next(createHttpError.BadRequest("quizId parameter is required"));
       }
-      const results = await this.resultsService.findAll({
+
+      const { page, perPage } = req.query as z.infer<
+        typeof resultQueryValidationSchema
+      >;
+
+      const pageNumber = page ? Number(page) : 1;
+      const perPageNumber = perPage ? Number(perPage) : 10;
+
+      const [results, count] = await this.resultsService.findAll({
         where: { quiz: { id: quizId } },
+        order: { createdAt: "DESC" },
+        take: perPageNumber,
+        skip: (pageNumber - 1) * perPageNumber,
       });
+
       this.logger.info(`Returned ${results.length} results`);
-      res.json(results);
+
+      const response = {
+        data: results,
+        success: true,
+        meta: {
+          total: count,
+          page: pageNumber,
+          perPage: perPageNumber,
+          totalPages: Math.ceil(count / perPageNumber),
+        },
+      };
+
+      res.json(response);
     } catch (error) {
       this.logger.error(`Error in findAll: ${error}`);
       next(error);

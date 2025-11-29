@@ -8,6 +8,12 @@ export const createUserValidationSchema = z.object({
   password: z.string(),
 });
 
+export const userQueryValidationSchema = z.object({
+  page: z.number().optional(),
+  perPage: z.number().optional(),
+  search: z.string().optional(),
+});
+
 export const createUserValidator = (
   req: Request,
   res: Response,

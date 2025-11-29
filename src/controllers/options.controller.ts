@@ -60,7 +60,11 @@ class OptionsController {
         },
       });
       this.logger.debug("options found");
-      res.json(options);
+      const response = {
+        data: options,
+        success: true,
+      };
+      res.json(response);
     } catch (error) {
       this.logger.error(`error finding all options: ${error}`);
       next(error);
@@ -88,7 +92,11 @@ class OptionsController {
         throw createHttpError.NotFound("option not found");
       }
       this.logger.debug("option found");
-      res.json(option);
+      const response = {
+        data: option,
+        success: true,
+      };
+      res.json(response);
     } catch (error) {
       this.logger.error(`error finding option: ${error}`);
       next(error);

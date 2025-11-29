@@ -1,11 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 import { Logger } from "winston";
+import { Like } from "typeorm";
 import QuestionsService from "@/services/questions.service.js";
 import createHttpError from "http-errors";
 import QuizzesService from "@/services/quizzes.service.js";
 import AnswersService from "@/services/options.service.js";
-import { questionValidationSchema } from "@/validators/questions.validator.js";
+import {
+  questionValidationSchema,
+  questionQueryValidationSchema,
+} from "@/validators/questions.validator.js";
 
 class QuestionsController {
   constructor(
@@ -55,15 +59,45 @@ class QuestionsController {
         this.logger.error("Quiz ID parameter is missing");
         throw createHttpError.BadRequest("Quiz ID parameter is required");
       }
-      const questions = await this.questionsService.findAll({
-        where: { quiz: { id: quizId } },
+
+      const { page, perPage, search } = req.query as z.infer<
+        typeof questionQueryValidationSchema
+      >;
+
+      const pageNumber = page ? Number(page) : 1;
+      const perPageNumber = perPage ? Number(perPage) : 10;
+
+      const [questions, count] = await this.questionsService.findAll({
+        where: search
+          ? [
+              {
+                quiz: { id: quizId },
+                text: Like(`%${search}%`),
+              },
+            ]
+          : { quiz: { id: quizId } },
         order: { createdAt: "DESC" },
+        take: perPageNumber,
+        skip: (pageNumber - 1) * perPageNumber,
       });
+
       if (!questions) {
         this.logger.error("Failed to obtain questions");
         throw createHttpError.InternalServerError("Failed to obtain questions");
       }
-      return res.json(questions);
+
+      const response = {
+        data: questions,
+        success: true,
+        meta: {
+          total: count,
+          page: pageNumber,
+          perPage: perPageNumber,
+          totalPages: Math.ceil(count / perPageNumber),
+        },
+      };
+
+      return res.json(response);
     } catch (error) {
       this.logger.error(`Error fetching all questions: ${error}`);
       next(error);

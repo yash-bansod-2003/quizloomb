@@ -9,6 +9,7 @@ import configuration from "@/lib/configuration.js";
 export interface ErrorResponse {
   name: string;
   code: number;
+  success?: boolean;
   errors: unknown[];
   stack?: string;
 }
@@ -46,6 +47,7 @@ const errorHandler = (
     errorResponse = {
       name: err.name,
       code: 400,
+      success: false,
       errors: [
         {
           message: err.message,
@@ -59,6 +61,7 @@ const errorHandler = (
     errorResponse = {
       name: err.name,
       code: 401,
+      success: false,
       errors: [
         {
           message: err.message,

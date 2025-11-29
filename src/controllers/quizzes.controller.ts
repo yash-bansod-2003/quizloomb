@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Logger } from "winston";
 import { z } from "zod";
 import createHttpError from "http-errors";
+import { Like } from "typeorm";
 
 import QuizzesService from "@/services/quizzes.service.js";
 import QuizSessionsService from "@/services/quizSessions.service.js";
@@ -14,7 +15,10 @@ import ResultsService from "@/services/results.service.js";
 import TokensService from "@/services/tokens.service.js";
 import ParserService from "@/services/parser.service.js";
 
-import { quizValidationSchema } from "@/validators/quizzes.validator.js";
+import {
+  quizValidationSchema,
+  quizQueryValidationSchema,
+} from "@/validators/quizzes.validator.js";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 
 import { COOKIE_PROPERTIES } from "@/lib/constants.js";
@@ -263,11 +267,43 @@ class QuizzesController {
       }
 
       this.logger.info(`Fetching all quizzes for user ${userId}`);
-      const quizzes = await this.quizzesService.findAll({
-        where: { user: { id: user.id } },
+      const { page, perPage, search } = req.query as z.infer<
+        typeof quizQueryValidationSchema
+      >;
+
+      const pageNumber = page ? Number(page) : 1;
+      const perPageNumber = perPage ? Number(perPage) : 10;
+
+      const [quizzes, count] = await this.quizzesService.findAll({
+        where: [
+          {
+            user: { id: user.id },
+            ...(search && {
+              title: Like(`%${search}%`),
+            }),
+          },
+          {
+            user: { id: user.id },
+            ...(search && {
+              description: Like(`%${search}%`),
+            }),
+          },
+        ],
         order: { createdAt: "DESC" },
+        take: perPageNumber,
+        skip: (pageNumber - 1) * perPageNumber,
       });
-      return res.json(quizzes);
+      const response = {
+        data: quizzes,
+        success: true,
+        meta: {
+          total: count,
+          page: pageNumber,
+          perPage: perPageNumber,
+          totalPages: Math.ceil(count / perPageNumber),
+        },
+      };
+      return res.json(response);
     } catch (error) {
       this.logger.error(`Find all quizzes error: ${error}`);
       return next(createHttpError.InternalServerError());
@@ -299,7 +335,17 @@ class QuizzesController {
           },
         },
       });
-      return res.json(quiz);
+
+      if (!quiz) {
+        this.logger.error(`Quiz ${quizId} not found for user ${userId}`);
+        return next(createHttpError.NotFound());
+      }
+
+      const response = {
+        data: quiz,
+        success: true,
+      };
+      return res.json(response);
     } catch (error) {
       this.logger.error(`Find one quiz error: ${error}`);
       return next(createHttpError.InternalServerError());
