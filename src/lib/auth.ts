@@ -22,6 +22,9 @@ export const auth = betterAuth({
     ...(configuration.node_env === "development" && {
       disableOriginCheck: true,
     }),
+    defaultCookieAttributes: {
+      sameSite: "None",
+    },
   },
   emailAndPassword: {
     enabled: true,
