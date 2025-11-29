@@ -10,10 +10,10 @@ import {
   OneToOne,
   JoinColumn,
 } from "typeorm";
-import { Quiz } from "@/entities/Quiz.js";
+import { Quiz } from "@/entities/quiz.js";
 import { generateId } from "better-auth";
-import { Submission } from "./Submission.js";
-import { QuizSession } from "./QuizSession.js";
+import { Submission } from "@/entities/submission.js";
+import { QuizSession } from "@/entities/quiz-session.js";
 
 export enum ResultStatus {
   PENDING = "pending",
@@ -53,7 +53,11 @@ export class Result {
   @ManyToOne(() => Quiz, (quiz) => quiz.results, {
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "quizId" })
   quiz: Quiz;
+
+  @Column({ type: "text", nullable: true })
+  quizId?: string;
 
   @OneToMany(() => Submission, (submission) => submission.result, {
     cascade: true,
@@ -63,6 +67,9 @@ export class Result {
   @OneToOne(() => QuizSession, (quizSession) => quizSession.result)
   @JoinColumn()
   quizSession: QuizSession;
+
+  @Column({ type: "text", nullable: true })
+  quizSessionId?: string;
 
   @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;

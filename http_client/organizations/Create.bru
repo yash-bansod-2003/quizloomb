@@ -1,0 +1,22 @@
+meta {
+  name: Create
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/api/auth/organization/create
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjc4NjcwMzV9.EblhUijUGNgfXuFYChIS2w7TJFQohjxFZDRj9yCfQPE
+}
+
+body:json {
+  {
+    "name" : "Webtech Developers",
+    "slug" : "webtech-developers"
+  }
+}

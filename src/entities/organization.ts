@@ -5,8 +5,9 @@ import {
   PrimaryColumn,
   OneToMany,
 } from "typeorm";
-import { Member } from "./Member.js";
-import { Invitation } from "./Invitation.js";
+import { Member } from "@/entities/member.js";
+import { Invitation } from "@/entities/invitation.js";
+import { Team } from "@/entities/team.js";
 
 @Entity("organization")
 export class Organization {
@@ -33,4 +34,7 @@ export class Organization {
 
   @OneToMany(() => Invitation, (invitation) => invitation.organization)
   invitations: Invitation[];
+
+  @OneToMany(() => Team, (team) => team.organization)
+  teams: Team[];
 }

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import createHttpError from "http-errors";
 import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import { AppDataSource } from "@/data-source.js";
-import { User } from "@/entities/auth/User.js";
+import { User } from "@/entities/auth/user.js";
 
 import UsersService from "@/services/users.service.js";
 const usersRepository = AppDataSource.getRepository(User);

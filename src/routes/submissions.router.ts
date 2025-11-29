@@ -5,20 +5,20 @@ import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/lib/logger.js";
 import { SubmissionValidator } from "@/validators/submissions.validator.js";
-import { Question } from "@/entities/Question.js";
-import { Option } from "@/entities/Option.js";
-import { User } from "@/entities/auth/User.js";
-import { Quiz } from "@/entities/Quiz.js";
+import { Question } from "@/entities/question.js";
+import { Option } from "@/entities/option.js";
+import { User } from "@/entities/auth/user.js";
+import { Quiz } from "@/entities/quiz.js";
 import UserService from "@/services/users.service.js";
 import QuizzesService from "@/services/quizzes.service.js";
-import { Submission } from "@/entities/Submission.js";
+import { Submission } from "@/entities/submission.js";
 import SubmissionsService from "@/services/submissions.service.js";
 import SubmissionsController from "@/controllers/submissions.controller.js";
 import authenticateQuiz from "@/middlewares/authenticate-quiz.js";
 import ResultsService from "@/services/results.service.js";
 import QuizSessionsService from "@/services/quizSessions.service.js";
-import { QuizSession } from "@/entities/QuizSession.js";
-import { Result } from "@/entities/Result.js";
+import { QuizSession } from "@/entities/quiz-session.js";
+import { Result } from "@/entities/result.js";
 
 const router = Router();
 
@@ -29,7 +29,7 @@ const optionsRepository = AppDataSource.getRepository(Option);
 const submissionsRepository = AppDataSource.getRepository(Submission);
 
 const usersService = new UserService(usersRepository);
-const quizzessService = new QuizzesService(quizzesRepository);
+const quizzesService = new QuizzesService(quizzesRepository);
 const questionsService = new QuestionsService(questionsRepository);
 const optionsService = new OptionsService(optionsRepository);
 const submissionsService = new SubmissionsService(submissionsRepository);
@@ -41,7 +41,7 @@ const resultsService = new ResultsService(resultsRepository);
 const submissionsController = new SubmissionsController(
   submissionsService,
   usersService,
-  quizzessService,
+  quizzesService,
   resultsService,
   quizSessionsService,
   questionsService,

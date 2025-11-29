@@ -1,4 +1,4 @@
-import { Quiz } from "@/entities/Quiz.js";
+import { Quiz } from "@/entities/quiz.js";
 import {
   DeepPartial,
   DeleteResult,

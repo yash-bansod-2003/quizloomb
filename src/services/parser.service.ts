@@ -1,5 +1,5 @@
 import { QuizQuestion } from "@/types/index.js";
-import { Difficulty, QuestionType } from "@/entities/Question.js";
+import { Difficulty, QuestionType } from "@/entities/question.js";
 
 class Parser {
   constructor() {}

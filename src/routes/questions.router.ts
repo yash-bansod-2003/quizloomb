@@ -7,9 +7,9 @@ import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/lib/logger.js";
 import { QuestionValidator } from "@/validators/questions.validator.js";
-import { Quiz } from "@/entities/Quiz.js";
-import { Question } from "@/entities/Question.js";
-import { Option } from "@/entities/Option.js";
+import { Quiz } from "@/entities/quiz.js";
+import { Question } from "@/entities/question.js";
+import { Option } from "@/entities/option.js";
 
 const router = Router();
 

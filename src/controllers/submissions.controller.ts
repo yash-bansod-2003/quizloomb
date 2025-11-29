@@ -8,10 +8,10 @@ import QuestionsService from "@/services/questions.service.js";
 import QuizzesService from "@/services/quizzes.service.js";
 import QuizSessionsService from "@/services/quizSessions.service.js";
 import UserService from "@/services/users.service.js";
-import AnswersService from "@/services/options.service.js";
+import OptionsService from "@/services/options.service.js";
 import ResultsService from "@/services/results.service.js";
 import { AuthenticatedQuizRequest } from "@/middlewares/authenticate-quiz.js";
-import { QuizStatus } from "@/entities/Quiz.js";
+import { QuizStatus } from "@/entities/quiz.js";
 
 class SubmissionsController {
   constructor(
@@ -21,12 +21,12 @@ class SubmissionsController {
     private readonly resultsService: ResultsService,
     private readonly quizSessionsService: QuizSessionsService,
     private readonly questionsService: QuestionsService,
-    private readonly answersService: AnswersService,
+    private readonly optionsService: OptionsService,
     private readonly logger: Logger,
   ) {}
 
   async create(req: Request, res: Response, next: NextFunction) {
-    const { quizId, questionId, answerId } = req.body as z.infer<
+    const { quizId, questionId, optionIds, text } = req.body as z.infer<
       typeof submissionValidationSchema
     >;
 
@@ -45,7 +45,7 @@ class SubmissionsController {
     }
 
     const match = (req as AuthenticatedQuizRequest).quiz;
-    console.log(match);
+
     if (!match) {
       this.logger.error("Quiz token does not match");
       return next(createHttpError.Unauthorized("quiz token does not match"));
@@ -53,20 +53,14 @@ class SubmissionsController {
 
     const question = await this.questionsService.findOne({
       where: { id: questionId },
+      relations: {
+        options: true,
+      },
     });
 
     if (!question) {
       this.logger.error(`Question with id ${questionId} not found`);
       return next(createHttpError.NotFound("question not found"));
-    }
-
-    const answer = await this.answersService.findOne({
-      where: { id: answerId, question: { id: question.id } },
-    });
-
-    if (!answer) {
-      this.logger.error(`Answer with id ${answerId} not found`);
-      return next(createHttpError.NotFound("answer not found"));
     }
 
     const result = await this.resultsService.findOne({
@@ -107,10 +101,20 @@ class SubmissionsController {
       where: {
         quiz: { id: quizId },
         question: { id: questionId },
-        answer: { id: answerId },
         sessionId: match.sessionId,
       },
     });
+
+    const options = optionIds?.reduce(
+      (acc, optionId) => {
+        const option = question.options.find((opt) => opt.id === optionId);
+        if (option) {
+          acc.push(option);
+        }
+        return acc;
+      },
+      [] as typeof question.options,
+    );
 
     if (submission) {
       await this.submissionsService.update(
@@ -118,8 +122,9 @@ class SubmissionsController {
         {
           quiz,
           question,
-          answer,
+          options: options.length ? options : null,
           sessionId: match.sessionId,
+          text,
         },
       );
       this.logger.info(`Updated existing submission with id: ${submission.id}`);
@@ -130,7 +135,8 @@ class SubmissionsController {
     const createdSubmission = await this.submissionsService.create({
       quiz,
       question,
-      answer,
+      options: options.length ? options : null,
+      text,
       sessionId: match.sessionId,
       result: result,
     });

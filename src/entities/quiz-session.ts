@@ -7,10 +7,11 @@ import {
   PrimaryColumn,
   BeforeInsert,
   OneToOne,
+  JoinColumn,
 } from "typeorm";
 import { generateId } from "better-auth";
-import { Result } from "@/entities/Result.js";
-import { Quiz } from "./Quiz.js";
+import { Result } from "@/entities/result.js";
+import { Quiz } from "@/entities/quiz.js";
 
 @Entity("quiz_sessions")
 export class QuizSession {
@@ -35,7 +36,11 @@ export class QuizSession {
   @ManyToOne(() => Quiz, (quiz) => quiz.quizSessions, {
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "quizId" })
   quiz: Quiz;
+
+  @Column({ type: "text", nullable: true })
+  quizId?: string;
 
   @OneToOne(() => Result, (result) => result.quizSession)
   result: Result;

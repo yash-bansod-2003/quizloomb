@@ -8,7 +8,7 @@ import {
   JoinColumn,
   Index,
 } from "typeorm";
-import { User } from "./User.js";
+import { User } from "@/entities/auth/user.js";
 
 @Entity("session")
 export class Session {
@@ -34,14 +34,16 @@ export class Session {
   @Column({ type: "text", nullable: true })
   userAgent: string;
 
-  @Index()
-  @Column({ type: "text" })
-  userId: string;
+  @ManyToOne(() => User, (user) => user.sessions, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "userId" })
+  user: User;
+
+  @Column({ type: "text", nullable: true })
+  userId?: string;
 
   @Column({ type: "text", nullable: true })
   activeOrganizationId: string;
 
-  @ManyToOne(() => User, (user) => user.sessions, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "userId" })
-  user: User;
+  @Column({ type: "text", nullable: true })
+  activeTeamId: string;
 }

@@ -10,13 +10,13 @@ import {
   PrimaryColumn,
   BeforeInsert,
 } from "typeorm";
-import { User } from "@/entities/auth/User.js";
-import { Question } from "@/entities/Question.js";
-import { Submission } from "@/entities/Submission.js";
-import { Result } from "@/entities/Result.js";
-import { Settings } from "@/entities/Settings.js";
+import { User } from "@/entities/auth/user.js";
+import { Question } from "@/entities/question.js";
+import { Submission } from "@/entities/submission.js";
+import { Result } from "@/entities/result.js";
+import { Settings } from "@/entities/settings.js";
 import { generateId } from "better-auth";
-import { QuizSession } from "./QuizSession.js";
+import { QuizSession } from "@/entities/quiz-session.js";
 
 export enum QuizStatus {
   DRAFT = "draft",
@@ -59,26 +59,24 @@ export class Quiz {
   @ManyToOne(() => User, (user) => user.quizzes, {
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "userId" })
   user: User;
+
+  @Column({ type: "text", nullable: true })
+  userId?: string;
 
   @OneToMany(() => Question, (question) => question.quiz, {
     cascade: true,
   })
   questions: Question[];
 
-  @OneToMany(() => Submission, (submission) => submission.quiz, {
-    cascade: true,
-  })
+  @OneToMany(() => Submission, (submission) => submission.quiz)
   submissions: Submission[];
 
-  @OneToMany(() => Result, (result) => result.quiz, {
-    cascade: true,
-  })
+  @OneToMany(() => Result, (result) => result.quiz)
   results: Result[];
 
-  @OneToMany(() => QuizSession, (quizSession) => quizSession.quiz, {
-    cascade: true,
-  })
+  @OneToMany(() => QuizSession, (quizSession) => quizSession.quiz)
   quizSessions: QuizSession[];
 
   @OneToOne(() => Settings, (settings) => settings.quiz, {
@@ -86,6 +84,9 @@ export class Quiz {
   })
   @JoinColumn()
   settings: Settings;
+
+  @Column({ type: "text", nullable: true })
+  settingsId?: string;
 
   @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;

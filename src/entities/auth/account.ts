@@ -6,9 +6,8 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
-  Index,
 } from "typeorm";
-import { User } from "./User.js";
+import { User } from "@/entities/auth/user.js";
 
 @Entity("account")
 export class Account {
@@ -20,10 +19,6 @@ export class Account {
 
   @Column({ type: "text" })
   providerId: string;
-
-  @Index()
-  @Column({ type: "text" })
-  userId: string;
 
   @Column({ type: "text", nullable: true })
   accessToken: string;
@@ -55,4 +50,7 @@ export class Account {
   @ManyToOne(() => User, (user) => user.accounts, { onDelete: "CASCADE" })
   @JoinColumn({ name: "userId" })
   user: User;
+
+  @Column({ type: "text", nullable: true })
+  userId?: string;
 }

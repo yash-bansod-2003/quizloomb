@@ -8,9 +8,10 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   ManyToMany,
+  JoinColumn,
 } from "typeorm";
-import { Question } from "@/entities/Question.js";
-import { Submission } from "@/entities/Submission.js";
+import { Question } from "@/entities/question.js";
+import { Submission } from "@/entities/submission.js";
 import { generateId } from "better-auth";
 
 @Entity("options")
@@ -32,7 +33,11 @@ export class Option {
   @ManyToOne(() => Question, (question) => question.options, {
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "questionId" })
   question: Question;
+
+  @Column({ type: "text", nullable: true })
+  questionId?: string;
 
   @ManyToMany(() => Submission, (submission) => submission.options)
   submissions: Submission[];

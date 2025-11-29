@@ -3,7 +3,7 @@ import UsersController from "@/controllers/users.controller.js";
 import UsersService from "@/services/users.service.js";
 import HashingService from "@/services/hashing.service.js";
 import { AppDataSource } from "@/data-source.js";
-import { User } from "@/entities/auth/User.js";
+import { User } from "@/entities/auth/user.js";
 import authenticate from "@/middlewares/authenticate.js";
 import authorization from "@/middlewares/authorization.js";
 import logger from "@/lib/logger.js";

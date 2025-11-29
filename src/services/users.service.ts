@@ -1,4 +1,4 @@
-import { User } from "@/entities/auth/User.js";
+import { User } from "@/entities/auth/user.js";
 import {
   DeepPartial,
   DeleteResult,

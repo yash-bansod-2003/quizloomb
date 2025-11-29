@@ -1,4 +1,4 @@
-import { Submission } from "@/entities/Submission.js";
+import { Submission } from "@/entities/submission.js";
 import {
   DeepPartial,
   DeleteResult,

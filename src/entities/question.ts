@@ -7,10 +7,11 @@ import {
   UpdateDateColumn,
   PrimaryColumn,
   BeforeInsert,
+  JoinColumn,
 } from "typeorm";
-import { Quiz } from "@/entities/Quiz.js";
-import { Option } from "@/entities/Option.js";
-import { Submission } from "@/entities/Submission.js";
+import { Quiz } from "@/entities/quiz.js";
+import { Option } from "@/entities/option.js";
+import { Submission } from "@/entities/submission.js";
 import { generateId } from "better-auth";
 
 export enum QuestionType {
@@ -71,16 +72,18 @@ export class Question {
   @ManyToOne(() => Quiz, (quiz) => quiz.questions, {
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "quizId" })
   quiz: Quiz;
+
+  @Column({ type: "text", nullable: true })
+  quizId?: string;
 
   @OneToMany(() => Option, (option) => option.question, {
     cascade: true,
   })
   options: Option[];
 
-  @OneToMany(() => Submission, (submission) => submission.question, {
-    cascade: true,
-  })
+  @OneToMany(() => Submission, (submission) => submission.question)
   submissions: Submission[];
 
   @CreateDateColumn({ type: "timestamp" })
