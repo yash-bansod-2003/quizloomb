@@ -20,7 +20,7 @@ const errorHandler = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _: NextFunction,
 ) => {
-  let errorResponse: ErrorResponse | undefined = undefined;
+  let errorResponse: ErrorResponse = undefined;
 
   errorResponse = {
     name: "Internal Server Error",

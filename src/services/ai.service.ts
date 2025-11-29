@@ -15,7 +15,7 @@ class Aiservice {
   }
   async improveQuiz(
     createQuizDto: z.infer<typeof quizValidationSchema>,
-  ): Promise<Record<string, unknown> | null> {
+  ): Promise<Record<string, unknown>> {
     const prompt = `
     I want you to take the following title and description of a quiz application and enhance them to make them more engaging, creative, and appealing. The enhanced title should be concise, attractive, and clearly indicate the purpose of the quiz app. The enhanced description should be detailed, exciting, and communicate the app's unique features and value in a way that entices users to participate.
 
@@ -42,7 +42,7 @@ class Aiservice {
 
   async generateQuiz(
     createQuizDto: z.infer<typeof quizValidationSchema>,
-  ): Promise<string | null> {
+  ): Promise<string> {
     const prompt = `
     You are a quiz generator. Based on the title "${createQuizDto.title}" and description "${createQuizDto.description}" provided, generate a quiz in a plain text format following the structure below. Include 16 questions: 4 multiple choice (${QuestionType.MCQ}), 4 true/false (${QuestionType.TRUE_FALSE}), 4 written response (${QuestionType.WRITTEN}), and 4 multi-select (${QuestionType.WRITTEN}). Use varied and accurate questions appropriate to the topic.
     
@@ -98,9 +98,7 @@ class Aiservice {
     return result.response.candidates[0].content.parts[0].text;
   }
 
-  private extractJsonFromMarkdown(
-    markdown: string,
-  ): Record<string, unknown> | null {
+  private extractJsonFromMarkdown(markdown: string): Record<string, unknown> {
     try {
       const jsonRegex = /```json\s*([\s\S]*?)\s*```/;
       const jsonMatch = jsonRegex.exec(markdown);
