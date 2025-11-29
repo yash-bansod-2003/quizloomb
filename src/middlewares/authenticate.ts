@@ -12,7 +12,7 @@ export interface AuthenticatedRequest extends Request {
     email: string;
     createdAt: Date;
     updatedAt: Date;
-    image?: string | null | undefined;
+    image?: string;
   };
 }
 
