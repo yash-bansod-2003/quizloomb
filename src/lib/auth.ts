@@ -18,6 +18,11 @@ export const auth = betterAuth({
     }),
   ],
   trustedOrigins: [configuration.domain],
+  advanced: {
+    ...(configuration.node_env === "development" && {
+      disableOriginCheck: true,
+    }),
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
