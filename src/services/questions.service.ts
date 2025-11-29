@@ -22,8 +22,10 @@ class QuestionsService {
     return await this.questionsRepository.save(result, options);
   }
 
-  async findAll(options?: FindManyOptions<Question>): Promise<Question[]> {
-    return this.questionsRepository.find(options);
+  async findAll(
+    options?: FindManyOptions<Question>,
+  ): Promise<[Question[], number]> {
+    return this.questionsRepository.findAndCount(options);
   }
 
   async findTags(): Promise<string[]> {

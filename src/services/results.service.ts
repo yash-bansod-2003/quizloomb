@@ -19,8 +19,10 @@ class ResultsService {
     return await this.resultsRepository.save(result, options);
   }
 
-  async findAll(options?: FindManyOptions<Result>): Promise<Result[]> {
-    return await this.resultsRepository.find(options);
+  async findAll(
+    options?: FindManyOptions<Result>,
+  ): Promise<[Result[], number]> {
+    return await this.resultsRepository.findAndCount(options);
   }
 
   async findOne(options: FindOneOptions<Result>): Promise<Result | null> {

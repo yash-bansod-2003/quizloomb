@@ -1,8 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { Logger } from "winston";
 import createError from "http-errors";
+import { Like } from "typeorm";
 import UsersService from "@/services/users.service.js";
-import { createUserValidationSchema } from "@/validators/users.validators.js";
+import {
+  createUserValidationSchema,
+  userQueryValidationSchema,
+} from "@/validators/users.validators.js";
 import HashingService from "@/services/hashing.service.js";
 import { z } from "zod";
 
@@ -38,9 +42,43 @@ class UsersController {
   async findAll(req: Request, res: Response, next: NextFunction) {
     this.logger.debug("finding all users");
     try {
-      const users = await this.usersService.findAll();
+      const { page, perPage, search } = req.query as z.infer<
+        typeof userQueryValidationSchema
+      >;
+
+      const pageNumber = page ? Number(page) : 1;
+      const perPageNumber = perPage ? Number(perPage) : 10;
+
+      const [users, count] = await this.usersService.findAll({
+        where: search
+          ? [
+              {
+                name: Like(`%${search}%`),
+              },
+              {
+                email: Like(`%${search}%`),
+              },
+            ]
+          : {},
+        order: { createdAt: "DESC" },
+        take: perPageNumber,
+        skip: (pageNumber - 1) * perPageNumber,
+      });
+
       this.logger.debug("users found successfully");
-      res.json(users);
+
+      const response = {
+        data: users,
+        success: true,
+        meta: {
+          total: count,
+          page: pageNumber,
+          perPage: perPageNumber,
+          totalPages: Math.ceil(count / perPageNumber),
+        },
+      };
+
+      res.json(response);
     } catch (error) {
       this.logger.error(`error finding users ${error}`);
       next(error);

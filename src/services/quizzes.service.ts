@@ -19,8 +19,8 @@ class QuizzesService {
     return await this.quizzesRepository.save(quiz, options);
   }
 
-  async findAll(options?: FindManyOptions<Quiz>): Promise<Quiz[]> {
-    return await this.quizzesRepository.find(options);
+  async findAll(options?: FindManyOptions<Quiz>): Promise<[Quiz[], number]> {
+    return await this.quizzesRepository.findAndCount(options);
   }
 
   async findOne(options: FindOneOptions<Quiz>): Promise<Quiz | null> {

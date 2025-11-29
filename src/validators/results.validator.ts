@@ -5,6 +5,11 @@ export const resultValidationSchema = z.object({
   quizId: z.string(),
 });
 
+export const resultQueryValidationSchema = z.object({
+  page: z.number().optional(),
+  perPage: z.number().optional(),
+});
+
 /**
  * Validates the body of a request to create a new answer.
  *

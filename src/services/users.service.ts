@@ -19,8 +19,8 @@ class UsersService {
     return await this.usersRepository.save(result, options);
   }
 
-  async findAll(options?: FindManyOptions<User>): Promise<User[]> {
-    return await this.usersRepository.find(options);
+  async findAll(options?: FindManyOptions<User>): Promise<[User[], number]> {
+    return await this.usersRepository.findAndCount(options);
   }
 
   async findOne(options: FindOneOptions<User>): Promise<User | null> {

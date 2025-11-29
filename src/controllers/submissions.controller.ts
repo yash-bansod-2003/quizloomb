@@ -149,7 +149,11 @@ class SubmissionsController {
   async findAll(req: Request, res: Response, next: NextFunction) {
     try {
       const submissions = await this.submissionsService.findAll(req.query);
-      return res.json(submissions);
+      const response = {
+        data: submissions,
+        success: true,
+      };
+      return res.json(response);
     } catch (error) {
       next(error);
     }
@@ -164,7 +168,11 @@ class SubmissionsController {
       this.logger.error(`Submission with id ${req.params.id} not found`);
       return next(createHttpError.NotFound("submission not found"));
     }
-    return res.json(submission);
+    const response = {
+      data: submission,
+      success: true,
+    };
+    return res.json(response);
   }
 
   async delete(req: Request, res: Response, next: NextFunction) {

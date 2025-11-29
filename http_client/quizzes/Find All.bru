@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: {{base_url}}/api/quizzes
+  url: {{base_url}}/api/quizzes?page=1
   body: none
   auth: none
+}
+
+params:query {
+  page: 1
 }
