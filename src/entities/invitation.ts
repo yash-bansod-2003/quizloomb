@@ -6,9 +6,9 @@ import {
   ManyToOne,
   JoinColumn,
 } from "typeorm";
-import { User } from "./auth/User.js";
-import { Organization } from "./Organization.js";
-import { Team } from "./Team.js";
+import { User } from "@/entities/auth/user.js";
+import { Organization } from "@/entities/organization.js";
+import { Team } from "@/entities/team.js";
 
 @Entity("invitation")
 export class Invitation {
@@ -40,7 +40,7 @@ export class Invitation {
   @JoinColumn({ name: "userId" })
   user: User;
 
-  @ManyToOne(() => Organization, (organization) => organization.members)
+  @ManyToOne(() => Organization, (organization) => organization.invitations)
   @JoinColumn({ name: "organizationId" })
   organization: Organization;
 

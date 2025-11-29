@@ -9,11 +9,11 @@ import {
   ManyToMany,
   JoinColumn,
 } from "typeorm";
-import { Question } from "@/entities/Question.js";
-import { Quiz } from "@/entities/Quiz.js";
-import { Option } from "@/entities/Option.js";
+import { Question } from "@/entities/question.js";
+import { Quiz } from "@/entities/quiz.js";
+import { Option } from "@/entities/option.js";
 import { generateId } from "better-auth";
-import { Result } from "./Result.js";
+import { Result } from "@/entities/result.js";
 
 @Entity("submissions")
 export class Submission {

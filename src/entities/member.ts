@@ -6,8 +6,8 @@ import {
   ManyToOne,
   JoinColumn,
 } from "typeorm";
-import { User } from "./auth/User.js";
-import { Organization } from "./Organization.js";
+import { User } from "@/entities/auth/user.js";
+import { Organization } from "@/entities/organization.js";
 
 @Entity("member")
 export class Member {

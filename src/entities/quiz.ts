@@ -10,13 +10,13 @@ import {
   PrimaryColumn,
   BeforeInsert,
 } from "typeorm";
-import { User } from "@/entities/auth/User.js";
-import { Question } from "@/entities/Question.js";
-import { Submission } from "@/entities/Submission.js";
-import { Result } from "@/entities/Result.js";
-import { Settings } from "@/entities/Settings.js";
+import { User } from "@/entities/auth/user.js";
+import { Question } from "@/entities/question.js";
+import { Submission } from "@/entities/submission.js";
+import { Result } from "@/entities/result.js";
+import { Settings } from "@/entities/settings.js";
 import { generateId } from "better-auth";
-import { QuizSession } from "./QuizSession.js";
+import { QuizSession } from "@/entities/quiz-session.js";
 
 export enum QuizStatus {
   DRAFT = "draft",

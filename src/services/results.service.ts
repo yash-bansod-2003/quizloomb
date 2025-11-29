@@ -1,4 +1,4 @@
-import { Result } from "@/entities/Result.js";
+import { Result } from "@/entities/result.js";
 import {
   DeepPartial,
   DeleteResult,

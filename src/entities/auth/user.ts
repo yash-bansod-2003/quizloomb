@@ -6,12 +6,12 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from "typeorm";
-import { Session } from "./Session.js";
-import { Account } from "./Account.js";
-import { Quiz } from "../Quiz.js";
-import { Member } from "../Member.js";
-import { Invitation } from "../Invitation.js";
-import { TeamMember } from "../TeamMember.js";
+import { Session } from "@/entities/auth/session.js";
+import { Account } from "@/entities/auth/account.js";
+import { Quiz } from "../quiz.js";
+import { Member } from "../member.js";
+import { Invitation } from "../invitation.js";
+import { TeamMember } from "../team-member.js";
 
 @Entity("user")
 export class User {

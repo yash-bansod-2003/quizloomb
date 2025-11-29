@@ -11,7 +11,7 @@ import UserService from "@/services/users.service.js";
 import OptionsService from "@/services/options.service.js";
 import ResultsService from "@/services/results.service.js";
 import { AuthenticatedQuizRequest } from "@/middlewares/authenticate-quiz.js";
-import { QuizStatus } from "@/entities/Quiz.js";
+import { QuizStatus } from "@/entities/quiz.js";
 
 class SubmissionsController {
   constructor(

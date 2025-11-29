@@ -1,4 +1,4 @@
-import { QuizSession } from "@/entities/QuizSession.js";
+import { QuizSession } from "@/entities/quiz-session.js";
 import {
   DeepPartial,
   DeleteResult,

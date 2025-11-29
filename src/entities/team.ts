@@ -8,9 +8,9 @@ import {
   OneToMany,
   JoinColumn,
 } from "typeorm";
-import { Organization } from "./Organization.js";
-import { TeamMember } from "./TeamMember.js";
-import { Invitation } from "./Invitation.js";
+import { Organization } from "@/entities/organization.js";
+import { TeamMember } from "@/entities/team-member.js";
+import { Invitation } from "@/entities/invitation.js";
 
 @Entity("team")
 export class Team {

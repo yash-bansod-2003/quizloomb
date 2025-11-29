@@ -1,4 +1,4 @@
-import { Option } from "@/entities/Option.js";
+import { Option } from "@/entities/option.js";
 import {
   DeepPartial,
   DeleteResult,

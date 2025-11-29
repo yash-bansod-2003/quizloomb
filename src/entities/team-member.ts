@@ -6,8 +6,8 @@ import {
   JoinColumn,
   Column,
 } from "typeorm";
-import { User } from "./auth/User.js";
-import { Team } from "./Team.js";
+import { User } from "@/entities/auth/user.js";
+import { Team } from "@/entities/team.js";
 
 @Entity("teamMember")
 export class TeamMember {

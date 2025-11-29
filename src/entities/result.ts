@@ -10,10 +10,10 @@ import {
   OneToOne,
   JoinColumn,
 } from "typeorm";
-import { Quiz } from "@/entities/Quiz.js";
+import { Quiz } from "@/entities/quiz.js";
 import { generateId } from "better-auth";
-import { Submission } from "./Submission.js";
-import { QuizSession } from "./QuizSession.js";
+import { Submission } from "@/entities/submission.js";
+import { QuizSession } from "@/entities/quiz-session.js";
 
 export enum ResultStatus {
   PENDING = "pending",

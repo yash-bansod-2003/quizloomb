@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { NextFunction, Request, Response } from "express";
-import { QuestionType } from "@/entities/Question.js";
+import { QuestionType } from "@/entities/question.js";
 
 export const questionValidationSchema = z.object({
   quizId: z.string(),

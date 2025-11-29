@@ -10,8 +10,8 @@ import {
   ManyToMany,
   JoinColumn,
 } from "typeorm";
-import { Question } from "@/entities/Question.js";
-import { Submission } from "@/entities/Submission.js";
+import { Question } from "@/entities/question.js";
+import { Submission } from "@/entities/submission.js";
 import { generateId } from "better-auth";
 
 @Entity("options")

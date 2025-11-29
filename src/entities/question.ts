@@ -9,9 +9,9 @@ import {
   BeforeInsert,
   JoinColumn,
 } from "typeorm";
-import { Quiz } from "@/entities/Quiz.js";
-import { Option } from "@/entities/Option.js";
-import { Submission } from "@/entities/Submission.js";
+import { Quiz } from "@/entities/quiz.js";
+import { Option } from "@/entities/option.js";
+import { Submission } from "@/entities/submission.js";
 import { generateId } from "better-auth";
 
 export enum QuestionType {

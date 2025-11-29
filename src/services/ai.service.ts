@@ -2,7 +2,7 @@ import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 import configuration from "@/lib/configuration.js";
 import { quizValidationSchema } from "@/validators/quizzes.validator.js";
 import { z } from "zod";
-import { QuestionType, Difficulty } from "@/entities/Question.js";
+import { QuestionType, Difficulty } from "@/entities/question.js";
 
 class Aiservice {
   private readonly client: GoogleGenerativeAI;

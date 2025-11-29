@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
   BeforeInsert,
 } from "typeorm";
-import { Quiz } from "@/entities/Quiz.js";
+import { Quiz } from "@/entities/quiz.js";
 import { generateId } from "better-auth";
 
 export enum ShuffleMode {

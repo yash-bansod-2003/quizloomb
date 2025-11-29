@@ -1,4 +1,4 @@
-import { Settings } from "@/entities/Settings.js";
+import { Settings } from "@/entities/settings.js";
 import {
   DeepPartial,
   DeleteResult,

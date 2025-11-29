@@ -10,8 +10,8 @@ import {
   JoinColumn,
 } from "typeorm";
 import { generateId } from "better-auth";
-import { Result } from "@/entities/Result.js";
-import { Quiz } from "./Quiz.js";
+import { Result } from "@/entities/result.js";
+import { Quiz } from "@/entities/quiz.js";
 
 @Entity("quiz_sessions")
 export class QuizSession {

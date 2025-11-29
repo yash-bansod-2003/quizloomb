@@ -20,7 +20,7 @@ import { AuthenticatedRequest } from "@/middlewares/authenticate.js";
 import { COOKIE_PROPERTIES } from "@/lib/constants.js";
 import configuration from "@/lib/configuration.js";
 import { Field, QuizTokenPayload } from "@/types/index.js";
-import { QuestionType } from "@/entities/Question.js";
+import { QuestionType } from "@/entities/question.js";
 
 class QuizzesController {
   constructor(

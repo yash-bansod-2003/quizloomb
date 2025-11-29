@@ -8,7 +8,7 @@ import {
   JoinColumn,
   Index,
 } from "typeorm";
-import { User } from "./User.js";
+import { User } from "@/entities/auth/user.js";
 
 @Entity("session")
 export class Session {

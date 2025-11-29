@@ -6,8 +6,8 @@ import { AppDataSource } from "@/data-source.js";
 import authenticate from "@/middlewares/authenticate.js";
 import logger from "@/lib/logger.js";
 import { OptionValidator } from "@/validators/options.validator.js";
-import { Question } from "@/entities/Question.js";
-import { Option } from "@/entities/Option.js";
+import { Question } from "@/entities/question.js";
+import { Option } from "@/entities/option.js";
 
 const router = Router();
 
